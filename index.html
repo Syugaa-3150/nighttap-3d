@@ -6,9 +6,9 @@
 <meta name="description" content="クラフトビール＆バーのバーテンダーになって、ビールを注ぎ、カクテルを振る3D一人称シミュレーション。目指せ1日50杯！">
 <meta name="theme-color" content="#140c08">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="ナイトタップ">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Bar 憩">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8D%BA%3C/text%3E%3C/svg%3E">
-<title>ナイトタップ 3D — バーテンダーPOVシミュレーション</title>
+<title>Bar 憩（いこい）— バーテンダーPOVシミュレーション</title>
 <meta http-equiv="Content-Security-Policy" content="connect-src 'none'; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'; worker-src 'none'">
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js"},"integrity":{"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js":"sha384-8/hf5tabFfIo0BPku31TKUvGIKpWGYaMwNtlSNqNyZzXgZCMd4lnOGWbJElML9dv"}}</script>
 <style>
@@ -90,7 +90,7 @@ button{font-family:inherit}
 .btn.sec{background:#4a3020;color:#f5e6c8;box-shadow:0 4px 0 #24150c}
 .btn.sm{padding:5px 12px;font-size:13px;border-radius:9px}
 .btn:disabled{opacity:.35;cursor:not-allowed;filter:none}
-.title{width:780px;text-align:center;background:radial-gradient(ellipse at 50% 0,#4a2a18,#1e120a 70%)}
+.title{width:780px;text-align:center;background:radial-gradient(ellipse at 50% 20%,#3a2414,#140c07 75%)}
 .neon{font-size:64px;font-weight:900;color:#fff;text-shadow:0 0 6px #ff5a7a,0 0 18px #ff5a7a,0 0 36px #ff2a5a;letter-spacing:.08em;margin:10px 0 0}
 .neon2{font-size:18px;color:#3fd0c9;text-shadow:0 0 8px #3fd0c9;font-weight:800;margin-bottom:18px;letter-spacing:.2em}
 .tbtns{display:flex;flex-direction:column;gap:12px;align-items:center;margin-top:16px}
@@ -222,6 +222,27 @@ body.touch #tip{display:none!important}
 .card{font-size:14px}.card .sub{font-size:12px}
 .hlc{font-size:13.5px}
 .rtab{font-size:15px}
+#ticket{left:50%!important;right:auto!important;top:auto!important;bottom:8px;transform:translateX(-50%);width:780px!important;display:flex!important;gap:10px;padding:8px 10px!important;border-radius:14px;align-items:stretch}
+#tkL{width:170px;flex:none;display:flex;flex-direction:column}
+#tkL #orderTabs{flex-direction:column;flex-wrap:nowrap;max-height:92px;overflow:auto;margin:4px 0 0}
+#tkL .otab{min-width:0}
+#tkR{flex:1;display:flex;flex-direction:column;gap:6px;min-width:0}
+#tkt{padding:6px 10px!important;background-image:none!important}
+#tkt h2{font-size:18px!important;border-bottom:none!important;margin:0 0 4px!important;padding:0!important}
+#tkt .steps{display:flex;flex-wrap:wrap;gap:4px}
+#tkt .step{display:inline-flex;border:1px solid #d8c8a0;border-radius:20px;padding:0 9px 0 4px;line-height:1.7;font-size:12.5px;background:#fff8}
+#tkt .step.cur{background:#ffe2d8;border-color:#c0392b;box-shadow:0 0 0 2px #c0392b55}
+#tkt .step.done{background:#e3f4df;border-color:#7ab87a}
+#tkt .step .amt{margin-left:6px}
+.tktEmpty{padding:4px 0!important;font-size:13px!important}
+#nextLine{background:#06302e;border:1px solid #3fd0c9;border-radius:10px;padding:5px 10px;font-size:15px;font-weight:800;color:#c8faf6;display:flex;gap:8px;align-items:center}
+#nextLine b{color:#3fd0c9;font-size:12px;flex:none}
+#hintBar{display:none!important}
+#combo{right:16px!important;top:58px!important}
+#tut{left:12px!important;bottom:auto!important;top:58px;transform:none!important;width:340px!important}
+#tut .tt{font-size:14px!important}
+.bub{pointer-events:auto;cursor:pointer}
+body.touch #ticket{width:640px!important}
 #loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#ffd77a;background:#0e0806}
 </style>
 </head>
@@ -250,7 +271,7 @@ body.touch #tip{display:none!important}
    <button class="ic" id="btnSet" title="設定（音量・ガイド表示）">⚙ 設定</button><button class="ic" id="btnMute" title="音">🔊</button>
    <button class="ic" id="btnPause" title="一時停止">Ⅱ</button>
   </div>
-  <div id="ticket"><h3>伝票 <span id="ordCount"></span></h3><div id="orderTabs"></div><div id="tkt"></div></div>
+  <div id="ticket"><div id="tkL"><h3>🧾 伝票 <span id="ordCount"></span></h3><div id="orderTabs"></div></div><div id="tkR"><div id="tkt"></div><div id="nextLine"><b>次は▶</b><span id="nextTxt"></span></div></div></div>
   <div id="evalPop"></div>
   <div id="readout"></div>
   <div id="gaugeBox"><div class="glab" id="glab"></div><div class="gt"><div class="nd" id="needle"></div></div></div>
@@ -364,7 +385,7 @@ const DIFF={
 function DF(){return DIFF[(S&&S.diff)||'normal']}
 function applyDiff(){FOAM[0]=DF().foam[0];FOAM[1]=DF().foam[1]}
 const SETKEY='nighttap3d_settings';
-const SET=(()=>{const d={bgmVol:.55,sfxVol:.8,arrow:1,labels:1,hint:1,quality:'auto',gyro:0,voice:1};try{const t=JSON.parse(localStorage.getItem(SETKEY)||'{}');return{...d,...t}}catch(e){return d}})();
+const SET=(()=>{const d={bgmVol:.55,sfxVol:.8,voiceVol:.9,envVol:.5,arrow:1,labels:1,hint:1,quality:'auto',gyro:0,voice:1};try{const t=JSON.parse(localStorage.getItem(SETKEY)||'{}');return{...d,...t}}catch(e){return d}})();
 function saveSet(){try{localStorage.setItem(SETKEY,JSON.stringify(SET))}catch(e){}}
 const IS_TOUCH=(()=>{try{return matchMedia('(pointer:coarse)').matches||('ontouchstart' in window&&navigator.maxTouchPoints>0)}catch(e){return false}})();
 let touchMode=IS_TOUCH;
@@ -388,6 +409,11 @@ function tone(f,d,type='sine',v=.12,delay=0){if(muted)return;const a=ac();if(!a)
 function noise(d,freq,v=.15,q=1){if(muted)return;const a=ac();if(!a)return;const s=a.createBufferSource();s.buffer=nbuf();const f=a.createBiquadFilter();f.type='bandpass';f.frequency.value=freq;f.Q.value=q;const g=a.createGain();const t=a.currentTime;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);s.connect(f).connect(g).connect(out());s.start(t,Math.random());s.stop(t+d+.05)}
 function bellCall(){tone(2637,1.1,'sine',.09);tone(3951,.7,'sine',.035);tone(5274,.4,'sine',.02);tone(2637,1.1,'sine',.08,.2);tone(3951,.7,'sine',.03,.2)}
 function printer(){for(let i=0;i<6;i++)noise(.04,3200+i*150,.06,4);tone(988,.12,'square',.035,.28);tone(1318,.18,'square',.035,.36)}
+let JAV=[],ENV=[];function loadVoices(){try{const vs=speechSynthesis.getVoices();const sc=v=>(/Natural|Neural|Online|Siri|Enhanced|Premium|Google|Kyoko|Otoya|Nanami|Keita/i.test(v.name)?10:0)+(v.localService?0:1);JAV=vs.filter(v=>/^ja/i.test(v.lang)).sort((a,b)=>sc(b)-sc(a));ENV=vs.filter(v=>/^en/i.test(v.lang)).sort((a,b)=>sc(b)-sc(a))}catch(e){}}
+try{if('speechSynthesis' in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}}catch(e){}
+function speakC(c,text,hi=false){if(muted||!SET.voice||!('speechSynthesis' in window)||!text)return;try{const ss=speechSynthesis;if(ss.speaking||ss.pending){if(!hi)return;ss.cancel()}
+ const en=c&&c.en;const list=en?ENV:JAV;const u=new SpeechSynthesisUtterance(text);u.lang=en?'en-US':'ja-JP';if(list.length)u.voice=list[((c&&c.vi)||0)%Math.min(list.length,6)];
+ u.pitch=clamp(c?c.vp:1,.4,1.9);u.rate=clamp(c?c.vr:1.05,.7,1.4);u.volume=clamp(SET.voiceVol,0,1);ss.speak(u)}catch(e){}}
 let voices=null;function speak(text,pitch=1,lang='ja-JP'){if(muted||!SET.voice||!('speechSynthesis' in window))return;try{const u=new SpeechSynthesisUtterance(text);u.lang=lang;u.pitch=clamp(pitch,.3,2);u.rate=1.08;u.volume=clamp(SET.sfxVol,0,1);
  if(!voices)voices=speechSynthesis.getVoices();const v=(voices||[]).find(v=>v.lang&&v.lang.startsWith(lang.slice(0,2)));if(v)u.voice=v;speechSynthesis.speak(u)}catch(e){}}
 const sfx={clink(){tone(2600,.18,'sine',.08);tone(3900,.12,'sine',.04,.02)},coin(){tone(1320,.08,'square',.05);tone(1980,.18,'square',.05,.07)},bell(){tone(1046,.5,'triangle',.08);tone(1568,.6,'triangle',.06,.12)},
@@ -403,7 +429,7 @@ let renderer;
 try{renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true,powerPreference:'high-performance'})}catch(e){$('#loading').textContent='このブラウザでは3D表示（WebGL）が使えません';throw e}
 renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;
 renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-const scene=new THREE.Scene();scene.background=new THREE.Color(0x0d0705);scene.fog=new THREE.Fog(0x0d0705,5,11);
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x0d0705);scene.fog=new THREE.Fog(0x0d0705,7,14);
 const camera=new THREE.PerspectiveCamera(68,1280/720,.03,30);camera.rotation.order='YXZ';
 const CAM0=V(.1,1.68,.74);camera.position.copy(CAM0);
 const pmrem=new THREE.PMREMGenerator(renderer);scene.environment=pmrem.fromScene(new RoomEnvironment(),.04).texture;
@@ -415,7 +441,7 @@ function canvasTex(w,h,draw){const c=document.createElement('canvas');c.width=w;
 const FONTS='"Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic UI","Meiryo","Noto Sans JP",sans-serif';
 const std=(o)=>new THREE.MeshStandardMaterial({envMapIntensity:.45,...o});
 const TEX={
- wood:canvasTex(512,128,(x,w,h)=>{x.fillStyle='#6a3c1e';x.fillRect(0,0,w,h);for(let i=0;i<70;i++){x.strokeStyle=`rgba(${rnd(20,60)|0},${rnd(8,25)|0},0,${rnd(.15,.45)})`;x.lineWidth=rnd(1,3);x.beginPath();const y=rnd(0,h);x.moveTo(0,y);for(let X=0;X<=w;X+=32)x.lineTo(X,y+Math.sin(X*.02+i)*rnd(1,4));x.stroke()}}),
+ wood:canvasTex(1024,256,(x,w,h)=>{const gr=x.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#5e3418');gr.addColorStop(.5,'#6e4020');gr.addColorStop(1,'#56301a');x.fillStyle=gr;x.fillRect(0,0,w,h);for(let k=0;k<6;k++){x.fillStyle='rgba(30,12,4,.35)';x.beginPath();x.ellipse(rnd(0,w),rnd(0,h),rnd(10,26),rnd(4,9),0,0,7);x.fill()}for(let i=0;i<180;i++){x.strokeStyle=`rgba(${rnd(20,60)|0},${rnd(8,25)|0},0,${rnd(.15,.45)})`;x.lineWidth=rnd(1,3);x.beginPath();const y=rnd(0,h);x.moveTo(0,y);for(let X=0;X<=w;X+=32)x.lineTo(X,y+Math.sin(X*.02+i)*rnd(1,4));x.stroke()}}),
  floor:canvasTex(512,512,(x,w,h)=>{for(let i=0;i<8;i++){x.fillStyle=`hsl(25,${35+rnd(-5,5)}%,${14+rnd(-3,3)}%)`;x.fillRect(0,i*64,w,64);x.fillStyle='#0006';x.fillRect(0,i*64,w,2);x.fillRect(rnd(0,w),i*64,2,64)}}),
  brick:canvasTex(512,256,(x,w,h)=>{x.fillStyle='#2a1610';x.fillRect(0,0,w,h);for(let r=0;r<8;r++)for(let c=-1;c<9;c++){x.fillStyle=`hsl(${12+rnd(-4,4)},${40+rnd(-8,8)}%,${22+rnd(-5,5)}%)`;x.fillRect(c*64+(r%2)*32+2,r*32+2,60,28)}}),
 };
@@ -424,11 +450,11 @@ const M={
  wood:std({map:TEX.wood,roughness:.45,metalness:0}),
  darkWood:std({color:0x2a160c,roughness:.7}),
  brass:std({color:0xd8a850,metalness:1,roughness:.25,envMapIntensity:1}),
- steel:std({color:0x8a9298,metalness:.85,roughness:.38,envMapIntensity:.55}),
+ steel:std({color:0xa4abb2,metalness:.85,roughness:.34,envMapIntensity:.6}),
  chrome:std({color:0xe6ecf0,metalness:1,roughness:.12,envMapIntensity:1.1}),
  rubber:std({color:0x111111,roughness:.95}),
  grate:std({color:0x222428,metalness:.6,roughness:.5}),
- glass:new THREE.MeshStandardMaterial({color:0xffffff,transparent:true,opacity:.22,roughness:.05,metalness:.1,envMapIntensity:1.6,depthWrite:false,side:THREE.DoubleSide}),
+ glass:new THREE.MeshPhysicalMaterial({color:0xffffff,transparent:true,opacity:.2,roughness:.03,metalness:0,clearcoat:1,clearcoatRoughness:.04,envMapIntensity:2.2,depthWrite:false,side:THREE.DoubleSide}),
  copper:std({color:0xd07a48,metalness:.9,roughness:.25,envMapIntensity:1}),
  ice:new THREE.MeshStandardMaterial({color:0xeaf6ff,transparent:true,opacity:.55,roughness:.1,metalness:0,envMapIntensity:1.2}),
  white:std({color:0xf0ece4,roughness:.4}),
@@ -442,46 +468,78 @@ const ICEE=new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:
 function addPick(o,act){o.userData.act=act;PICK.push(o);return o}
 function box(w,h,d,mat,x,y,z,parent=scene){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;parent.add(m);return m}
 function cyl(rt,rb,h,mat,x,y,z,seg=24,parent=scene){const m=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,seg),mat);m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;parent.add(m);return m}
+const SHOP={ja:'憩',name:'Bar 憩',kana:'いこい',en:'BAR IKOI',sub:'CRAFT BEER & COCKTAILS'};
+const MINCHO='"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP","MS PMincho",serif';
+function drawLogo(x,w,h,o={}){const cx=w/2,cy=h*(o.cy||.42),R0=Math.min(w,h)*(o.r||.3);
+ if(o.bg){x.fillStyle=o.bg;x.fillRect(0,0,w,h)}
+ // enso brush ring
+ const steps=140;for(let i=0;i<steps;i++){const t=i/steps;const a0=-Math.PI*.38+t*Math.PI*1.86;const a1=a0+Math.PI*1.86/steps*1.6;const wdt=R0*(.03+.2*Math.sin(Math.PI*Math.pow(t,.7))*(1-t*.55));
+  x.strokeStyle=o.ring||`rgba(226,170,80,${.85-.4*t})`;x.lineWidth=wdt;x.lineCap='round';x.beginPath();x.arc(cx+Math.sin(t*9)*R0*.008,cy,R0*(1+Math.sin(t*5)*.015),a0,a1);x.stroke()}
+ for(let i=0;i<30;i++){const a=-Math.PI*.38+Math.random()*Math.PI*1.7;x.fillStyle='rgba(226,170,80,.35)';x.beginPath();x.arc(cx+Math.cos(a)*R0*(1+rnd(-.12,.12)),cy+Math.sin(a)*R0*(1+rnd(-.12,.12)),rnd(.5,2.2)*R0*.02,0,7);x.fill()}
+ x.fillStyle=o.ink||'#f5ecd8';x.font=`700 ${R0*1.15}px ${MINCHO}`;x.textAlign='center';x.textBaseline='middle';x.shadowColor=o.glow||'rgba(255,190,90,.6)';x.shadowBlur=o.blur||R0*.12;x.fillText(SHOP.ja,cx,cy+R0*.04);x.shadowBlur=0;
+ if(!o.noText){x.fillStyle=o.ink||'#f5ecd8';x.font=`700 ${R0*.3}px ${MINCHO}`;const t1=SHOP.en.split('').join(String.fromCharCode(8202));x.fillText(SHOP.en.replace(/ /g,'   '),cx,cy+R0*1.42);
+  x.fillStyle=o.sub||'#e2aa50';x.font=`600 ${R0*.13}px ${MINCHO}`;x.fillText(SHOP.sub.split('').join(' '),cx,cy+R0*1.7)}}
+let LOGO_URL='';
+function buildLogoURL(){const c=document.createElement('canvas');c.width=900;c.height=760;const x=c.getContext('2d');drawLogo(x,900,760,{r:.27,cy:.4});LOGO_URL=c.toDataURL('image/png')}
+let NORENTEX,HALOTEX,SHOJITEX,PLASTERTEX,SLATTEX,BRUSHTEX,COASTERTEX,SIGNTEX;
+function buildBrandTex(){
+ NORENTEX=canvasTex(512,300,(x,w,h)=>{x.clearRect(0,0,w,h);const cols=3,sw=w/cols;for(let i=0;i<cols;i++){x.fillStyle='#1f2a44';x.fillRect(i*sw+3,0,sw-6,h)}x.fillStyle='#f3eee2';x.font=`700 170px ${MINCHO}`;x.textAlign='center';x.textBaseline='middle';x.fillText(SHOP.ja,w/2,h*.5);x.font=`600 30px ${MINCHO}`;x.fillText(SHOP.kana,w/2,h*.88);for(let i=1;i<cols;i++)x.clearRect(i*sw-3,h*.35,6,h)});
+ HALOTEX=canvasTex(128,128,(x,w,h)=>{const g=x.createRadialGradient(64,64,0,64,64,64);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.25,'rgba(255,255,255,.35)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,w,h)});
+ SHOJITEX=canvasTex(256,512,(x,w,h)=>{x.fillStyle='#f6e2b8';x.fillRect(0,0,w,h);for(let i=0;i<300;i++){x.fillStyle=`rgba(200,160,100,${Math.random()*.06})`;x.fillRect(Math.random()*w,Math.random()*h,2,6)}x.fillStyle='#3a2414';for(let i=0;i<=4;i++)x.fillRect(i*w/4-4,0,8,h);for(let j=0;j<=6;j++)x.fillRect(0,j*h/6-4,w,8)});
+ PLASTERTEX=canvasTex(512,512,(x,w,h)=>{x.fillStyle='#2b2622';x.fillRect(0,0,w,h);for(let i=0;i<9000;i++){const v=Math.random();x.fillStyle=`rgba(${v>.5?255:0},${v>.5?240:0},${v>.5?220:0},${Math.random()*.05})`;x.fillRect(Math.random()*w,Math.random()*h,rnd(1,5),rnd(1,5))}});
+ PLASTERTEX.wrapS=PLASTERTEX.wrapT=THREE.RepeatWrapping;PLASTERTEX.repeat.set(4,1.5);
+ BRUSHTEX=canvasTex(512,512,(x,w,h)=>{x.fillStyle='#b8bec4';x.fillRect(0,0,w,h);for(let i=0;i<1400;i++){const y=Math.random()*h;x.strokeStyle=`rgba(${Math.random()<.5?255:60},${Math.random()<.5?255:60},${Math.random()<.5?255:70},${Math.random()*.08})`;x.lineWidth=rnd(.5,1.5);x.beginPath();x.moveTo(0,y);x.lineTo(w,y+rnd(-2,2));x.stroke()}});
+ BRUSHTEX.wrapS=BRUSHTEX.wrapT=THREE.RepeatWrapping;BRUSHTEX.repeat.set(3,1);
+ COASTERTEX=canvasTex(256,256,(x,w,h)=>{x.fillStyle='#e9dcc0';x.beginPath();x.arc(128,128,126,0,7);x.fill();x.strokeStyle='#7a4a20';x.lineWidth=5;x.beginPath();x.arc(128,128,116,0,7);x.stroke();drawLogo(x,w,h,{r:.26,cy:.42,ink:'#3a2414',ring:'rgba(160,100,40,.9)',glow:'rgba(0,0,0,0)',sub:'#7a4a20'})});
+ SIGNTEX=canvasTex(1024,700,(x,w,h)=>{x.clearRect(0,0,w,h);drawLogo(x,w,h,{r:.27,cy:.4,blur:30})});
+}
+function halo(pos,size,color,op=.5){const m=new THREE.SpriteMaterial({map:HALOTEX,color,transparent:true,opacity:op,depthWrite:false,blending:THREE.AdditiveBlending,toneMapped:false});const sp=new THREE.Sprite(m);sp.position.copy(pos);sp.scale.set(size,size,1);sp.raycast=()=>{};scene.add(sp);return sp}
+function buildBackWall(){
+ const wall=new THREE.Mesh(new THREE.PlaneGeometry(9,3),std({map:PLASTERTEX,roughness:.95}));wall.position.set(0,1.5,-4.2);scene.add(wall);
+ // wainscot
+ const wn=box(9,.9,.04,M.wood,0,.45,-4.18);
+ // vertical slat panels
+ for(const cx of [-3.3,3.3])for(let k=0;k<14;k++)box(.035,2.3,.05,M.wood,cx-.45+k*.07,1.75,-4.15);
+ // shoji backlit panels
+ for(const x of [-2.4,2.4]){const sp=new THREE.Mesh(new THREE.PlaneGeometry(.9,1.5),new THREE.MeshBasicMaterial({map:SHOJITEX,toneMapped:false,color:0xffd9a0}));sp.position.set(x,1.75,-4.16);scene.add(sp);halo(V(x,1.75,-4.0),2.2,0xffb060,.22);const pl=new THREE.PointLight(0xffb870,1.6,3,2);pl.position.set(x,1.7,-3.7);scene.add(pl)}
+ // wooden sign board with logo
+ const plank=box(1.9,1.05,.06,std({map:TEX.wood,color:0x8a6a50,roughness:.6}),0,2.25,-4.14);
+ const sg=new THREE.Mesh(new THREE.PlaneGeometry(1.75,1.2),new THREE.MeshBasicMaterial({map:SIGNTEX,transparent:true,toneMapped:false}));sg.position.set(0,2.27,-4.105);scene.add(sg);
+ halo(V(0,2.25,-4.05),2.6,0xffa040,.28);const sl=new THREE.PointLight(0xffb060,3,3.5,2);sl.position.set(0,1.9,-3.6);scene.add(sl);
+ for(const x of [-.75,.75]){const sp=cyl(.03,.045,.08,M.brass,x,2.55,-4.0,12);sp.rotation.x=.9}
+}
 function buildBoardTex(){BOARDTEX=canvasTex(512,600,(x,w,h)=>{x.fillStyle='#1d2a22';x.fillRect(0,0,w,h);for(let i=0;i<400;i++){x.fillStyle=`rgba(255,255,255,${Math.random()*.03})`;x.fillRect(Math.random()*w,Math.random()*h,3,3)}
- x.fillStyle='#ffe9a8';x.font='900 52px '+FONTS;x.textAlign='center';x.fillText('MENU',w/2,70);x.font='700 30px '+FONTS;x.textAlign='left';let y=130;
+ x.fillStyle='#ffe9a8';x.font='700 52px '+MINCHO;x.textAlign='center';x.fillText('憩  MENU',w/2,70);x.font='700 30px '+FONTS;x.textAlign='left';let y=130;
  const items=S?Object.keys(RECIPES).filter(k=>S.unlocked[k]):['pale','ipa','highball','gintonic'];for(const k of items.slice(0,11)){x.fillStyle='#f0f6ea';x.fillText(RECIPES[k].name.slice(0,9),40,y);x.textAlign='right';x.fillStyle='#ffd77a';x.fillText(RECIPES[k].price,w-40,y);x.textAlign='left';y+=42}
  x.strokeStyle='#ffffff55';x.lineWidth=3;x.beginPath();x.moveTo(40,90);x.lineTo(w-40,90);x.stroke()})}
 function refreshBoard(){if(!BOARDTEX)return;const nt=(buildBoardTex(),BOARDTEX);scene.traverse(o=>{if(o.isMesh&&o.material&&o.material.userData&&o.material.userData.board){o.material.map=nt;o.material.needsUpdate=true}})}
-function buildRoom(){buildBoardTex();
+function buildRoom(){buildBrandTex();buildBoardTex();
  const fl=new THREE.Mesh(new THREE.PlaneGeometry(10,10),std({map:TEX.floor,roughness:.7}));fl.rotation.x=-Math.PI/2;fl.receiveShadow=true;scene.add(fl);
  const ceil=new THREE.Mesh(new THREE.PlaneGeometry(10,10),std({color:0x140b07,roughness:1}));ceil.rotation.x=Math.PI/2;ceil.position.y=3;scene.add(ceil);
- const bw=new THREE.Mesh(new THREE.PlaneGeometry(9,3),std({map:TEX.brick,roughness:.9}));bw.position.set(0,1.5,-4.2);scene.add(bw);
- for(const s of [-1,1]){const w=new THREE.Mesh(new THREE.PlaneGeometry(6,3),std({color:0x24140c,roughness:.9}));w.position.set(s*4.3,1.5,-1.2);w.rotation.y=-s*Math.PI/2;scene.add(w)}
- // neon sign
- const neon=canvasTex(1024,256,(x,w,h)=>{x.clearRect(0,0,w,h);x.font='900 150px "Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic UI","Meiryo","Noto Sans JP",sans-serif';x.textAlign='center';x.textBaseline='middle';x.shadowColor='#ff3a6a';x.shadowBlur=30;x.fillStyle='#ffd0dc';x.fillText('NIGHT TAP',w/2,h/2+6);x.shadowBlur=60;x.fillText('NIGHT TAP',w/2,h/2+6)});
- const ns=new THREE.Mesh(new THREE.PlaneGeometry(2.4,.6),new THREE.MeshBasicMaterial({map:neon,transparent:true,toneMapped:false}));ns.position.set(0,2.25,-4.15);scene.add(ns);
- const nl=new THREE.PointLight(0xff3a6a,6,5,2);nl.position.set(0,2.2,-3.7);scene.add(nl);
- const sub=canvasTex(512,128,(x,w,h)=>{x.font='800 54px "Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic UI","Meiryo","Noto Sans JP",sans-serif';x.textAlign='center';x.textBaseline='middle';x.shadowColor='#3fd0c9';x.shadowBlur=24;x.fillStyle='#d8fffc';x.fillText('CRAFT BEER & BAR',w/2,h/2)});
- const ss=new THREE.Mesh(new THREE.PlaneGeometry(1.4,.35),new THREE.MeshBasicMaterial({map:sub,transparent:true,toneMapped:false}));ss.position.set(0,1.78,-4.15);scene.add(ss);
- const tl=new THREE.PointLight(0x3fd0c9,3,4,2);tl.position.set(0,1.8,-3.8);scene.add(tl);
- // windows
- for(const x of [-2.8,2.8]){const wm=new THREE.Mesh(new THREE.PlaneGeometry(1.1,1.2),new THREE.MeshBasicMaterial({color:0x1a2a4a}));wm.position.set(x,1.7,-4.17);scene.add(wm);box(1.2,.06,.06,M.darkWood,x,1.1,-4.12);box(1.2,.06,.06,M.darkWood,x,2.3,-4.12);box(.06,1.2,.06,M.darkWood,x,1.7,-4.12)}
+ buildBackWall();
  // door (left wall)
- box(.06,2.1,1,M.darkWood,-4.25,1.05,-2.6);const dw=new THREE.Mesh(new THREE.PlaneGeometry(.6,.6),new THREE.MeshBasicMaterial({color:0xffcf8a}));dw.position.set(-4.2,1.5,-2.6);dw.rotation.y=Math.PI/2;scene.add(dw);
+ box(.06,2.1,1,M.darkWood,-4.25,1.05,-2.6);{const dw=new THREE.Mesh(new THREE.PlaneGeometry(.5,.5),new THREE.MeshBasicMaterial({color:0xffcf8a}));dw.position.set(-4.2,1.2,-2.6);dw.rotation.y=Math.PI/2;scene.add(dw);
+  const nr=new THREE.Mesh(new THREE.PlaneGeometry(1.1,.62),new THREE.MeshStandardMaterial({map:NORENTEX,transparent:true,side:THREE.DoubleSide,roughness:.95}));nr.position.set(-4.17,1.82,-2.6);nr.rotation.y=Math.PI/2;scene.add(nr);
+  const rod=cyl(.012,.012,1.2,M.darkWood,-4.16,2.14,-2.6,8);rod.rotation.x=Math.PI/2;halo(V(-4.1,1.2,-2.6),.9,0xffc070,.35)}
  // tables
  for(const [x,z] of [[-2.6,-3.1],[2.5,-3.0],[-1.0,-3.4],[1.1,-3.5]]){cyl(.4,.4,.04,M.wood,x,.75,z);cyl(.04,.04,.75,M.chrome,x,.37,z);for(const a of [0,2.1,4.2]){cyl(.17,.17,.05,M.darkWood,x+Math.cos(a)*.6,.45,z+Math.sin(a)*.6)}
-  const cd=cyl(.025,.03,.08,std({color:0xffe0a0,emissive:0xffa040,emissiveIntensity:1.2}),x,.81,z);}
+  const cd=cyl(.025,.03,.08,std({color:0xffe0a0,emissive:0xffa040,emissiveIntensity:1.2}),x,.81,z);halo(V(x,.88,z),.5,0xffa040,.5)}
  for(const [x,z] of [[-2.6,-3.1],[2.5,-3.0]]){const pl=new THREE.PointLight(0xffa850,1.2,2.5,2);pl.position.set(x,1.1,z);scene.add(pl)}
  // lights
- scene.add(new THREE.AmbientLight(0xffe0c0,.22));
+ scene.add(new THREE.AmbientLight(0xffe0c0,.16));
  scene.add(new THREE.HemisphereLight(0xffd9b0,0x1a0c06,.35));
  for(const x of [-1.2,0,1.2]){
   const g=new THREE.Group();g.position.set(x,2.25,-.95);scene.add(g);
   const sh=new THREE.Mesh(new THREE.ConeGeometry(.16,.18,24,1,true),std({color:0x1c1c1c,metalness:.6,roughness:.4,side:THREE.DoubleSide}));sh.position.y=.09;g.add(sh);
   const bulb=new THREE.Mesh(new THREE.SphereGeometry(.05,16,12),new THREE.MeshBasicMaterial({color:0xffe2a8,toneMapped:false}));g.add(bulb);
   const cord=cyl(.004,.004,1,M.rubber,0,.68,0,6,g);
-  const pl=new THREE.PointLight(0xffc888,5,4.5,2);pl.position.set(x,1.9,-.85);scene.add(pl);
+  const pl=new THREE.PointLight(0xffc888,5,4.5,2);pl.position.set(x,1.9,-.85);scene.add(pl);halo(V(x,2.24,-.95),.7,0xffc070,.55);
  }
- const spot=new THREE.SpotLight(0xffe6c8,11,4,.8,.7,2);spot.position.set(.1,2.6,.35);spot.target.position.set(.1,.9,-.3);spot.castShadow=true;spot.shadow.mapSize.set(1024,1024);spot.shadow.bias=-.0004;scene.add(spot,spot.target);
+ const spot=new THREE.SpotLight(0xffe6c8,11,4,.8,.7,2);spot.position.set(.1,2.6,.35);spot.target.position.set(.1,.9,-.3);spot.castShadow=true;spot.shadow.mapSize.set(IS_TOUCH?1024:2048,IS_TOUCH?1024:2048);spot.shadow.bias=-.0004;scene.add(spot,spot.target);
  // glass rack hanging above bar
- {const hr=box(3.2,.03,.25,M.darkWood,.1,2.12,-.82);for(let x=-1.4;x<=1.6;x+=.16){const gl=lathe(GLR,M.glass,18);gl.renderOrder=3;gl.rotation.x=Math.PI;gl.position.set(x,2.1,-.82+((Math.round(x*10)%2)?.06:-.06));scene.add(gl)}}
+ {const hr=box(3.2,.03,.25,M.darkWood,.1,2.32,-.82);for(let x=-1.4;x<=1.6;x+=.16){const gl=lathe(GLR,M.glass,18);gl.renderOrder=3;gl.rotation.x=Math.PI;gl.position.set(x,2.3,-.82+((Math.round(x*10)%2)?.06:-.06));scene.add(gl)}}
  // string lights
- {const lm=new THREE.MeshBasicMaterial({color:0xffd9a0,toneMapped:false});for(let k=0;k<=40;k++){const t=k/40;const x=-4+t*8;const y=2.75-Math.sin(t*Math.PI*3)*.18-.05;const b=new THREE.Mesh(new THREE.SphereGeometry(.018,8,6),lm);b.position.set(x,y,-3.9);scene.add(b)}}
+ {const lm=new THREE.MeshBasicMaterial({color:0xffd9a0,toneMapped:false});for(let k=0;k<=40;k++){const t=k/40;const x=-4+t*8;const y=2.75-Math.sin(t*Math.PI*3)*.18-.05;const b=new THREE.Mesh(new THREE.SphereGeometry(.018,8,6),lm);b.position.set(x,y,-3.9);scene.add(b);if(k%2===0)halo(V(x,y,-3.88),.22,0xffc070,.45)}}
  // chalkboard menu
  {const cbm=new THREE.MeshStandardMaterial({map:BOARDTEX,roughness:.9});cbm.userData.board=1;const cb=new THREE.Mesh(new THREE.PlaneGeometry(1.1,1.3),cbm);cb.position.set(-1.9,1.6,-4.15);scene.add(cb);box(1.16,.04,.04,M.wood,-1.9,.94,-4.13);box(1.16,.04,.04,M.wood,-1.9,2.26,-4.13);box(.04,1.36,.04,M.wood,-2.47,1.6,-4.13);box(.04,1.36,.04,M.wood,-1.33,1.6,-4.13)}
  // plants
@@ -495,7 +553,7 @@ function buildRoom(){buildBoardTex();
   const nose=cyl(.028,.028,5,M.wood,.1,1.1,-1.03,20);nose.rotation.z=Math.PI/2;for(let x=-2.3;x<=2.5;x+=.32)box(.02,1.0,.012,std({color:0x1e1008,roughness:.8}),x,.52,-1.04)}
  box(5,.18,.04,M.darkWood,.1,.99,-.6);
  // work area
- const ws=box(3.5,.04,.6,M.steel,.08,.88,-.31);addPick(ws,{kind:'surface'});
+ const wsM=std({map:BRUSHTEX,roughnessMap:BRUSHTEX,color:0xd0d6dc,metalness:.8,roughness:.45,envMapIntensity:.7});const ws=box(3.5,.04,.6,wsM,.08,.88,-.31);addPick(ws,{kind:'surface'});
  box(3.5,.86,.04,M.darkWood,.08,.43,-.02);
  // stools
  for(let i=0;i<7;i++){const x=SEATX[i];cyl(.18,.18,.06,std({color:0x5a1a1a,roughness:.6}),x,.78,-1.38);cyl(.025,.025,.75,M.chrome,x,.38,-1.38)}
@@ -573,6 +631,7 @@ function buildStation(){
  for(let i=0;i<70;i++){d.position.set(rnd(-.1,.1),rnd(.04,.085),rnd(-.12,.12));d.rotation.set(rnd(0,3),rnd(0,3),rnd(0,3));d.updateMatrix();im.setMatrixAt(i,d.matrix)}ib.add(im);
  const scoop=makeScoop(true);scoop.position.set(.06,.11,.06);scoop.rotation.set(.6,.4,0);ib.add(scoop);
  addPick(ib,{kind:'ice'});ST.ice=ib;
+ {const pl=new THREE.Mesh(new THREE.PlaneGeometry(.16,.12),new THREE.MeshBasicMaterial({map:SIGNTEX,transparent:true,toneMapped:false}));pl.position.set(1.04,1.19,-.497);scene.add(pl)}
  // spoon holder + spoon
  const sh=new THREE.Group();sh.position.set(-.76,.9,-.42);scene.add(sh);
  const cup=lathe([[0,0],[.022,0],[.024,.08],[.021,.08],[.019,.004],[0,.004]],M.chrome,20);sh.add(cup);
@@ -598,7 +657,7 @@ function buildStation(){
  for(let i=0;i<7;i++){const z=new THREE.Mesh(new THREE.BoxGeometry(.42,.06,.38),new THREE.MeshBasicMaterial());z.visible=false;z.position.set(SEATX[i],1.15,-.81);scene.add(z);addPick(z,{kind:'seat',i});
   const mg=new THREE.Group();mg.position.set(SEATX[i]+.13,1.125,-.72);const bill=box(.075,.004,.04,std({color:0xd8dcc0,roughness:.8}),0,0,0,mg);bill.rotation.y=.3;for(let j=0;j<3;j++)cyl(.011,.011,.003,std({color:0xe0b040,metalness:.9,roughness:.3}),.03+j*.006,.004+j*.003,.025,16,mg);mg.visible=false;scene.add(mg);
   const rs=new THREE.Mesh(new THREE.PlaneGeometry(.22,.06),new THREE.MeshBasicMaterial({map:canvasTex(256,64,(x)=>{x.fillStyle='#1a0f09';x.fillRect(0,0,256,64);x.strokeStyle='#d4a24c';x.lineWidth=4;x.strokeRect(2,2,252,60);x.fillStyle='#d4a24c';x.font='900 30px "Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic UI","Meiryo","Noto Sans JP",sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText('RESERVED',128,34)})}));rs.position.set(SEATX[i],1.16,-.85);rs.rotation.x=-.5;scene.add(rs);
-  SEATOBJ[i]={zone:z,money:mg,resv:rs}}
+  SEATOBJ[i]={zone:z,money:mg,resv:rs};const co=new THREE.Mesh(new THREE.CylinderGeometry(.048,.048,.004,32),[std({color:0xd8c8a8,roughness:.9}),std({map:COASTERTEX,roughness:.9}),std({color:0xd8c8a8})]);co.position.set(SEATX[i]+.05,1.124,-.78);co.raycast=()=>{};scene.add(co)}
 }
 const SEATOBJ=[];
 function makeScoop(full){const g=new THREE.Group();const c=new THREE.Mesh(new THREE.CylinderGeometry(.035,.035,.08,16,1,true,0,Math.PI),std({color:0xc4ccd2,metalness:.85,roughness:.3,side:THREE.DoubleSide}));c.rotation.z=Math.PI/2;g.add(c);const h=cyl(.008,.008,.07,M.darkWood,.075,0,0,8,g);h.rotation.z=Math.PI/2;
@@ -766,9 +825,9 @@ function spawnCustomer(force){
  if(!force&&!G.tutorial&&S.day>=2&&Math.random()<(rankIdx()>=3?.45:.3)){const cand=REGS.filter(r=>!G.regSeen[r.id]&&!G.customers.some(c=>c.reg===r.id));if(cand.length){reg=pick(cand);G.regSeen[reg.id]=1;ty='regular'}}
  let L=reg?{eye:'#2a1a10',build:1,h:1,...reg.L,star:true}:randLook(ty);
  const c={id:G.nid++,seat:seat.i,L,ty,reg:reg&&reg.id,orderT:0,pref:reg?'any':pick(CT[ty].pref),status:'enter',t:0,pat:1,patMax:1,order:null,drinks:0,drinkT:0,bill:0,mood:'neutral',served:null,say:null,sayT:0,dirty:1,ph:Math.random()*6};
- c.vp=rnd(.7,1.5);c.m=makeCustomer3D(L);c.m.g.position.copy(DOOR);c.m.g.userData.act={kind:'cust',c};PICK.push(c.m.g);scene.add(c.m.g);
+ c.vp=rnd(.75,1.35);c.vr=rnd(.95,1.15);c.vi=Math.floor(Math.random()*6);c.en=ty==='tourist';if(reg)Object.assign(c,REGVOICE[reg.id]||{});c.m=makeCustomer3D(L);c.m.g.position.copy(DOOR);c.m.g.userData.act={kind:'cust',c};PICK.push(c.m.g);scene.add(c.m.g);
  c.target=V(SEATX[seat.i],0,-1.36);
- const b=document.createElement('div');b.className='bub';$('#bubbles').appendChild(b);c.bub=b;
+ const b=document.createElement('div');b.className='bub';b.addEventListener('pointerdown',e=>{e.stopPropagation();e.preventDefault();custTap(c)});$('#bubbles').appendChild(b);c.bub=b;
  seat.cust=c;G.customers.push(c);sfx.bell();
 }
 function canMake(rid){const r=RECIPES[rid];const fills=Object.keys(r.ings).filter(k=>r.ings[k]==='fill');
@@ -779,13 +838,25 @@ function chooseOrder(c){const opts=Object.keys(RECIPES).filter(k=>S.unlocked[k]&
  if(c.ty==='vip'||c.ty==='critic'){const ex=opts.filter(k=>RECIPES[k].price>=900);if(ex.length&&Math.random()<.7)return pick(ex)}
  const w=opts.map(k=>{const r=RECIPES[k];let v=r.cat==='beer'?1.3:1;if(r.cat==='original')v=origWeight(r);if(c.pref===r.cat)v*=2.4;if(c.pref==='mix'&&r.cat==='cocktail')v*=1.3;if(c.order===k)v*=1.8;return v});
  let t=w.reduce((a,b)=>a+b,0)*Math.random();for(let i=0;i<opts.length;i++){t-=w[i];if(t<=0)return opts[i]}return opts[0]}
-function callOut(c){bellCall();const en=c.ty==='tourist'||c.reg==='john';setTimeout(()=>speak(en?pick(['Excuse me!','Hello! Can I order?']):pick(['すみませーん！','注文いいですか？','お願いしまーす！','すいませーん']),c.vp||1,en?'en-US':'ja-JP'),250)}
+const VL={
+ call:['すみませーん！','注文いいですか？','お願いしまーす！','すいません、いいですか？','あのー、すみません','ちょっといいですか？','注文お願いします！'],
+ callT:{hurry:['すみません！急ぎでお願いします！','早めにいいですか！'],drunk:['おーい、マスタ〜','すいませぇ〜ん、もう一杯〜'],gent:['失礼、よろしいかな','注文をお願いできるかね'],vip:['ねえ、ちょっといいかしら','注文、いい？'],student:['すみません、注文いいっすか？','あ、すいませーん'],critic:['……注文を','少し、よろしいですか'],beerfan:['ビールもう一杯いける？','すいません、ビールの注文を'],tourist:['Excuse me!','Hello! Can I order?','Hi! One more please!']},
+ order:n=>[`${n}ひとつ`,`${n}お願いします`,`じゃあ、${n}で`,`${n}ください`,`${n}をひとつ`,`えーっと、${n}で！`],
+ orderEn:n=>[`One ${n}, please!`,`Can I get a ${n}?`],
+ orderReg:n=>[`いつもの${n}で`,`今日も${n}かな`,`${n}、いつもの感じで頼むよ`,`やっぱり${n}だね`],
+ react:{p:['最高！','うまい！','これこれ！','完璧だね！','すごい、おいしい！'],g:['おいしい！','いいね','うん、うまい','ありがとう！'],m:['まあまあかな','うーん…まあいいか'],b:['これ違うよ…','うーん、ちょっと…','頼んだのと違うな']},
+ reactReg:['さすがマスター！','やっぱりここのが一番だ','これを飲みに来たんだよ'],
+ leave:['ごちそうさま！','また来るね','おやすみー','ありがとう、楽しかった'],leaveReg:['また来るよ！','ごちそうさま、マスター','次もよろしくね'],
+ reg:{sato:['お疲れさま、今日も一杯だけ…','また来ちゃったよ','やあマスター、今日も寄らせてもらうよ'],mika:['こんばんは〜、来ちゃった','また来たよー！','今日もいい雰囲気だね'],john:['Hey! また来たよ！','Hi friend! 今日も来ました','こんばんは！ Cheers!'],gen:['邪魔するぞ','ほう、今日も精が出るな','また来てしもうたわい'],yuta:['こんばんは、また来ちゃいました','あ、マスター、こんばんは','研究の息抜きに来ました'],reiko:['…こんばんは。いつもの席、空いてる？','また来たわ','今夜も少しだけ']},
+ regClose:['ただいまー！','やっぱりここが落ち着くね','マスターの顔見たくなってさ']};
+const REGVOICE={sato:{vp:.75,vr:1,vi:1},mika:{vp:1.35,vr:1.1,vi:0},john:{vp:1,vr:1.05,vi:0,en:1},gen:{vp:.55,vr:.88,vi:1},yuta:{vp:1.15,vr:1.12,vi:2},reiko:{vp:1.05,vr:.9,vi:0}};
+function callOut(c){bellCall();const L0=c.reg?['すみません、マスター','注文いいかな？','マスター、いいかい？']:((VL.callT[c.ty])||VL.call);setTimeout(()=>speakC(c,pick(L0),true),260)}
 function say(c,t,d=2.2){c.say=t;c.sayT=d;c.dirty=1}
 function takeOrder(c){const o=G.forceOrder||chooseOrder(c);G.forceOrder=null;c.orderT=0;
  if(c.reg&&o){const st=S.regs[c.reg]||(S.regs[c.reg]={aff:0,met:0});if(!st.met){st.met=1;talk(c.reg,0)}else if(Math.random()<.5)say(c,pick(['いつものを','やあ、また来たよ','こんばんは']),1.6)}
  if(!o){say(c,'品切れか…帰るよ');leave(c,'sad');S.rep=clamp(S.rep-.05,.5,5);return}
  const r=RECIPES[o];c.order=o;c.status='ordered';c.pat=c.patMax=(40+(r.method==='shake'||r.method==='stir'?14:0)+(Object.keys(r.ings).length>1?8:0))*DF().patOrder*patMul(c);
- if(!activeCust())G.active=c.id;printer();speak(`${r.name.replace(/<[^>]*>/g,'')}、ください`,c.vp||1);floatAt(c.m.g.position.clone().add(V(0,1.95,0)),r.name+' お願い！','#fff',16);c.dirty=1;D.ticket=1;
+ if(!activeCust())G.active=c.id;printer();{const nm=r.name.replace(/<[^>]*>/g,'').replace(/&[a-z#0-9]+;/g,'');const ln=c.reg&&Math.random()<.7?VL.orderReg(nm):c.en?VL.orderEn(nm):VL.order(nm);setTimeout(()=>speakC(c,pick(ln),true),350)}floatAt(c.m.g.position.clone().add(V(0,1.95,0)),r.name+' お願い！','#fff',16);c.dirty=1;D.ticket=1;
 }
 function activeCust(){return G&&G.customers.find(c=>c.id===G.active&&c.status==='ordered')}
 function orders(){return G.customers.filter(c=>c.status==='ordered').sort((a,b)=>a.id-b.id)}
@@ -800,7 +871,8 @@ function updateCust(c,dt){if(c.m.star){c.m.star.rotation.y+=dt*2;c.m.star.positi
  c.t+=dt;if(c.sayT>0){c.sayT-=dt;if(c.sayT<=0){c.say=null;c.dirty=1}}
  const g=c.m.g;
  if(c.status==='enter'){const k=clamp(c.t/2.2,0,1);const e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;g.position.lerpVectors(DOOR,c.target,e);g.position.y=Math.abs(Math.sin(c.t*9))*.03*(1-k);g.rotation.y=k<.9?Math.atan2(c.target.x-DOOR.x,c.target.z-DOOR.z)*(1-k)*1.1:0;
-  if(c.t>2.2){callOut(c);c.status='waiting';c.pat=c.patMax=34*DF().patWait*patMul(c);c.t=0;c.dirty=1;g.rotation.y=0}}
+  if(c.t>1.4&&c.reg&&!c.greeted){c.greeted=1;const st=S.regs[c.reg]||{};const ln=[...(VL.reg[c.reg]||['また来たよー']),...((st.aff||0)>=3?VL.regClose:[])];const t=pick(ln);say(c,t,2.4);speakC(c,t,true)}
+  if(c.t>2.2){if(c.reg)setTimeout(()=>callOut(c),1600);else callOut(c);c.status='waiting';c.pat=c.patMax=34*DF().patWait*patMul(c);c.t=0;c.dirty=1;g.rotation.y=0}}
  else if(c.status==='relax'){c.relaxT-=dt;g.position.y=Math.sin(c.t*2+c.ph)*.004;if(c.relaxT<=0){callOut(c);c.status='waiting';c.pat=c.patMax=34*DF().patWait*patMul(c);c.mood='neutral';c.dirty=1}}
  else if(c.status==='waiting'||c.status==='ordered'){if(!G.tutorial)c.pat-=dt;if(c.status==='ordered'){c.orderT+=dt;if(c.ty==='drunk'&&!c.changed&&c.orderT>9&&Math.random()<dt*.12){const o2=chooseOrder(c);if(o2&&o2!==c.order){c.changed=1;c.order=o2;c.pat=Math.min(c.patMax,c.pat+20);say(c,`やっぱ${RECIPES[o2].name}にして〜`,3);sfx.pop();floatAt(c.m.g.position.clone().add(V(0,1.95,0)),'注文変更！','#ffb070',18);D.ticket=1}}}g.position.y=Math.sin(c.t*2+c.ph)*.004;
   if(c.pat<=0){say(c,'もういいよ！',2);G.stats.angry++;G.combo=0;S.rep=clamp(S.rep-.12,.5,5);floatAt(g.position.clone().add(V(0,1.9,0)),'怒って帰った… 評判↓','#ff7a7a',16);sfx.bad();leave(c,'angry')}
@@ -810,7 +882,7 @@ function updateCust(c,dt){if(c.m.star){c.m.star.rotation.y+=dt*2;c.m.star.positi
    const sip=(c.t%4)<.9;const hp=V(SEATX[c.seat]+.05,1.125,-.78);if(sip){const k=Math.sin((c.t%4)/.9*Math.PI);c.served.g.position.set(hp.x,hp.y+k*.38,hp.z-k*.42);c.served.g.rotation.x=-k*.9}else{c.served.g.position.copy(hp);c.served.g.rotation.x=0}}
   if(c.drinkT<=0){c.drinks++;const seat=G.seats[c.seat];const gl=c.served;c.served=null;gl.dirtyGlass=true;gl.shownFill=.05;seat.glasses.push(gl);layoutSeat(seat);
    if(!G.tutorial&&!G.closing&&c.drinks<3&&Math.random()<.55&&G.time<G.dayLen*.9){c.status='relax';c.relaxT=DF().brk*rnd(.8,1.3);c.mood='happy';c.dirty=1;g.rotation.z=0}
-   else{say(c,'ごちそうさま！',1.5);leave(c,c.mood==='happy'?'happy':'neutral')}}}
+   else{const t=pick(c.reg?VL.leaveReg:c.en?['Thank you!','See you!']:VL.leave);say(c,t,1.8);speakC(c,t);leave(c,c.mood==='happy'?'happy':'neutral')}}}
  else if(c.status==='leave'){const k=clamp(c.t/2,0,1);g.position.lerpVectors(c.from,DOOR,k);g.position.y=Math.abs(Math.sin(c.t*9))*.03;g.rotation.y=Math.atan2(DOOR.x-c.from.x,DOOR.z-c.from.z);
   if(c.t>2){scene.remove(g);PICK.splice(PICK.indexOf(g),1);c.bub.remove();G.customers.splice(G.customers.indexOf(c),1)}}
 }
@@ -884,7 +956,7 @@ function serve(c,gl){
  if(ev.score>=90){G.stats.perfect++;S.totals.perfect++;if(r.method==='tap')S.totals.beerPerfect++}
  H=null;gl.loc={kind:'served'};gl.fill0=Math.min(1,gl.fill());gl.shownFill=gl.fill0;c.served=gl;gl.g.position.set(SEATX[c.seat]+.05,1.125,-.78);gl.g.rotation.set(0,0,0);
  c.status='drinking';c.drinkT=c.drinkMax=rnd(12,18);c.t=0;c.mood=ev.score>=70?'happy':ev.score>=50?'neutral':'sad';
- if(ev.score>=90){say(c,'最高！',1.8);sfx.good()}else if(ev.score>=70){say(c,'おいしい！',1.8);sfx.ok()}else if(ev.score>=50){say(c,'まあまあ…',1.8);sfx.ok()}else{say(c,'これ違うよ…',2);sfx.bad()}
+ {const k=ev.score>=90?'p':ev.score>=70?'g':ev.score>=50?'m':'b';let t=pick(VL.react[k]);if(c.reg&&ev.score>=90&&Math.random()<.6)t=pick(VL.reactReg);if(c.en)t=pick(k==='p'||k==='g'?['Amazing!','So good!','Perfect!']:['Hmm...','Not quite...']);say(c,t,2);setTimeout(()=>speakC(c,t),500);k==='p'?sfx.good():k==='b'?sfx.bad():sfx.ok()}
  floatAt(c.m.g.position.clone().add(V(0,1.3,.3)),`${yen(price)}${tip?' +チップ'+yen(tip):''}`,'#ffd34a',18);
  if(ev.score>=90)for(let i=0;i<14;i++)emit(gl.g.position.clone().add(V(0,.15,0)),'#ffe27a',1,.5);
  G.lastEval={name:r.name,score:ev.score,notes:ev.notes,tip,tricks,combo:G.combo||0};G.evalT=3.8;showEval();pickNextActive();c.dirty=1;checkAch()}
@@ -957,7 +1029,7 @@ function pickAnchor(){let best=null,bd=1e9,all=[];const sc=touchMode?1.5:1;for(c
 function pickAt(){const ra=pickRay();const an=pickAnchor();
  if(!an)return ra;const A0={act:an.act,point:an.p};
  if(!ra)return A0;const k=ra.act.kind;
- if(k==='cust'||k==='seat')return P.y<toScreen(an.p).y-30?ra:A0;
+ if(k==='cust'||k==='seat')return (an.nd<.45&&P.y>toScreen(an.p).y-8)?A0:ra;
  if(k==='surface'||k==='block'||k==='slot'||k==='drip')return A0;
  if(sameAct(an.act,ra.act))return ra;
  const rAn=an.all.find(x=>sameAct(x.act,ra.act));
@@ -1037,7 +1109,8 @@ function handGlassToCust(c,gl){
  if(gl.type==='shaker'){msg('シェイカーのままでは出せません。グラスに注ごう');return}
  if(!gl.hasIngs()){msg('空のグラスです');return}
  serve(c,gl)}
-function clickCust(c){if(c.status==='waiting')takeOrder(c);else if(c.status==='ordered'){G.active=c.id;D.ticket=1;for(const x of G.customers)x.dirty=1;sfx.pop()}else if(c.status==='drinking')say(c,pick(['うまい！','いい店だね','♪','最高の夜だ']),1.6)}
+function custTap(c){if(!G||S.phase!=='service'||G.paused||c.status==='leave')return;ac();if(H&&H.kind==='glass'){handGlassToCust(c,H.glass);return}if(!autoServe(c))clickCust(c)}
+function clickCust(c){if(c.status==='waiting')takeOrder(c);else if(c.status==='ordered'){const w=workGlass(c.order);if(w&&w.hasIngs()&&w.type!=='shaker'&&G.active===c.id){if(G.pendServe===c.id&&performance.now()-G.pendT<3500){if(w.loc.kind==='slot')w.loc.slot.glass=null;G.pendServe=null;serve(c,w);return}G.pendServe=c.id;G.pendT=performance.now();msg('まだ完成していません：'+(nextHint().t||'')+'（もう一度クリックでこのまま提供）');return}G.active=c.id;D.ticket=1;for(const x of G.customers)x.dirty=1;sfx.pop()}else if(c.status==='drinking')say(c,pick(['うまい！','いい店だね','♪','最高の夜だ']),1.6)}
 function onDrag(dist){if(!P.down||!P.act)return;P.moved+=dist;const A=P.act;
  if(A.kind==='tap'){}
  else if(A.kind==='pendShake'){A.energy+=dist;if(P.moved>16){P.act={kind:'shake',energy:A.energy,v:0};showGauge('シェイク！ ブンブン振って、緑で離す')}}
@@ -1091,6 +1164,7 @@ function update(dt){
   else{loopSet('pour',false);if(!sh.c.done){sh.c.done=1;floatAt(tg.g.position.clone().add(V(0,.25,0)),'注ぎ終わり！','#bff6f2',16)}}}
  // foam settle
  for(const gl of GLASSOBJS){if(gl.c.foam>0&&!(gl.loc&&gl.loc.kind==='slot'&&gl.loc.slot.kind==='tap'&&ST.taps[gl.loc.slot.tap].pull>.06)){const d=gl.c.foam*.022*dt;gl.c.foam-=d;const tk=Object.keys(gl.c.ings).find(k=>ING[k].type==='tap');if(tk)gl.c.ings[tk]+=d*.25}}
+ {const n=G.customers.filter(c=>c.status!=='leave').length;const v=muted?0:SET.envVol*Math.min(1,n/4)*.07;loopSet('amb',v>.001,320+Math.sin(G.time*.7)*60,v);if(n&&Math.random()<dt*.25*n*SET.envVol&&!muted)tone(rnd(2500,4200),.08,'sine',.012*SET.envVol)}
  if(S.up.dish){G.dishT+=dt;if(G.dishT>=3){G.dishT=0;if(G.dirty.length)washOne()}}
  if(G.evalT>0){G.evalT-=dt;if(G.evalT<=0)$('#evalPop').style.display='none'}
  if(G.closing&&!G.ended&&G.customers.length===0&&!G.tutorial)endDay();
@@ -1130,7 +1204,7 @@ let camYaw=0,camPitch=-.5;
 const LOOK={x:640,y:520};
 function updateCamera(dt,t){const src=touchMode?LOOK:P;const nx=src.x/1280*2-1,ny=src.y/720;
  const dz=.4;let yt=0;if(Math.abs(nx)>dz)yt=-Math.sign(nx)*(Math.abs(nx)-dz)/(1-dz)*.42;
- const pt=-(.16+.46*clamp((ny-.08)/.84,0,1));
+ const pt=-(.16+.56*clamp((ny-.08)/.84,0,1));
  const k=Math.min(1,dt*3.2);camYaw+=(yt-camYaw)*k;camPitch+=(pt-camPitch)*k;
  let sh=0;if(P.act&&P.act.kind==='shake')sh=.004;
  camera.position.set(CAM0.x+Math.sin(t*.7)*.004+rnd(-sh,sh),CAM0.y+Math.sin(t*1.3)*.003+rnd(-sh,sh),CAM0.z);camera.rotation.set(camPitch,camYaw,0)}
@@ -1183,8 +1257,8 @@ function renderTicket(){const os=orders();$('#ordCount').textContent=os.length?`
  if(tabsKey!==lastTabs){lastTabs=tabsKey;$('#orderTabs').innerHTML=os.map(c=>`<div class="otab ${c.id===G.active?'on':''}" data-oid="${c.id}">${c.seat+1}番 ${RECIPES[c.order].name}<div class="pb"><i data-pb="${c.id}"></i></div></div>`).join('')}
  os.forEach(c=>{const e=document.querySelector(`[data-pb="${c.id}"]`);if(e){const p=clamp(c.pat/c.patMax,0,1);e.style.width=p*100+'%';e.style.background=p>.5?'#7cd67c':p>.25?'#f0c040':'#ff5a5a'}});
  const a=activeCust();let h;
- if(!a)h=`<div class="tktEmpty">🧾<br>「注文！」のお客さんを<br>クリックすると伝票が届きます</div>`;
- else{const r=RECIPES[a.order],st=steps(a.order);let cur=false;h=`<h2>${r.name}<small>${a.seat+1}番席・${yen(r.price)}</small></h2>`+st.map(s=>{let cls=s.d?'done':'';if(!s.d&&!cur){cls='cur';cur=true}return `<div class="step ${cls}"><span class="ck">${s.d?'✓':''}</span>${s.t}<span class="amt">${s.amt||''}</span></div>`}).join('')}
+ if(!a)h=`<div class="tktEmpty">「🙋注文！」のお客さんをクリックすると、ここに伝票（作り方）が出ます</div>`;
+ else{const r=RECIPES[a.order],st=steps(a.order);let cur=false;h=`<h2>${r.name}<small>${a.seat+1}番席（${custLabel(a)}）・${yen(r.price)}</small></h2><div class="steps">`+st.map((s,i)=>{let cls=s.d?'done':'';if(!s.d&&!cur){cls='cur';cur=true}return `<div class="step ${cls}"><span class="ck">${s.d?'✓':i+1}</span>${s.t}${s.amt?`<span class="amt">${s.amt}</span>`:''}</div>`}).join('')+'</div>'}
  if(h!==renderTicket.last){$('#tkt').innerHTML=h;renderTicket.last=h}}
 $('#orderTabs').addEventListener('pointerdown',e=>{const o=e.target.closest('[data-oid]');if(o&&G){G.active=+o.dataset.oid;lastTabs='';for(const c of G.customers)c.dirty=1;sfx.pop()}});
 function renderBubbles(){for(const c of G.customers){const b=c.bub;const p=toScreen(c.m.g.position.clone().add(V(0,1.86,0)));
@@ -1207,7 +1281,8 @@ function renderHUD(t){
  $('#hintBar').style.display='flex';$('#ticket').style.display='block';$('#hand').style.display='block';
  renderTicket();renderBubbles();
  let h=nextHint();if(G.tutorial){const ts=TUT[G.tutorial.st];if(ts&&ts.hl)h={t:h.t,hl:ts.hl};if(ts&&ts.btn)h={t:'',hl:null}}
- if(h.t!==lastHint){$('#hintTxt').textContent=h.t;lastHint=h.t}
+ if(h.t!==lastHint){$('#hintTxt').textContent=h.t;$('#nextTxt').textContent=h.t||'—';lastHint=h.t}
+ $('#nextLine').style.display=SET.hint?'flex':'none';
  $('#hintBar').style.display=(G.tutorial||!SET.hint)?'none':'flex';
  updateGlow(t,h.hl);renderLabels(h.hl);renderArrow(h.hl,h.t);if(G.tutorial)tutRender();
  // hand
@@ -1237,6 +1312,7 @@ function renderHUD(t){
 let last=performance.now(),T=0;
 let FDT=.016;
 function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;T+=dt;FDT=dt;
+ if(!(S&&S.phase==='service'&&G&&!G.paused))loopSet('amb',false);
  if(S&&S.phase==='service'&&G&&!G.paused){update(dt);computeHand();hover=P.act?null:pickAt();if(hover)hover.root=actRoot(hover.act)}else hover=null;
  updateCamera(dt,T);if(G){updateHandVisual(T);rackRefresh();sinkRefresh()}
  if(S)renderHUD(T);
@@ -1296,8 +1372,8 @@ function openShop(tab){shopTab=tab||shopTab;S.phase='shop';
 function openOv(h){const o=$('#ov');o.innerHTML=h;o.classList.add('show')}
 function closeOv(){$('#ov').classList.remove('show');$('#ov').innerHTML=''}
 function showTitle(){const sv=load();
- openOv(`<div class="modal title"><div class="neon">NIGHT TAP 3D</div><div class="neon2">BARTENDER POV SIMULATOR</div>
- <p style="line-height:1.8;font-size:14px">あなたはクラフトビール＆バーのバーテンダー。目線はあなた自身の目。<br>タップを引いて泡を作り、シェイカーを振り、グラスを洗い、お会計をして…<br><b style="color:#ffd77a">目指せ、1日50杯！</b></p>
+ openOv(`<div class="modal title"><img src="${LOGO_URL}" alt="Bar 憩" style="width:340px;height:auto;display:block;margin:-6px auto -18px"><div class="neon2" style="color:#e2aa50;text-shadow:none;letter-spacing:.3em">BARTENDER POV SIMULATOR</div>
+ <p style="line-height:1.8;font-size:14px">ここは路地裏の小さなバー「憩（いこい）」。あなたはここのバーテンダー。目線はあなた自身の目。<br>タップを引いて泡を作り、シェイカーを振り、グラスを洗い、お会計をして…<br><b style="color:#ffd77a">目指せ、1日50杯！</b></p>
  <div class="tbtns">${sv?`<button class="btn" id="tContinue">つづきから（DAY ${sv.day}・${DIFF[sv.diff||'normal'].name}）</button>`:''}<button class="btn ${sv?'sec':''}" id="tNew">はじめから</button><button class="btn sec" id="tTut">📘 チュートリアル</button><button class="btn sec" id="tHelp">操作方法</button></div>
  <p style="font-size:11px;color:#f5e6c877;margin-top:16px">パソコン（マウス）・スマホ（横向き・タッチ）対応 ・ 音が出ます</p></div>`);
  if(sv)$('#tContinue').onclick=()=>{ac();S=load();applyDiff();newDay();openShop('stock')};
@@ -1530,6 +1606,8 @@ function showSettings(){const was=G&&G.paused;if(G&&S.phase==='service')G.paused
  const tg=(k,l)=>`<div class="setrow"><span>${l}</span><button class="tg ${SET[k]?'on':''}" data-st="${k}">${SET[k]?'表示する':'表示しない'}</button></div>`;
  openOv(`<div class="modal" style="width:600px"><h1>⚙ 設定</h1>
  <div class="setrow"><span>🎵 BGMの音量</span><input type="range" min="0" max="100" value="${Math.round(SET.bgmVol*100)}" id="sBgm"><b id="sBgmV" style="width:44px;text-align:right">${Math.round(SET.bgmVol*100)}</b></div>
+ <div class="setrow"><span>🗣 お客さんの声の音量</span><input type="range" min="0" max="100" value="${Math.round(SET.voiceVol*100)}" id="sVoice"><b id="sVoiceV" style="width:44px;text-align:right">${Math.round(SET.voiceVol*100)}</b></div>
+ <div class="setrow"><span>🍻 店内のざわめき</span><input type="range" min="0" max="100" value="${Math.round(SET.envVol*100)}" id="sEnv"><b id="sEnvV" style="width:44px;text-align:right">${Math.round(SET.envVol*100)}</b></div>
  <div class="setrow"><span>🔔 効果音の音量</span><input type="range" min="0" max="100" value="${Math.round(SET.sfxVol*100)}" id="sSfx"><b id="sSfxV" style="width:44px;text-align:right">${Math.round(SET.sfxVol*100)}</b></div>
  ${tg('voice','🗣 お客さんの声（注文の呼びかけ）')}${tg('arrow','⬇ 黄色い矢印「ここ！」')}${tg('labels','🏷 場所の名札（①〜⑨）')}${tg('hint','💬 画面下の「次は▶」')}
  <div class="setrow"><span>🖥 画質</span>${[['auto','自動'],['high','高画質'],['low','軽量（スマホ向け）']].map(([k,l])=>`<button class="tg ${SET.quality===k?'on':''}" data-q="${k}">${l}</button>`).join('')}</div>
@@ -1538,6 +1616,8 @@ function showSettings(){const was=G&&G.paused;if(G&&S.phase==='service')G.paused
  ${S?`<div class="setrow"><span>🎚 難易度</span>${diffSel()}</div>`:''}
  <div style="display:flex;justify-content:flex-end;margin-top:14px"><button class="btn" id="sClose">閉じる</button></div></div>`);
  $('#sBgm').oninput=e=>{SET.bgmVol=e.target.value/100;$('#sBgmV').textContent=e.target.value;if(S)S.bgm=SET.bgmVol>0?1:0;ac();bgmStart();bgmVol();saveSet()};
+ $('#sVoice').oninput=e=>{SET.voiceVol=e.target.value/100;$('#sVoiceV').textContent=e.target.value;saveSet()};$('#sVoice').onchange=()=>speakC({vp:1,vr:1.05,vi:0},'いらっしゃいませ',true);
+ $('#sEnv').oninput=e=>{SET.envVol=e.target.value/100;$('#sEnvV').textContent=e.target.value;saveSet()};
  $('#sSfx').oninput=e=>{SET.sfxVol=e.target.value/100;$('#sSfxV').textContent=e.target.value;ac();bgmVol();saveSet()};$('#sSfx').onchange=()=>sfx.pop();
  document.querySelectorAll('[data-st]').forEach(b=>b.onclick=()=>{const k=b.dataset.st;SET[k]=SET[k]?0:1;saveSet();showSettings();if(G)G.paused=true});
  document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{SET.quality=b.dataset.q;saveSet();fit();showSettings()});
@@ -1612,7 +1692,7 @@ function newGameFlow(){openOv(`<div class="modal" style="width:860px"><h1>難易
   openOv(`<div class="modal" style="width:560px;text-align:center"><h1>チュートリアルをやりますか？</h1><p style="line-height:1.8">お客さん2人を相手に、<b style="color:#ffd77a">ビール</b>と<b style="color:#ffd77a">ハイボール</b>の作り方、<br>お会計と洗い物を1つずつ練習します（約3分・時間制限なし）。</p><div class="tbtns"><button class="btn" id="tY">やる（おすすめ）</button><button class="btn sec" id="tN">スキップして営業開始</button></div></div>`);
   $('#tY').onclick=()=>startTutorial('day1');$('#tN').onclick=()=>startService()})}
 /* ====================== BOOT ====================== */
-buildRoom();buildStation();
+buildLogoURL();buildRoom();buildStation();
 S=load()||freshSave();S.phase='title';syncOriginals();applyDiff();newDay();
 $('#loading').remove();
 showTitle();
