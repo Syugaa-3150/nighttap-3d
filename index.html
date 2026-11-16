@@ -243,6 +243,13 @@ body.touch #tip{display:none!important}
 #tut .tt{font-size:14px!important}
 .bub{pointer-events:auto;cursor:pointer}
 body.touch #ticket{width:640px!important}
+.sn{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;border-radius:50%;color:#1a0f09;font-weight:900;font-size:11.5px;margin-right:5px;padding:0 4px;vertical-align:middle;box-shadow:0 0 0 2px #0005}
+.sn.big{min-width:26px;height:26px;font-size:16px}
+.bub .actl{font-size:10.5px;color:#0a6a64;font-weight:900;margin-bottom:1px}
+.bub.act{box-shadow:0 0 0 4px #3fd0c9,0 0 18px #3fd0c9,0 3px 0 #0005!important;transform:translate(-50%,-100%) scale(1.12)}
+#gaugeBox{bottom:auto!important;top:112px}
+#arrow .al{white-space:nowrap}
+.slab.dim{opacity:.18}
 #loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#ffd77a;background:#0e0806}
 </style>
 </head>
@@ -411,9 +418,9 @@ function bellCall(){tone(2637,1.1,'sine',.09);tone(3951,.7,'sine',.035);tone(527
 function printer(){for(let i=0;i<6;i++)noise(.04,3200+i*150,.06,4);tone(988,.12,'square',.035,.28);tone(1318,.18,'square',.035,.36)}
 let JAV=[],ENV=[];function loadVoices(){try{const vs=speechSynthesis.getVoices();const sc=v=>(/Natural|Neural|Online|Siri|Enhanced|Premium|Google|Kyoko|Otoya|Nanami|Keita/i.test(v.name)?10:0)+(v.localService?0:1);JAV=vs.filter(v=>/^ja/i.test(v.lang)).sort((a,b)=>sc(b)-sc(a));ENV=vs.filter(v=>/^en/i.test(v.lang)).sort((a,b)=>sc(b)-sc(a))}catch(e){}}
 try{if('speechSynthesis' in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}}catch(e){}
-function speakC(c,text,hi=false){if(muted||!SET.voice||!('speechSynthesis' in window)||!text)return;try{const ss=speechSynthesis;if(ss.speaking||ss.pending){if(!hi)return;ss.cancel()}
+let lastSpeak=0;function speakC(c,text,hi=false){if(muted||!SET.voice||!('speechSynthesis' in window)||!text)return;const now=performance.now();if(!hi&&now-lastSpeak<5000)return;try{const ss=speechSynthesis;if(ss.speaking||ss.pending){if(!hi)return;ss.cancel()}lastSpeak=now;text=String(text).replace(/（[^）]*）/g,'');if(!text.trim())return;
  const en=c&&c.en;const list=en?ENV:JAV;const u=new SpeechSynthesisUtterance(text);u.lang=en?'en-US':'ja-JP';if(list.length)u.voice=list[((c&&c.vi)||0)%Math.min(list.length,6)];
- u.pitch=clamp(c?c.vp:1,.4,1.9);u.rate=clamp(c?c.vr:1.05,.7,1.4);u.volume=clamp(SET.voiceVol,0,1);ss.speak(u)}catch(e){}}
+ u.pitch=clamp((c?c.vp:1)+rnd(-.05,.05),.4,1.9);u.rate=clamp((c?c.vr:1.05)*rnd(.96,1.04),.7,1.4);u.volume=clamp(SET.voiceVol,0,1);ss.speak(u)}catch(e){}}
 let voices=null;function speak(text,pitch=1,lang='ja-JP'){if(muted||!SET.voice||!('speechSynthesis' in window))return;try{const u=new SpeechSynthesisUtterance(text);u.lang=lang;u.pitch=clamp(pitch,.3,2);u.rate=1.08;u.volume=clamp(SET.sfxVol,0,1);
  if(!voices)voices=speechSynthesis.getVoices();const v=(voices||[]).find(v=>v.lang&&v.lang.startsWith(lang.slice(0,2)));if(v)u.voice=v;speechSynthesis.speak(u)}catch(e){}}
 const sfx={clink(){tone(2600,.18,'sine',.08);tone(3900,.12,'sine',.04,.02)},coin(){tone(1320,.08,'square',.05);tone(1980,.18,'square',.05,.07)},bell(){tone(1046,.5,'triangle',.08);tone(1568,.6,'triangle',.06,.12)},
@@ -508,6 +515,28 @@ function buildBackWall(){
  halo(V(0,2.25,-4.05),2.6,0xffa040,.28);const sl=new THREE.PointLight(0xffb060,3,3.5,2);sl.position.set(0,1.9,-3.6);scene.add(sl);
  for(const x of [-.75,.75]){const sp=cyl(.03,.045,.08,M.brass,x,2.55,-4.0,12);sp.rotation.x=.9}
 }
+let DOORPIV=null,doorAng=0;
+function buildSideWalls(){const wm=std({map:PLASTERTEX,roughness:.95});
+ const wr=new THREE.Mesh(new THREE.PlaneGeometry(6,3),wm);wr.position.set(4.3,1.5,-1.2);wr.rotation.y=-Math.PI/2;scene.add(wr);
+ // left wall with doorway (z -3.05..-2.15, h 2.15)
+ const seg=(z0,z1,y0,y1)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(z1-z0,y1-y0),wm);m.position.set(-4.3,(y0+y1)/2,(z0+z1)/2);m.rotation.y=Math.PI/2;scene.add(m)};
+ seg(-4.2,-3.05,0,3);seg(-2.15,1.8,0,3);seg(-3.05,-2.15,2.15,3);
+ for(const z of [-3.1,-2.1])box(.14,2.25,.1,M.darkWood,-4.27,1.12,z);box(.14,.12,1.1,M.darkWood,-4.27,2.2,-2.6);box(.2,.03,1.0,M.darkWood,-4.25,.015,-2.6);
+ // swinging door
+ DOORPIV=new THREE.Group();DOORPIV.position.set(-4.3,0,-3.05);scene.add(DOORPIV);
+ const dm=std({map:TEX.wood,color:0x7a5a40,roughness:.55});const panel=box(.05,2.08,.88,dm,0,1.06,.45,DOORPIV);
+ for(const y of [.55,1.5])box(.06,.5,.7,std({map:TEX.wood,color:0x5a3a24,roughness:.6}),0,y,.45,DOORPIV);
+ const win=new THREE.Mesh(new THREE.PlaneGeometry(.5,.28),new THREE.MeshBasicMaterial({color:0x8aa0c8,transparent:true,opacity:.55}));win.position.set(.03,1.62,.45);win.rotation.y=Math.PI/2;DOORPIV.add(win);
+ const hd=cyl(.012,.012,.14,M.brass,.05,1.0,.8,10,DOORPIV);
+ // outside street backdrop
+ const st=canvasTex(512,768,(x,w,h)=>{const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'#0a1020');g.addColorStop(.6,'#1a2238');g.addColorStop(1,'#2a2420');x.fillStyle=g;x.fillRect(0,0,w,h);
+  for(let i=0;i<5;i++){const bx=i*110-20,bh=rnd(250,420);x.fillStyle='#0c0f1a';x.fillRect(bx,h*.62-bh,100,bh);for(let k=0;k<12;k++){if(Math.random()<.4){x.fillStyle=`rgba(255,${rnd(170,220)|0},120,${rnd(.4,.9)})`;x.fillRect(bx+10+(k%3)*28,h*.62-bh+20+Math.floor(k/3)*50,16,24)}}}
+  const lg=x.createRadialGradient(380,300,0,380,300,160);lg.addColorStop(0,'rgba(255,200,130,.8)');lg.addColorStop(1,'rgba(255,200,130,0)');x.fillStyle=lg;x.fillRect(0,0,w,h);x.fillStyle='#222';x.fillRect(376,300,8,300);
+  x.fillStyle='#3a3430';x.fillRect(0,h*.62,w,h)});
+ const sp=new THREE.Mesh(new THREE.PlaneGeometry(2.6,3),new THREE.MeshBasicMaterial({map:st}));sp.position.set(-6.2,1.5,-2.6);sp.rotation.y=Math.PI/2;scene.add(sp);
+ const ol=new THREE.PointLight(0x8aa0ff,1.2,3,2);ol.position.set(-5,1.8,-2.6);scene.add(ol);
+ const fo=new THREE.Mesh(new THREE.PlaneGeometry(2,1.2),std({color:0x2a2420,roughness:1}));fo.rotation.x=-Math.PI/2;fo.position.set(-5.2,.001,-2.6);scene.add(fo)}
+function updateDoor(dt){if(!DOORPIV||!G)return;const need=G.customers.some(c=>(c.status==='enter'&&c.t<1.7)||(c.status==='leave'&&c.t>1.3&&c.t<3.1));const tgt=need?1.3:0;if(need&&doorAng<.05)noise(.25,500,.04,2);doorAng+=(tgt-doorAng)*Math.min(1,dt*4);DOORPIV.rotation.y=doorAng}
 function buildBoardTex(){BOARDTEX=canvasTex(512,600,(x,w,h)=>{x.fillStyle='#1d2a22';x.fillRect(0,0,w,h);for(let i=0;i<400;i++){x.fillStyle=`rgba(255,255,255,${Math.random()*.03})`;x.fillRect(Math.random()*w,Math.random()*h,3,3)}
  x.fillStyle='#ffe9a8';x.font='700 52px '+MINCHO;x.textAlign='center';x.fillText('憩  MENU',w/2,70);x.font='700 30px '+FONTS;x.textAlign='left';let y=130;
  const items=S?Object.keys(RECIPES).filter(k=>S.unlocked[k]):['pale','ipa','highball','gintonic'];for(const k of items.slice(0,11)){x.fillStyle='#f0f6ea';x.fillText(RECIPES[k].name.slice(0,9),40,y);x.textAlign='right';x.fillStyle='#ffd77a';x.fillText(RECIPES[k].price,w-40,y);x.textAlign='left';y+=42}
@@ -518,7 +547,7 @@ function buildRoom(){buildBrandTex();buildBoardTex();
  const ceil=new THREE.Mesh(new THREE.PlaneGeometry(10,10),std({color:0x140b07,roughness:1}));ceil.rotation.x=Math.PI/2;ceil.position.y=3;scene.add(ceil);
  buildBackWall();
  // door (left wall)
- box(.06,2.1,1,M.darkWood,-4.25,1.05,-2.6);{const dw=new THREE.Mesh(new THREE.PlaneGeometry(.5,.5),new THREE.MeshBasicMaterial({color:0xffcf8a}));dw.position.set(-4.2,1.2,-2.6);dw.rotation.y=Math.PI/2;scene.add(dw);
+ buildSideWalls();{
   const nr=new THREE.Mesh(new THREE.PlaneGeometry(1.1,.62),new THREE.MeshStandardMaterial({map:NORENTEX,transparent:true,side:THREE.DoubleSide,roughness:.95}));nr.position.set(-4.17,1.82,-2.6);nr.rotation.y=Math.PI/2;scene.add(nr);
   const rod=cyl(.012,.012,1.2,M.darkWood,-4.16,2.14,-2.6,8);rod.rotation.x=Math.PI/2;halo(V(-4.1,1.2,-2.6),.9,0xffc070,.35)}
  // tables
@@ -545,7 +574,7 @@ function buildRoom(){buildBrandTex();buildBoardTex();
  // plants
  for(const [x,z] of [[-3.8,-3.8],[3.8,-3.8],[3.8,-1.5]]){cyl(.18,.14,.4,std({color:0x8a5030,roughness:.8}),x,.2,z,16);for(let k=0;k<6;k++){const lf=new THREE.Mesh(new THREE.SphereGeometry(.2,10,8),std({color:0x2e6a32,roughness:.8}));lf.position.set(x+rnd(-.15,.15),.6+k*.12,z+rnd(-.15,.15));lf.scale.set(1,.7,1);scene.add(lf)}}
  // wall shelves with bottles (side walls)
- for(const sd of [-1,1]){for(const y of [1.3,1.75]){box(.25,.03,2.2,M.wood,sd*4.15,y,-2.2);for(let k=0;k<9;k++){const c=pick(['#7a3e12','#4aa0b8','#3a8a3a','#c8d4dc','#6a1236','#e0d0a0','#2a4a2a']);const b=lathe([[0,0],[.035,0],[.035,.15],[.012,.2],[.012,.25],[0,.25]],std({color:c,transparent:true,opacity:.85,roughness:.15}),12);b.position.set(sd*4.12,y+.015,-3.1+k*.22);scene.add(b)}}}
+ for(const sd of [-1,1]){const zc=sd<0?-.9:-2.2;for(const y of [1.3,1.75]){box(.25,.03,2.2,M.wood,sd*4.15,y,zc);for(let k=0;k<9;k++){const c=pick(['#7a3e12','#4aa0b8','#3a8a3a','#c8d4dc','#6a1236','#e0d0a0','#2a4a2a']);const b=lathe([[0,0],[.035,0],[.035,.15],[.012,.2],[.012,.25],[0,.25]],std({color:c,transparent:true,opacity:.85,roughness:.15}),12);b.position.set(sd*4.12,y+.015,zc-.9+k*.22);scene.add(b)}}}
  // bar (customer side)
  const top=box(5,.05,.44,M.wood,.1,1.1,-.81);top.userData.block=1;PICK.push(top);
  box(5,1.08,.05,M.darkWood,.1,.54,-1.01);
@@ -559,6 +588,8 @@ function buildRoom(){buildBrandTex();buildBoardTex();
  for(let i=0;i<7;i++){const x=SEATX[i];cyl(.18,.18,.06,std({color:0x5a1a1a,roughness:.6}),x,.78,-1.38);cyl(.025,.025,.75,M.chrome,x,.38,-1.38)}
 }
 const SEATX=[-.45,0,.45,.9,-.9,1.35,-1.35];
+const SEATCOL=['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#c77dff','#ff9f43','#2ec4b6'];
+let ACTRING=null;
 const GLR=[[0,0],[.03,0],[.03,.004],[.004,.008],[.004,.07],[.04,.11],[.038,.16],[.036,.16],[.038,.11],[.002,.075],[0,.075]];
 let BOARDTEX;
 
@@ -631,6 +662,7 @@ function buildStation(){
  for(let i=0;i<70;i++){d.position.set(rnd(-.1,.1),rnd(.04,.085),rnd(-.12,.12));d.rotation.set(rnd(0,3),rnd(0,3),rnd(0,3));d.updateMatrix();im.setMatrixAt(i,d.matrix)}ib.add(im);
  const scoop=makeScoop(true);scoop.position.set(.06,.11,.06);scoop.rotation.set(.6,.4,0);ib.add(scoop);
  addPick(ib,{kind:'ice'});ST.ice=ib;
+ ACTRING=new THREE.Mesh(new THREE.TorusGeometry(.13,.007,8,40),new THREE.MeshBasicMaterial({color:0x3fd0c9,toneMapped:false,transparent:true}));ACTRING.rotation.x=Math.PI/2;ACTRING.visible=false;ACTRING.raycast=()=>{};scene.add(ACTRING);
  {const pl=new THREE.Mesh(new THREE.PlaneGeometry(.16,.12),new THREE.MeshBasicMaterial({map:SIGNTEX,transparent:true,toneMapped:false}));pl.position.set(1.04,1.19,-.497);scene.add(pl)}
  // spoon holder + spoon
  const sh=new THREE.Group();sh.position.set(-.76,.9,-.42);scene.add(sh);
@@ -657,7 +689,7 @@ function buildStation(){
  for(let i=0;i<7;i++){const z=new THREE.Mesh(new THREE.BoxGeometry(.42,.06,.38),new THREE.MeshBasicMaterial());z.visible=false;z.position.set(SEATX[i],1.15,-.81);scene.add(z);addPick(z,{kind:'seat',i});
   const mg=new THREE.Group();mg.position.set(SEATX[i]+.13,1.125,-.72);const bill=box(.075,.004,.04,std({color:0xd8dcc0,roughness:.8}),0,0,0,mg);bill.rotation.y=.3;for(let j=0;j<3;j++)cyl(.011,.011,.003,std({color:0xe0b040,metalness:.9,roughness:.3}),.03+j*.006,.004+j*.003,.025,16,mg);mg.visible=false;scene.add(mg);
   const rs=new THREE.Mesh(new THREE.PlaneGeometry(.22,.06),new THREE.MeshBasicMaterial({map:canvasTex(256,64,(x)=>{x.fillStyle='#1a0f09';x.fillRect(0,0,256,64);x.strokeStyle='#d4a24c';x.lineWidth=4;x.strokeRect(2,2,252,60);x.fillStyle='#d4a24c';x.font='900 30px "Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic UI","Meiryo","Noto Sans JP",sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText('RESERVED',128,34)})}));rs.position.set(SEATX[i],1.16,-.85);rs.rotation.x=-.5;scene.add(rs);
-  SEATOBJ[i]={zone:z,money:mg,resv:rs};const co=new THREE.Mesh(new THREE.CylinderGeometry(.048,.048,.004,32),[std({color:0xd8c8a8,roughness:.9}),std({map:COASTERTEX,roughness:.9}),std({color:0xd8c8a8})]);co.position.set(SEATX[i]+.05,1.124,-.78);co.raycast=()=>{};scene.add(co)}
+  SEATOBJ[i]={zone:z,money:mg,resv:rs};{const nt=canvasTex(128,128,(x)=>{x.fillStyle=SEATCOL[i];x.beginPath();x.arc(64,64,58,0,7);x.fill();x.fillStyle='#1a0f09';x.font='900 80px '+FONTS;x.textAlign='center';x.textBaseline='middle';x.fillText(i+1,64,70)});const np=new THREE.Mesh(new THREE.CircleGeometry(.03,24),new THREE.MeshBasicMaterial({map:nt,toneMapped:false}));np.rotation.x=-Math.PI/2+.5;np.position.set(SEATX[i]-.15,1.128,-.66);np.raycast=()=>{};scene.add(np)}const co=new THREE.Mesh(new THREE.CylinderGeometry(.048,.048,.004,32),[std({color:0xd8c8a8,roughness:.9}),std({map:COASTERTEX,roughness:.9}),std({color:0xd8c8a8})]);co.position.set(SEATX[i]+.05,1.124,-.78);co.raycast=()=>{};scene.add(co)}
 }
 const SEATOBJ=[];
 function makeScoop(full){const g=new THREE.Group();const c=new THREE.Mesh(new THREE.CylinderGeometry(.035,.035,.08,16,1,true,0,Math.PI),std({color:0xc4ccd2,metalness:.85,roughness:.3,side:THREE.DoubleSide}));c.rotation.z=Math.PI/2;g.add(c);const h=cyl(.008,.008,.07,M.darkWood,.075,0,0,8,g);h.rotation.z=Math.PI/2;
@@ -798,7 +830,7 @@ function patMul(c){return (S.up.juke?1.3:1)*(c&&c.ty&&CT[c.ty]?CT[c.ty].pat:1)}
 function phaseMul(){const f=G.time/G.dayLen;return f<.15?1.5:f<.3?1.05:f<.7?.72:f<.85?1.1:1.7}
 function spawnInterval(){let b=14*DF().spawn/(0.6+S.rep*0.2)*phaseMul();if(S.up.neon)b*=0.77;if(S.day===1)b*=1.4;b*=1-Math.min(.3,(S.day-1)*.03);return Math.max(6,b*rnd(.75,1.3))}
 function seatFree(s){return s.i<S.up.seats&&!s.cust&&!s.glasses.length&&!s.money}
-const DOOR=V(-3.9,0,-2.6);
+const DOOR=V(-3.85,0,-2.6),OUTSIDE=V(-5.4,0,-2.6);
 const HATS=['cap','fedora','flat','beret'];const JK=['#2a3040','#3a3a3a','#4a3020','#203a30','#5a2a2a','#2a2a4a','#6a6a6a','#d8d0c0'];
 const EYES=['#2a1a10','#3a2a1a','#2a3a5a','#2a4a2a'];
 function randLook(ty){const L={skin:pick(SKINS),hair:pick(HAIRS),shirt:pick(SHIRTS),hs:Math.floor(Math.random()*8),glasses:Math.random()<.2,beard:Math.random()<.12?'full':Math.random()<.1?'mus':null,
@@ -825,7 +857,7 @@ function spawnCustomer(force){
  if(!force&&!G.tutorial&&S.day>=2&&Math.random()<(rankIdx()>=3?.45:.3)){const cand=REGS.filter(r=>!G.regSeen[r.id]&&!G.customers.some(c=>c.reg===r.id));if(cand.length){reg=pick(cand);G.regSeen[reg.id]=1;ty='regular'}}
  let L=reg?{eye:'#2a1a10',build:1,h:1,...reg.L,star:true}:randLook(ty);
  const c={id:G.nid++,seat:seat.i,L,ty,reg:reg&&reg.id,orderT:0,pref:reg?'any':pick(CT[ty].pref),status:'enter',t:0,pat:1,patMax:1,order:null,drinks:0,drinkT:0,bill:0,mood:'neutral',served:null,say:null,sayT:0,dirty:1,ph:Math.random()*6};
- c.vp=rnd(.75,1.35);c.vr=rnd(.95,1.15);c.vi=Math.floor(Math.random()*6);c.en=ty==='tourist';if(reg)Object.assign(c,REGVOICE[reg.id]||{});c.m=makeCustomer3D(L);c.m.g.position.copy(DOOR);c.m.g.userData.act={kind:'cust',c};PICK.push(c.m.g);scene.add(c.m.g);
+ c.pers=reg?REGPERS[reg.id]:pick(TYPEPERS[ty]||['calm']);c.vp=rnd(.8,1.25)+pers(c).vp;c.vr=rnd(.95,1.08)*pers(c).vr;c.vi=Math.floor(Math.random()*6);c.en=ty==='tourist';if(reg)Object.assign(c,REGVOICE[reg.id]||{});c.m=makeCustomer3D(L);c.m.g.position.copy(OUTSIDE);c.m.g.userData.act={kind:'cust',c};PICK.push(c.m.g);scene.add(c.m.g);
  c.target=V(SEATX[seat.i],0,-1.36);
  const b=document.createElement('div');b.className='bub';b.addEventListener('pointerdown',e=>{e.stopPropagation();e.preventDefault();custTap(c)});$('#bubbles').appendChild(b);c.bub=b;
  seat.cust=c;G.customers.push(c);sfx.bell();
@@ -849,14 +881,26 @@ const VL={
  leave:['ごちそうさま！','また来るね','おやすみー','ありがとう、楽しかった'],leaveReg:['また来るよ！','ごちそうさま、マスター','次もよろしくね'],
  reg:{sato:['お疲れさま、今日も一杯だけ…','また来ちゃったよ','やあマスター、今日も寄らせてもらうよ'],mika:['こんばんは〜、来ちゃった','また来たよー！','今日もいい雰囲気だね'],john:['Hey! また来たよ！','Hi friend! 今日も来ました','こんばんは！ Cheers!'],gen:['邪魔するぞ','ほう、今日も精が出るな','また来てしもうたわい'],yuta:['こんばんは、また来ちゃいました','あ、マスター、こんばんは','研究の息抜きに来ました'],reiko:['…こんばんは。いつもの席、空いてる？','また来たわ','今夜も少しだけ']},
  regClose:['ただいまー！','やっぱりここが落ち着くね','マスターの顔見たくなってさ']};
+const PERS={
+ cheerful:{vp:.15,vr:1.1,fill:['あ、','ねえ、',''],call:['すみませーん！','はーい、注文お願いしまーす！','ねえねえ、注文いい？'],order:n=>[`${n}ひとつ！`,`じゃあ、${n}で！`,`${n}、お願いしまーす！`],react:{p:['わあ、最高！','めっちゃおいしい！'],g:['おいしい！','いいねー！'],m:['んー、まあまあかな'],b:['あれ、これ違うかも…']},leave:['ごちそうさまー！ また来るね！','楽しかった！'],small:['ここの雰囲気、好きだなー','今日もいい日だった！','この曲いいね']},
+ calm:{vp:-.05,vr:.95,fill:['',''],call:['すみません','注文、いいですか'],order:n=>[`${n}を、お願いします`,`${n}を、ひとつ`],react:{p:['……うまい','いい一杯ですね'],g:['おいしいです','ありがとう'],m:['なるほど','ふむ'],b:['……少し、違いますね']},leave:['ごちそうさまでした','また寄ります'],small:['静かで、いい店だ','ふう……落ち着く']},
+ shy:{vp:.1,vr:.92,fill:['えっと、','あの、',''],call:['あ、あの……すみません','あのー……'],order:n=>[`え、えっと……${n}で`,`${n}……お願いします`],react:{p:['わ……おいしい','すごい……'],g:['おいしいです……'],m:['あ、はい……'],b:['あ……えっと……']},leave:['ご、ごちそうさまでした','また、来ます……'],small:['（グラスをじっと見つめている）','……いいお店']},
+ grumpy:{vp:-.2,vr:1.0,fill:['',''],call:['おい、注文','すまんが、いいか'],order:n=>[`${n}。早めにな`,`${n}だ`],react:{p:['……悪くない','やるじゃないか'],g:['まあ、いいだろう'],m:['ふん'],b:['違うだろう、これ']},leave:['ごちそうさん','……また来る'],small:['ったく、今日は疲れた','……最近の若いもんは']},
+ chatty:{vp:.05,vr:1.15,fill:['あ、そうそう、',''],call:['すみませーん、ちょっといい？','ねえ、マスター！'],order:n=>[`今日はね、${n}の気分なんだよね`,`${n}！ ……うん、やっぱり${n}で！`],react:{p:['うわ、これ最高！ 写真撮っちゃお','完璧！'],g:['おいしい！ ここ当たりだわ'],m:['まあまあかなー'],b:['えー、これ頼んだっけ？']},leave:['ごちそうさま！ また友達連れてくるね','楽しかったー！'],small:['聞いてよマスター、今日さ……','この前の休みにね……','最近ハマってるお酒があってさ']},
+ polite:{vp:0,vr:1.0,fill:['',''],call:['恐れ入ります、よろしいですか','すみません、お願いできますか'],order:n=>[`${n}を、いただけますか`,`${n}を、お願いいたします`],react:{p:['大変おいしいです','素晴らしい一杯です'],g:['おいしいです、ありがとうございます'],m:['ありがとうございます'],b:['あの、注文と違うようで……']},leave:['ごちそうさまでした。ありがとうございました','また伺います'],small:['素敵なお店ですね']},
+};
+const TYPEPERS={office:['calm','cheerful','polite','grumpy','chatty'],student:['shy','cheerful','chatty'],tourist:['cheerful'],gent:['polite','calm'],hurry:['grumpy','cheerful'],drunk:['chatty','cheerful'],beerfan:['cheerful','grumpy','chatty'],critic:['calm','grumpy'],vip:['polite','chatty']};
+const REGPERS={sato:'calm',mika:'cheerful',john:'cheerful',gen:'grumpy',yuta:'shy',reiko:'calm'};
+function pers(c){return PERS[c.pers]||PERS.calm}
+function human(c,t){const P0=pers(c);if(c.en)return t;const f=Math.random()<.35?pick(P0.fill||['']):'';return f+t}
 const REGVOICE={sato:{vp:.75,vr:1,vi:1},mika:{vp:1.35,vr:1.1,vi:0},john:{vp:1,vr:1.05,vi:0,en:1},gen:{vp:.55,vr:.88,vi:1},yuta:{vp:1.15,vr:1.12,vi:2},reiko:{vp:1.05,vr:.9,vi:0}};
-function callOut(c){bellCall();const L0=c.reg?['すみません、マスター','注文いいかな？','マスター、いいかい？']:((VL.callT[c.ty])||VL.call);setTimeout(()=>speakC(c,pick(L0),true),260)}
+function callOut(c){bellCall();const L0=c.reg?['すみません、マスター','注文いいかな？','マスター、いいかい？']:c.en?VL.callT.tourist:(Math.random()<.5&&VL.callT[c.ty])?VL.callT[c.ty]:pers(c).call;const t=pick(L0);setTimeout(()=>speakC(c,human(c,t),true),260)}
 function say(c,t,d=2.2){c.say=t;c.sayT=d;c.dirty=1}
 function takeOrder(c){const o=G.forceOrder||chooseOrder(c);G.forceOrder=null;c.orderT=0;
  if(c.reg&&o){const st=S.regs[c.reg]||(S.regs[c.reg]={aff:0,met:0});if(!st.met){st.met=1;talk(c.reg,0)}else if(Math.random()<.5)say(c,pick(['いつものを','やあ、また来たよ','こんばんは']),1.6)}
  if(!o){say(c,'品切れか…帰るよ');leave(c,'sad');S.rep=clamp(S.rep-.05,.5,5);return}
  const r=RECIPES[o];c.order=o;c.status='ordered';c.pat=c.patMax=(40+(r.method==='shake'||r.method==='stir'?14:0)+(Object.keys(r.ings).length>1?8:0))*DF().patOrder*patMul(c);
- if(!activeCust())G.active=c.id;printer();{const nm=r.name.replace(/<[^>]*>/g,'').replace(/&[a-z#0-9]+;/g,'');const ln=c.reg&&Math.random()<.7?VL.orderReg(nm):c.en?VL.orderEn(nm):VL.order(nm);setTimeout(()=>speakC(c,pick(ln),true),350)}floatAt(c.m.g.position.clone().add(V(0,1.95,0)),r.name+' お願い！','#fff',16);c.dirty=1;D.ticket=1;
+ if(!activeCust())G.active=c.id;printer();{const nm=r.name.replace(/<[^>]*>/g,'').replace(/&[a-z#0-9]+;/g,'');const ln=c.reg&&Math.random()<.7?VL.orderReg(nm):c.en?VL.orderEn(nm):(Math.random()<.6?pers(c).order(nm):VL.order(nm));const t=pick(ln);say(c,t,2.2);setTimeout(()=>speakC(c,human(c,t),true),350)}floatAt(c.m.g.position.clone().add(V(0,1.95,0)),r.name+' お願い！','#fff',16);c.dirty=1;D.ticket=1;
 }
 function activeCust(){return G&&G.customers.find(c=>c.id===G.active&&c.status==='ordered')}
 function orders(){return G.customers.filter(c=>c.status==='ordered').sort((a,b)=>a.id-b.id)}
@@ -870,21 +914,21 @@ function layoutSeat(seat){const x=SEATX[seat.i];seat.glasses.forEach((gl,j)=>{gl
 function updateCust(c,dt){if(c.m.star){c.m.star.rotation.y+=dt*2;c.m.star.position.y=1.95*(c.L.h||1)+Math.sin(c.t*3)*.02}if(G.tutorial&&c.status==='drinking'&&c.drinkT>5)c.drinkT=5;
  c.t+=dt;if(c.sayT>0){c.sayT-=dt;if(c.sayT<=0){c.say=null;c.dirty=1}}
  const g=c.m.g;
- if(c.status==='enter'){const k=clamp(c.t/2.2,0,1);const e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;g.position.lerpVectors(DOOR,c.target,e);g.position.y=Math.abs(Math.sin(c.t*9))*.03*(1-k);g.rotation.y=k<.9?Math.atan2(c.target.x-DOOR.x,c.target.z-DOOR.z)*(1-k)*1.1:0;
-  if(c.t>1.4&&c.reg&&!c.greeted){c.greeted=1;const st=S.regs[c.reg]||{};const ln=[...(VL.reg[c.reg]||['また来たよー']),...((st.aff||0)>=3?VL.regClose:[])];const t=pick(ln);say(c,t,2.4);speakC(c,t,true)}
-  if(c.t>2.2){if(c.reg)setTimeout(()=>callOut(c),1600);else callOut(c);c.status='waiting';c.pat=c.patMax=34*DF().patWait*patMul(c);c.t=0;c.dirty=1;g.rotation.y=0}}
+ if(c.status==='enter'){if(c.t<1.1){const k=c.t/1.1;g.position.lerpVectors(OUTSIDE,DOOR,k);g.rotation.y=Math.PI/2;g.position.y=Math.abs(Math.sin(c.t*9))*.03}else{const k=clamp((c.t-1.1)/2.2,0,1);const e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;g.position.lerpVectors(DOOR,c.target,e);g.position.y=Math.abs(Math.sin(c.t*9))*.03*(1-k);g.rotation.y=k<.9?Math.atan2(c.target.x-DOOR.x,c.target.z-DOOR.z)*(1-k)*1.1:0}
+  if(c.t>2.5&&c.reg&&!c.greeted){c.greeted=1;const st=S.regs[c.reg]||{};const ln=[...(VL.reg[c.reg]||['また来たよー']),...((st.aff||0)>=3?VL.regClose:[])];const t=pick(ln);say(c,t,2.4);speakC(c,t,true)}
+  if(c.t>3.3){if(c.reg)setTimeout(()=>callOut(c),1600);else callOut(c);c.status='waiting';c.pat=c.patMax=34*DF().patWait*patMul(c);c.t=0;c.dirty=1;g.rotation.y=0}}
  else if(c.status==='relax'){c.relaxT-=dt;g.position.y=Math.sin(c.t*2+c.ph)*.004;if(c.relaxT<=0){callOut(c);c.status='waiting';c.pat=c.patMax=34*DF().patWait*patMul(c);c.mood='neutral';c.dirty=1}}
  else if(c.status==='waiting'||c.status==='ordered'){if(!G.tutorial)c.pat-=dt;if(c.status==='ordered'){c.orderT+=dt;if(c.ty==='drunk'&&!c.changed&&c.orderT>9&&Math.random()<dt*.12){const o2=chooseOrder(c);if(o2&&o2!==c.order){c.changed=1;c.order=o2;c.pat=Math.min(c.patMax,c.pat+20);say(c,`やっぱ${RECIPES[o2].name}にして〜`,3);sfx.pop();floatAt(c.m.g.position.clone().add(V(0,1.95,0)),'注文変更！','#ffb070',18);D.ticket=1}}}g.position.y=Math.sin(c.t*2+c.ph)*.004;
   if(c.pat<=0){say(c,'もういいよ！',2);G.stats.angry++;G.combo=0;S.rep=clamp(S.rep-.12,.5,5);floatAt(g.position.clone().add(V(0,1.9,0)),'怒って帰った… 評判↓','#ff7a7a',16);sfx.bad();leave(c,'angry')}
   else if(c.pat/c.patMax<.3&&c.mood!=='angry'){c.mood='angry';c.dirty=1}}
- else if(c.status==='drinking'){c.drinkT-=dt;g.rotation.z=Math.sin(c.t*1.3+c.ph)*.02;
+ else if(c.status==='drinking'){c.drinkT-=dt;if(!c.say&&!G.tutorial&&Math.random()<dt*(c.pers==='chatty'?.06:.015)){const t=pick(c.reg&&S.regs[c.reg]?[REGS.find(r=>r.id===c.reg).lines[clamp(S.regs[c.reg].aff,0,5)].slice(0,26)+'…',...(pers(c).small||[])]:(pers(c).small||['……']));say(c,t,3.2);if(Math.random()<.3)speakC(c,human(c,t))}g.rotation.z=Math.sin(c.t*1.3+c.ph)*.02;
   if(c.served){c.served.shownFill=Math.max(.04,c.served.fill0*(c.drinkT/c.drinkMax));
    const sip=(c.t%4)<.9;const hp=V(SEATX[c.seat]+.05,1.125,-.78);if(sip){const k=Math.sin((c.t%4)/.9*Math.PI);c.served.g.position.set(hp.x,hp.y+k*.38,hp.z-k*.42);c.served.g.rotation.x=-k*.9}else{c.served.g.position.copy(hp);c.served.g.rotation.x=0}}
   if(c.drinkT<=0){c.drinks++;const seat=G.seats[c.seat];const gl=c.served;c.served=null;gl.dirtyGlass=true;gl.shownFill=.05;seat.glasses.push(gl);layoutSeat(seat);
    if(!G.tutorial&&!G.closing&&c.drinks<3&&Math.random()<.55&&G.time<G.dayLen*.9){c.status='relax';c.relaxT=DF().brk*rnd(.8,1.3);c.mood='happy';c.dirty=1;g.rotation.z=0}
-   else{const t=pick(c.reg?VL.leaveReg:c.en?['Thank you!','See you!']:VL.leave);say(c,t,1.8);speakC(c,t);leave(c,c.mood==='happy'?'happy':'neutral')}}}
- else if(c.status==='leave'){const k=clamp(c.t/2,0,1);g.position.lerpVectors(c.from,DOOR,k);g.position.y=Math.abs(Math.sin(c.t*9))*.03;g.rotation.y=Math.atan2(DOOR.x-c.from.x,DOOR.z-c.from.z);
-  if(c.t>2){scene.remove(g);PICK.splice(PICK.indexOf(g),1);c.bub.remove();G.customers.splice(G.customers.indexOf(c),1)}}
+   else{const t=pick(c.reg?VL.leaveReg:c.en?['Thank you!','See you!']:pers(c).leave);say(c,t,1.8);speakC(c,t);leave(c,c.mood==='happy'?'happy':'neutral')}}}
+ else if(c.status==='leave'){if(c.t<2){const k=c.t/2;g.position.lerpVectors(c.from,DOOR,k);g.rotation.y=Math.atan2(DOOR.x-c.from.x,DOOR.z-c.from.z)}else{const k=clamp((c.t-2)/1.1,0,1);g.position.lerpVectors(DOOR,OUTSIDE,k);g.rotation.y=-Math.PI/2}g.position.y=Math.abs(Math.sin(c.t*9))*.03;
+  if(c.t>3.1){scene.remove(g);PICK.splice(PICK.indexOf(g),1);c.bub.remove();G.customers.splice(G.customers.indexOf(c),1)}}
 }
 function startClosing(){G.closing=true;toast('🌙 閉店時間！ 最後のお客さんを見送ろう');
  for(const c of [...G.customers]){if(c.status==='waiting'||c.status==='ordered'||c.status==='enter'||c.status==='relax'){say(c,'また来るね',1.5);leave(c,'neutral')}else if(c.status==='drinking')c.drinkT=Math.min(c.drinkT,2)}}
@@ -956,7 +1000,7 @@ function serve(c,gl){
  if(ev.score>=90){G.stats.perfect++;S.totals.perfect++;if(r.method==='tap')S.totals.beerPerfect++}
  H=null;gl.loc={kind:'served'};gl.fill0=Math.min(1,gl.fill());gl.shownFill=gl.fill0;c.served=gl;gl.g.position.set(SEATX[c.seat]+.05,1.125,-.78);gl.g.rotation.set(0,0,0);
  c.status='drinking';c.drinkT=c.drinkMax=rnd(12,18);c.t=0;c.mood=ev.score>=70?'happy':ev.score>=50?'neutral':'sad';
- {const k=ev.score>=90?'p':ev.score>=70?'g':ev.score>=50?'m':'b';let t=pick(VL.react[k]);if(c.reg&&ev.score>=90&&Math.random()<.6)t=pick(VL.reactReg);if(c.en)t=pick(k==='p'||k==='g'?['Amazing!','So good!','Perfect!']:['Hmm...','Not quite...']);say(c,t,2);setTimeout(()=>speakC(c,t),500);k==='p'?sfx.good():k==='b'?sfx.bad():sfx.ok()}
+ {const k=ev.score>=90?'p':ev.score>=70?'g':ev.score>=50?'m':'b';let t=pick(Math.random()<.65?pers(c).react[k]:VL.react[k]);if(c.reg&&ev.score>=90&&Math.random()<.6)t=pick(VL.reactReg);if(c.en)t=pick(k==='p'||k==='g'?['Amazing!','So good!','Perfect!']:['Hmm...','Not quite...']);say(c,t,2);setTimeout(()=>speakC(c,t),500);k==='p'?sfx.good():k==='b'?sfx.bad():sfx.ok()}
  floatAt(c.m.g.position.clone().add(V(0,1.3,.3)),`${yen(price)}${tip?' +チップ'+yen(tip):''}`,'#ffd34a',18);
  if(ev.score>=90)for(let i=0;i<14;i++)emit(gl.g.position.clone().add(V(0,.15,0)),'#ffe27a',1,.5);
  G.lastEval={name:r.name,score:ev.score,notes:ev.notes,tip,tricks,combo:G.combo||0};G.evalT=3.8;showEval();pickNextActive();c.dirty=1;checkAch()}
@@ -1167,6 +1211,7 @@ function update(dt){
  {const n=G.customers.filter(c=>c.status!=='leave').length;const v=muted?0:SET.envVol*Math.min(1,n/4)*.07;loopSet('amb',v>.001,320+Math.sin(G.time*.7)*60,v);if(n&&Math.random()<dt*.25*n*SET.envVol&&!muted)tone(rnd(2500,4200),.08,'sine',.012*SET.envVol)}
  if(S.up.dish){G.dishT+=dt;if(G.dishT>=3){G.dishT=0;if(G.dirty.length)washOne()}}
  if(G.evalT>0){G.evalT-=dt;if(G.evalT<=0)$('#evalPop').style.display='none'}
+ updateDoor(dt);
  if(G.closing&&!G.ended&&G.customers.length===0&&!G.tutorial)endDay();
  D.ticket=1;
 }
@@ -1223,7 +1268,7 @@ function hlTargets(hl){const out=[];if(!hl||!G)return out;const [a,b]=hl.split('
  else if(a==='tables')G.seats.filter(s=>s.money||s.glasses.length).forEach(s=>out.push(SEATOBJ[s.i].money.visible?SEATOBJ[s.i].money:(s.glasses[0]&&s.glasses[0].g)));
  return out.filter(Boolean)}
 let hover=null;
-function updateGlow(t,hl){clearGlow();const pul=.18+.18*Math.sin(t*6);for(const r of hlTargets(hl))glowRoot(r,0x3fd0c9,pul);if(hover&&hover.root)glowRoot(hover.root,0xffe2a0,.28)}
+function updateGlow(t,hl){clearGlow();const pul=.18+.18*Math.sin(t*6);if(G){const hc=G.customers.find(c=>c.id===G.hoverOid);if(hc)glowRoot(hc.m.g,new THREE.Color(SEATCOL[hc.seat]).getHex(),.35)}for(const r of hlTargets(hl))glowRoot(r,0x3fd0c9,pul);if(hover&&hover.root)glowRoot(hover.root,0xffe2a0,.28)}
 function actRoot(a){if(!a)return null;switch(a.kind){case 'bottle':return ST.bottles[a.k];case 'tap':return ST.taps[a.i].piv;case 'garnish':return ST.garn[a.k];case 'rack':return ST.rack[a.t].g;case 'ice':return ST.ice;case 'spoon':return ST.spoon;case 'sink':return ST.sink.g;case 'glass':return a.glass.g;case 'cust':return a.c.m.g;case 'slot':return a.slot.glass?a.slot.glass.g:a.slot.mesh;default:return null}}
 function tipText(a){if(!a)return'';switch(a.kind){
  case 'bottle':{const I=ING[a.k];if(!ingUnlocked(a.k))return `${I.name}<small>🔒 メニュー解禁で使用可</small>`;return `${I.name}　在庫 ${fmtStock(a.k)}<small>${H&&H.kind==='bottle'?'クリックで持ち替え':'クリックで持つ → グラスの上で長押しで注ぐ'}</small>`}
@@ -1234,7 +1279,7 @@ function tipText(a){if(!a)return'';switch(a.kind){
  case 'spoon':return `バースプーン<small>持ってグラスの上で押したまま、ぐるぐる回す</small>`;
  case 'sink':return `シンク（汚れ ${G.dirty.length}個）<small>${H&&H.kind==='glass'?'クリックでグラスの中身を捨てる':'押したまま左右にこすって洗う'}</small>`;
  case 'glass':{const gl=a.glass;if(gl.loc.kind==='bar')return '空きグラス<small>クリックで下げる</small>';const parts=Object.keys(gl.c.ings).map(k=>`${ING[k].short}${Math.round(gl.c.ings[k])}ml`);return `${GL[gl.type].full}　${Math.round(gl.fill()*100)}%${gl.c.ice?' 🧊':''}<small>${parts.join(' / ')||'空'}${gl.type==='shaker'?' ・ 持って押したまま振るとシェイク':''}</small>`}
- case 'cust':{const c=a.c;const lab=custLabel(c);if(c.status==='waiting')return `${lab}<small>クリックで注文を聞く ・ ${CT[c.ty].trait}</small>`;if(c.status==='ordered')return `${RECIPES[c.order].name} を待っている<small>${H&&H.kind==='glass'?'クリックで提供':'クリックで伝票を選ぶ'}</small>`;return 'お客さん'}
+ case 'cust':{const c=a.c;const lab=custLabel(c);const PN={cheerful:'明るい',calm:'落ち着いている',shy:'シャイ',grumpy:'ぶっきらぼう',chatty:'おしゃべり',polite:'丁寧'};if(c.status==='waiting')return `${lab}（性格：${PN[c.pers]||'—'}）<small>クリックで注文を聞く ・ ${CT[c.ty].trait}</small>`;if(c.status==='ordered')return `${RECIPES[c.order].name} を待っている<small>${H&&H.kind==='glass'?'クリックで提供':'クリックで伝票を選ぶ'}</small>`;return 'お客さん'}
  case 'seat':{const s=G.seats[a.i];if(s.money||s.glasses.length)return `お会計 ${yen(s.money)}<small>クリックで回収・片付け</small>`;return ''}
  case 'slot':return a.slot.glass?'':(H&&H.kind==='glass'?'ここに置く':'');
  case 'drip':return H&&H.kind==='glass'?'タップの下に置く':'';
@@ -1254,19 +1299,20 @@ function renderTop(){$('#dayN').textContent=S.day;const ri=rankIdx(),nx=RANKS[ri
 let lastTabs='';
 function renderTicket(){const os=orders();$('#ordCount').textContent=os.length?`${os.length}件`:'';
  const tabsKey=os.map(c=>c.id+(c.id===G.active?'*':'')).join(',');
- if(tabsKey!==lastTabs){lastTabs=tabsKey;$('#orderTabs').innerHTML=os.map(c=>`<div class="otab ${c.id===G.active?'on':''}" data-oid="${c.id}">${c.seat+1}番 ${RECIPES[c.order].name}<div class="pb"><i data-pb="${c.id}"></i></div></div>`).join('')}
+ if(tabsKey!==lastTabs){lastTabs=tabsKey;$('#orderTabs').innerHTML=os.map(c=>`<div class="otab ${c.id===G.active?'on':''}" data-oid="${c.id}"><span class="sn" style="background:${SEATCOL[c.seat]}">${c.seat+1}</span>${RECIPES[c.order].name}<div class="pb"><i data-pb="${c.id}"></i></div></div>`).join('')}
  os.forEach(c=>{const e=document.querySelector(`[data-pb="${c.id}"]`);if(e){const p=clamp(c.pat/c.patMax,0,1);e.style.width=p*100+'%';e.style.background=p>.5?'#7cd67c':p>.25?'#f0c040':'#ff5a5a'}});
  const a=activeCust();let h;
  if(!a)h=`<div class="tktEmpty">「🙋注文！」のお客さんをクリックすると、ここに伝票（作り方）が出ます</div>`;
- else{const r=RECIPES[a.order],st=steps(a.order);let cur=false;h=`<h2>${r.name}<small>${a.seat+1}番席（${custLabel(a)}）・${yen(r.price)}</small></h2><div class="steps">`+st.map((s,i)=>{let cls=s.d?'done':'';if(!s.d&&!cur){cls='cur';cur=true}return `<div class="step ${cls}"><span class="ck">${s.d?'✓':i+1}</span>${s.t}${s.amt?`<span class="amt">${s.amt}</span>`:''}</div>`}).join('')+'</div>'}
+ else{const r=RECIPES[a.order],st=steps(a.order);let cur=false;h=`<h2><span><span class="sn big" style="background:${SEATCOL[a.seat]}">${a.seat+1}</span>${r.name}</span><small>${a.seat+1}番席：${custLabel(a)}・${yen(r.price)}</small></h2><div class="steps">`+st.map((s,i)=>{let cls=s.d?'done':'';if(!s.d&&!cur){cls='cur';cur=true}return `<div class="step ${cls}"><span class="ck">${s.d?'✓':i+1}</span>${s.t}${s.amt?`<span class="amt">${s.amt}</span>`:''}</div>`}).join('')+'</div>'}
  if(h!==renderTicket.last){$('#tkt').innerHTML=h;renderTicket.last=h}}
+$('#orderTabs').addEventListener('pointerover',e=>{const o=e.target.closest('[data-oid]');G&&(G.hoverOid=o?+o.dataset.oid:null)});$('#orderTabs').addEventListener('pointerleave',()=>{if(G)G.hoverOid=null});
 $('#orderTabs').addEventListener('pointerdown',e=>{const o=e.target.closest('[data-oid]');if(o&&G){G.active=+o.dataset.oid;lastTabs='';for(const c of G.customers)c.dirty=1;sfx.pop()}});
 function renderBubbles(){for(const c of G.customers){const b=c.bub;const p=toScreen(c.m.g.position.clone().add(V(0,1.86,0)));
-  if(!p.vis||c.status==='enter'&&c.t<1||c.status==='leave'&&!c.say){b.style.display='none';continue}
+  if(!p.vis||c.status==='enter'&&c.t<2||c.status==='leave'&&(!c.say||c.t>2)){b.style.display='none';continue}
   let html='',cls='bub';
   if(c.say){cls+=' say';html=c.say}
-  else if(c.status==='waiting'){cls+=' call';html=`${c.reg?'⭐'+REGS.find(r=>r.id===c.reg).name:CT[c.ty].icon} 注文！`}
-  else if(c.status==='ordered'){html=`${c.reg?'⭐':CT[c.ty].icon} ${RECIPES[c.order].name}`;if(G.active===c.id)cls+=' act'}
+  else if(c.status==='waiting'){cls+=' call';html=`<span class="sn" style="background:${SEATCOL[c.seat]}">${c.seat+1}</span>${c.reg?'⭐'+REGS.find(r=>r.id===c.reg).name:CT[c.ty].icon} 注文！`}
+  else if(c.status==='ordered'){html=`<span class="sn" style="background:${SEATCOL[c.seat]}">${c.seat+1}</span>${c.reg?'⭐':CT[c.ty].icon} ${RECIPES[c.order].name}`;if(G.active===c.id){cls+=' act';html='<div class="actl">▼ いま作っている注文</div>'+html}}
   else if(c.reg){html=`⭐${REGS.find(r=>r.id===c.reg).name}`;cls+=' regtag'}
   else{b.style.display='none';continue}
   if(c.status==='waiting'||c.status==='ordered'){const pp=clamp(c.pat/c.patMax,0,1);html+=`<div class="pb"><i style="width:${pp*100}%;background:${pp>.5?'#7cd67c':pp>.25?'#f0c040':'#ff5a5a'}"></i></div>`}
@@ -1302,7 +1348,8 @@ function renderHUD(t){
  if(A&&(A.kind==='shake'||A.kind==='stir')&&A.v>0){$('#needle').style.left=(clamp(A.v,0,1.25)/1.25*100)+'%'}
  if(A&&A.kind==='scrub'){if(!txt){const p=toScreen(V(1.52,1.05,-.27));ro.style.display='block';ro.style.left=p.x+'px';ro.style.top=p.y+'px';ro.innerHTML=`ゴシゴシ… ${Math.round(G.scrubAcc/7)}%<small>残り ${G.dirty.length}個</small>`}}
  // target rings
- updParts(FDT);for(const g2 of GLASSOBJS){if(g2.wob>0){g2.wob=Math.max(0,g2.wob-FDT*1.6);const w=g2.wob;g2.liq.rotation.z=Math.sin(T*15)*.07*w;g2.liq.rotation.x=Math.cos(T*12)*.05*w;g2.foamM.rotation.copy(g2.liq.rotation)}}
+ updParts(FDT);{const ac=activeCust();if(ACTRING){ACTRING.visible=!!ac;if(ac){ACTRING.position.set(SEATX[ac.seat]+.05,1.13,-.78);ACTRING.material.color.set(SEATCOL[ac.seat]);const k=1+Math.sin(T*5)*.08;ACTRING.scale.set(k,k,k)}}}
+for(const g2 of GLASSOBJS){if(g2.wob>0){g2.wob=Math.max(0,g2.wob-FDT*1.6);const w=g2.wob;g2.liq.rotation.z=Math.sin(T*15)*.07*w;g2.liq.rotation.x=Math.cos(T*12)*.05*w;g2.foamM.rotation.copy(g2.liq.rotation)}}
  for(const g2 of GLASSOBJS){let lines=null;if(r&&g2.type===r.glass&&g2.loc&&(g2.loc.kind==='slot'||g2.loc.kind==='hand')&&Object.values(r.ings).includes('fill'))lines=fillBand(r);g2.refresh(lines)}
  // cursor
  cv.style.cursor=P.act?'grabbing':(hover&&hover.act&&tipText(hover.act))?'pointer':(H?'grab':'default');
@@ -1643,17 +1690,33 @@ function renderLabels(hl){const box=$('#labels');if(!SET.labels&&!G.tutorial){if
  for(const L of LABELS){const p=toScreen(L.p);if(!p.vis||p.x<-40||p.x>1320)continue;const on=hk===L.k||(hk==='glass'&&L.k==='mat');h+=`<div class="slab ${on?'on':''}" style="left:${p.x.toFixed(0)}px;top:${p.y.toFixed(0)}px">${L.n}<small>${L.sub}</small></div>`}
  if(h!==renderLabels.l){box.innerHTML=h;renderLabels.l=h}}
 const _b=new THREE.Box3();
-function renderArrow(hl,txt){const ar=$('#arrow');if((!SET.arrow&&!G.tutorial)||!hl||P.act){ar.style.display='none';return}
+function stageRect(el){const r=el.getBoundingClientRect();if(!r.width)return null;const sr=$('#stage').getBoundingClientRect();const k=sr.width/1280;return{l:(r.left-sr.left)/k,t:(r.top-sr.top)/k,r:(r.right-sr.left)/k,b:(r.bottom-sr.top)/k}}
+function hit(a,b){return a.l<b.r&&a.r>b.l&&a.t<b.b&&a.b>b.t}
+function renderArrow(hl,txt){const ar=$('#arrow');document.querySelectorAll('.slab.dim').forEach(e=>e.classList.remove('dim'));
+ if((!SET.arrow&&!G.tutorial)||!hl||P.act){ar.style.display='none';return}
  const t=hlTargets(hl);if(!t.length){ar.style.display='none';return}
- _b.setFromObject(t[0]);const c=_b.getCenter(new THREE.Vector3());c.y=_b.max.y+.015;const p=toScreen(c);
+ _b.setFromObject(t[0]);const c=_b.getCenter(new THREE.Vector3());const ctr=toScreen(c.clone());c.y=_b.max.y+.015;const p=toScreen(c);
  let lab=hl.startsWith('serve')||hl==='callers'?'ここをクリック':hl.startsWith('tap')?'押して手前に引く':hl==='sink'&&!(H&&H.kind==='glass')?'押してこする':hl==='glass'&&H&&H.kind==='spoon'?'押してぐるぐる':hl==='glass'&&H&&H.kind==='bottle'?'ここで長押し':hl==='shaker'&&H&&H.glass===G.shaker?'押したまま振る':'ここ！';
- ar.classList.remove('side');let arrowCh='⬇';let x=p.x,y=p.y;
  if(!p.vis){ar.style.display='none';return}
- if(x<40){x=70;y=clamp(y,150,600);arrowCh='⬅';lab=touchMode?'◀ボタンで左を見る':'左を見て（マウスを左端へ）';ar.classList.add('side')}
- else if(x>1240){x=1180;y=clamp(y,150,600);arrowCh='➡';lab=touchMode?'▶ボタンで右を見る':'右を見て（マウスを右端へ）';ar.classList.add('side')}
- else if(y<60){y=110;arrowCh='⬆';lab=touchMode?'⬆客席ボタン':'上を見て（マウスを上へ）'}
- else if(y>700){y=640;arrowCh='⬇';lab=touchMode?'⬇手元ボタン':'下を見て（マウスを下へ）'}
- ar.style.display='block';ar.style.left=x+'px';ar.style.top=(y-4)+'px';const hh=`<div class="al">${lab}</div><div class="ar">${arrowCh}</div>`;if(ar.innerHTML!==hh)ar.innerHTML=hh}
+ let x=p.x,y=p.y,mode='up';
+ if(x<40){x=70;y=clamp(y,150,500);mode='side';lab=touchMode?'◀ボタンで左を見る':'左を見て（マウスを左端へ）'}
+ else if(x>1240){x=1180;y=clamp(y,150,500);mode='side';lab=touchMode?'▶ボタンで右を見る':'右を見て（マウスを右端へ）'}
+ else if(y<60){y=110;mode='upTop';lab=touchMode?'⬆客席ボタン':'上を見て（マウスを上へ）'}
+ else if(y>560&&ctr.y>560){y=500;mode='downTop';lab=touchMode?'⬇手元ボタン':'下を見て（マウスを下へ）'}
+ const W=Math.max(70,lab.length*13+26),Hh=74;
+ const obs=[];for(const sel of ['#ticket','#top','#hand','#evalPop','#tut','#gaugeBox','#readout'])for(const e of document.querySelectorAll(sel)){if(e.offsetParent!==null||sel==='#top'){const r=stageRect(e);if(r)obs.push(r)}}
+ document.querySelectorAll('.bub').forEach(e=>{if(e.style.display!=='none'){const r=stageRect(e);if(r)obs.push(r)}});
+ const cands=mode==='up'?[['up',x,y],['left',ctr.x-14-(_b.max.x-_b.min.x)*0,ctr.y],['right',ctr.x+14,ctr.y],['down',x,toScreen(V(c.x,_b.min.y,c.z)).y+6]]:[[mode==='side'?'side':'up',x,y]];
+ const rectOf=(m,X,Y)=>m==='up'||m==='side'||m==='upTop'||m==='downTop'?{l:X-W/2,r:X+W/2,t:Y-Hh,b:Y}:m==='left'?{l:X-W-40,r:X,t:Y-Hh/2,b:Y+Hh/2}:m==='right'?{l:X,r:X+W+40,t:Y-Hh/2,b:Y+Hh/2}:{l:X-W/2,r:X+W/2,t:Y,b:Y+Hh};
+ let pickC=cands[0];for(const cd of cands){const rr=rectOf(cd[0],cd[1],cd[2]);if(rr.l<0||rr.r>1280||rr.t<48)continue;if(!obs.some(o=>hit(o,rr))){pickC=cd;break}}
+ const [m,X,Y]=pickC;const rr=rectOf(m,X,Y);
+ document.querySelectorAll('.slab').forEach(e=>{const r=stageRect(e);if(r&&hit(r,rr))e.classList.add('dim')});
+ const ch=m==='left'?'➡':m==='right'?'⬅':m==='down'||m==='upTop'?'⬆':m==='side'?(X<640?'⬅':'➡'):'⬇';
+ ar.classList.toggle('side',m==='left'||m==='right'||m==='side');ar.style.display='block';
+ if(m==='left'){ar.style.left=X+'px';ar.style.top=Y+'px';ar.style.transform='translate(-100%,-50%)'}else if(m==='right'){ar.style.left=X+'px';ar.style.top=Y+'px';ar.style.transform='translate(0,-50%)'}
+ else if(m==='down'){ar.style.left=X+'px';ar.style.top=Y+'px';ar.style.transform='translate(-50%,0)'}else{ar.style.left=X+'px';ar.style.top=(Y-4)+'px';ar.style.transform='translate(-50%,-100%)'}
+ const hh=m==='left'?`<div style="display:flex;align-items:center;gap:4px"><div class="al">${lab}</div><div class="ar">${ch}</div></div>`:m==='right'?`<div style="display:flex;align-items:center;gap:4px"><div class="ar">${ch}</div><div class="al">${lab}</div></div>`:m==='down'||m==='upTop'?`<div class="ar">${ch}</div><div class="al">${lab}</div>`:`<div class="al">${lab}</div><div class="ar">${ch}</div>`;
+ if(ar.innerHTML!==hh)ar.innerHTML=hh}
 
 /* ====================== TUTORIAL ====================== */
 const TUT=[
