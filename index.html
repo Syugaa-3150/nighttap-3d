@@ -227,7 +227,7 @@ body.touch #tip{display:none!important}
 #tkL #orderTabs{flex-direction:column;flex-wrap:nowrap;max-height:92px;overflow:auto;margin:4px 0 0}
 #tkL .otab{min-width:0}
 #tkR{flex:1;display:flex;flex-direction:column;gap:6px;min-width:0}
-#tkt{padding:6px 10px!important;background-image:none!important}
+#tkt{pointer-events:auto;padding:6px 10px!important;background-image:none!important}
 #tkt h2{font-size:18px!important;border-bottom:none!important;margin:0 0 4px!important;padding:0!important}
 #tkt .steps{display:flex;flex-wrap:wrap;gap:4px}
 #tkt .step{display:inline-flex;border:1px solid #d8c8a0;border-radius:20px;padding:0 9px 0 4px;line-height:1.7;font-size:12.5px;background:#fff8}
@@ -250,6 +250,19 @@ body.touch #ticket{width:640px!important}
 #gaugeBox{bottom:auto!important;top:112px}
 #arrow .al{white-space:nowrap}
 .slab.dim{opacity:.18}
+#cutPanel{position:absolute;left:50%;top:90px;transform:translateX(-50%);background:rgba(20,12,7,.96);border:2px solid #ffe14a;border-radius:16px;padding:10px 14px;display:none;pointer-events:auto;box-shadow:0 10px 30px #000c;z-index:5}
+.cph{font-weight:900;font-size:15px;margin-bottom:6px;display:flex;gap:8px;align-items:baseline}.cph small{font-size:11px;color:#ccc}.cph span{margin-left:auto;cursor:pointer;color:#aaa}
+.cpb{position:relative;touch-action:none;cursor:crosshair}
+#cutLine{position:absolute;width:4px;background:#fff;box-shadow:0 0 8px #fff;transform-origin:top center;pointer-events:none}
+#beat{position:absolute;right:20px;top:110px;width:26px;height:26px;border-radius:50%;border:3px solid #9ae6ff;display:none;opacity:.8}
+#beat.hit{background:#9ae6ff;box-shadow:0 0 16px #9ae6ff}
+#catchRing{position:absolute;border-radius:50%;border:4px solid #ffe14a;display:none;transform:translate(-50%,-50%);pointer-events:none}
+#catchRing.go{border-color:#7cff9a;box-shadow:0 0 20px #7cff9a}
+#hring{position:absolute;width:52px;height:52px;margin:-26px 0 0 -26px;border-radius:50%;border:2px dashed #ffe9a8cc;display:none;pointer-events:none;animation:spin 3s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#evalPop{left:auto!important;right:12px;top:auto!important;bottom:12px;transform:none!important;min-width:220px;max-width:240px;padding:8px 12px!important}
+#evalPop .sc{font-size:22px!important}
+body.touch #evalPop{bottom:190px}
 #loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#ffd77a;background:#0e0806}
 </style>
 </head>
@@ -284,7 +297,7 @@ body.touch #ticket{width:640px!important}
   <div id="gaugeBox"><div class="glab" id="glab"></div><div class="gt"><div class="nd" id="needle"></div></div></div>
   <div id="hand"></div><div id="viewPad"><button data-look="up">⬆<small>客席</small></button><button data-look="left">◀</button><button data-look="center">●</button><button data-look="right">▶</button><button data-look="down">⬇<small>手元</small></button></div>
   <div id="hintBar"><b>次は▶</b><span id="hintTxt"></span></div>
-  <div id="arrow"><div class="ar">⬇</div><div class="al"></div></div><div id="tut"></div><div id="combo"></div><div id="talk"></div><div id="rankUp"></div><div id="tip"></div>
+  <div id="arrow"><div class="ar">⬇</div><div class="al"></div></div><div id="tut"></div><div id="combo"></div><div id="beat"></div><div id="cutPanel"></div><div id="catchRing"></div><div id="hring"></div><div id="talk"></div><div id="rankUp"></div><div id="tip"></div>
   <div id="msg"></div>
   <div id="fx"></div>
   <div id="toast"></div>
@@ -386,9 +399,10 @@ const ACH=[
 ];
 
 const DIFF={
- easy:{name:'かんたん',icon:'🌱',desc:'お客さんはゆっくり来店（同時に2組まで）<br>待ち時間たっぷり<br>ボトル・タップが<b>ちょうどの量で自動ストップ</b>',spawn:2.0,cap:2,patWait:2.2,patOrder:2.4,tol:.32,foam:[.08,.45],fillLo:.72,gauge:{p:[.45,1.12],o:[.25,1.25]},assist:1,brk:14},
- normal:{name:'ふつう',icon:'🍺',desc:'ほどよい忙しさ（同時に3組まで）<br>待ち時間ゆったり<br>計量は少し甘め',spawn:1.4,cap:3,patWait:1.5,patOrder:1.6,tol:.22,foam:[.14,.38],fillLo:.78,gauge:{p:[.6,1.0],o:[.4,1.15]},assist:0,brk:9},
- hard:{name:'むずかしい',icon:'🔥',desc:'動画のバーテンダー級のラッシュ<br>待ち時間短め<br>計量も泡も厳しい',spawn:1,cap:6,patWait:1,patOrder:1,tol:.15,foam:[.18,.35],fillLo:.85,gauge:{p:[.7,.95],o:[.5,1.1]},assist:0,brk:5}};
+ easy:{name:'かんたん',icon:'🌱',desc:'お客さんはゆっくり来店（同時に2組まで）<br>待ち時間たっぷり<br>ボトル・タップが<b>ちょうどの量で自動ストップ</b>',spawn:2.0,cap:2,patWait:2.2,patOrder:2.4,tol:.32,foam:[.08,.45],fillLo:.72,gauge:{p:[.45,1.12],o:[.25,1.25]},assist:1,brk:14,x:{flairDur:1.5,flairWin:.75,slide:[350,99999],brk:false,foamMul:1,autoTilt:1,cutTol:9999,cutStart:99,wetPen:0,dry:5,cap:false,beat:.2,req:0,vague:0}},
+ normal:{name:'ふつう',icon:'🍺',desc:'ほどよい忙しさ（同時に3組まで）<br>待ち時間ゆったり<br>計量は少し甘め',spawn:1.4,cap:3,patWait:1.5,patOrder:1.6,tol:.22,foam:[.14,.38],fillLo:.78,gauge:{p:[.6,1.0],o:[.4,1.15]},assist:0,brk:9,x:{flairDur:1.3,flairWin:.45,slide:[600,3400],brk:true,foamMul:1.1,autoTilt:0,cutTol:55,cutStart:4,wetPen:0,dry:25,cap:true,beat:.13,req:.35,vague:0}},
+ hard:{name:'むずかしい',icon:'🔥',desc:'動画のバーテンダー級のラッシュ<br>待ち時間短め<br>計量も泡も厳しい',spawn:1,cap:6,patWait:1,patOrder:1,tol:.15,foam:[.18,.35],fillLo:.85,gauge:{p:[.7,.95],o:[.5,1.1]},assist:0,brk:5,x:{flairDur:1.15,flairWin:.3,slide:[800,2500],brk:true,foamMul:1.35,autoTilt:0,cutTol:30,cutStart:0,wetPen:5,dry:9999,cap:true,beat:.09,req:.3,vague:.35}}};
+function DX(){return DF().x}
 function DF(){return DIFF[(S&&S.diff)||'normal']}
 function applyDiff(){FOAM[0]=DF().foam[0];FOAM[1]=DF().foam[1]}
 const SETKEY='nighttap3d_settings';
@@ -613,14 +627,22 @@ const BSHAPE={
  limej:{p:[[0,0],[.026,0],[.027,.004],[.027,.1],[.016,.13],[.009,.15],[.009,.18],[0,.18]],lab:.06,lr:.0275,neck:.21},
  syrup:{p:[[0,0],[.027,0],[.028,.004],[.028,.11],[.02,.135],[.01,.15],[.01,.18],[0,.18]],lab:.06,lr:.0285,neck:.21},
 };
+const BRAND={whisky:['IKOI','WHISKY · 12 YEARS','#1a1410','#d8b060'],gin:['BOTANICAL','DRY GIN','#eef4ee','#2a6a4a'],vodka:['NORD','PREMIUM VODKA','#f4f6f8','#2a3a6a'],rum:['CARIBE','WHITE RUM','#f2e2b8','#8a3a1a'],cassis:['Cassis','DE IKOI','#3a0a1e','#f0b8d0'],vermouth:['DRY','VERMOUTH','#ece4c4','#5a6a2a'],soda:['SODA','CLUB SODA','#dff2ff','#2a6aa0'],tonic:['TONIC','INDIAN TONIC','#fff7c8','#a07a10'],limej:['LIME','100% JUICE','#e8f8c8','#3a8a2a'],syrup:['SYRUP','GUM SYRUP','#fffbe8','#8a6a3a'],ginger:['GINGER','DRY ALE','#2a6a2a','#f0e0a0']};
+function labelTex2(k){const I=ING[k],b=BRAND[k]||[I.short,'',I.color,'#222'];return canvasTex(512,180,(x,w,h)=>{x.fillStyle=b[2];x.fillRect(0,0,w,h);
+ for(const cx of [w*.25,w*.75]){x.save();x.translate(cx,0);x.strokeStyle=b[3];x.lineWidth=3;x.strokeRect(-112,10,224,h-20);x.lineWidth=1;x.strokeRect(-104,16,208,h-32);
+  x.fillStyle=b[3];x.textAlign='center';x.textBaseline='middle';x.font=`700 22px ${MINCHO}`;x.fillText(b[0],0,38);
+  x.font=`900 50px ${FONTS}`;const tw=x.measureText(I.short).width;x.save();x.scale(Math.min(1,190/tw),1);x.fillText(I.short,0,92);x.restore();
+  x.font=`600 15px ${MINCHO}`;x.fillText(b[1],0,138);x.restore()}})}
 function makeBottle(k){
  const I=ING[k],g=new THREE.Group();const sh=BSHAPE[k]||BSHAPE.gin;
  if(sh.carton){const cm=[std({color:I.color,roughness:.7}),std({color:I.color,roughness:.7}),std({color:0xffffff}),std({color:0xffffff}),std({map:labelTex(I.short,'#ffffff','#e06a10'),roughness:.7}),std({map:labelTex(I.short,'#ffffff','#e06a10'),roughness:.7})];
   const b=new THREE.Mesh(new THREE.BoxGeometry(.065,.18,.065),cm);b.position.y=.09;b.castShadow=true;g.add(b);const roof=new THREE.Mesh(new THREE.CylinderGeometry(.001,.046,.04,4,1),std({color:0xffffff}));roof.rotation.y=Math.PI/4;roof.position.y=.2;g.add(roof);cyl(.008,.008,.02,std({color:0x2a8a2a}),0,.215,.015,8,g);g.userData.neck=sh.neck;return g}
- const body=lathe(sh.p,sh.can?M.chrome:std({color:I.bottle,transparent:true,opacity:.9,roughness:.08,metalness:.1,envMapIntensity:1.4}),sh.seg||36);if(sh.rot)body.rotation.y=sh.rot;body.castShadow=true;g.add(body);
+ const body=lathe(sh.p,sh.can?M.chrome:new THREE.MeshPhysicalMaterial({color:I.bottle,transparent:true,opacity:.78,roughness:.06,metalness:0,clearcoat:1,clearcoatRoughness:.05,envMapIntensity:1.8,depthWrite:false}),sh.seg||36);body.renderOrder=2;if(sh.rot)body.rotation.y=sh.rot;body.castShadow=true;g.add(body);
  if(sh.can){const cb=new THREE.Mesh(new THREE.CylinderGeometry(.0335,.0335,.11,28,1,true),std({map:labelTex(I.short,I.bottle,'#fff'),roughness:.4,metalness:.3}));cb.position.y=.075;cb.rotation.y=-Math.PI/2;g.add(cb)}
  else if(sh.seg===4){const lm=std({map:labelTex(I.short,'#f5ead0','#2a1408'),roughness:.6});const lp=new THREE.Mesh(new THREE.PlaneGeometry(.055,.06),lm);lp.position.set(0,sh.lab,.0302);g.add(lp)}
- else{const lab=new THREE.Mesh(new THREE.CylinderGeometry(sh.lr,sh.lr,.065,36,1,true),std({map:labelTex(I.short,I.type==='spirit'?'#f5ead0':I.color,'#2a1408'),roughness:.6}));lab.position.y=sh.lab;lab.rotation.y=-Math.PI/2;g.add(lab)}
+ else{const lab=new THREE.Mesh(new THREE.CylinderGeometry(sh.lr,sh.lr,.075,40,1,true),std({map:labelTex2(k),roughness:.55}));lab.position.y=sh.lab;lab.rotation.y=-Math.PI/2;g.add(lab)}
+ if(!sh.can){const r0=sh.p[1][0]*.84,hTop=sh.p[3]?sh.p[3][1]:.12;const lq=new THREE.Mesh(new THREE.CylinderGeometry(r0,r0,1,24),std({color:I.color,transparent:true,opacity:.75,roughness:.2}));lq.renderOrder=1;lq.raycast=()=>{};g.add(lq);g.userData.liq=lq;g.userData.lh=hTop-.01;if(sh.seg===4){lq.geometry=new THREE.BoxGeometry(r0*1.35,1,r0*1.35)}
+  const foil=cyl(.0145,.0145,.03,std({color:I.type==='spirit'?(k==='whisky'?0xb08a3a:k==='cassis'?0x6a1a3a:0x1a1a1a):0xdddddd,metalness:.7,roughness:.3}),0,sh.p[sh.p.length-1][1]-.012,0,16,g)}
  const top=sh.p[sh.p.length-1][1];
  if(!sh.can){cyl(.0135,.0135,.02,I.type==='spirit'?std({color:0x1a1a1a,roughness:.5}):M.chrome,0,top+.005,0,16,g);cyl(.004,.006,.035,M.chrome,0,top+.03,0,8,g)}
  g.userData.neck=sh.neck;return g}
@@ -666,7 +688,7 @@ function buildStation(){
  {const pl=new THREE.Mesh(new THREE.PlaneGeometry(.16,.12),new THREE.MeshBasicMaterial({map:SIGNTEX,transparent:true,toneMapped:false}));pl.position.set(1.04,1.19,-.497);scene.add(pl)}
  // spoon holder + spoon
  const sh=new THREE.Group();sh.position.set(-.76,.9,-.42);scene.add(sh);
- const cup=lathe([[0,0],[.022,0],[.024,.08],[.021,.08],[.019,.004],[0,.004]],M.chrome,20);sh.add(cup);
+ const cup=lathe([[0,0],[.026,0],[.028,.1],[.025,.1],[.023,.004],[0,.004]],std({color:0x3a3a3a,metalness:.8,roughness:.3}),24);sh.add(cup);const spl=new THREE.Mesh(new THREE.PlaneGeometry(.09,.03),new THREE.MeshBasicMaterial({map:labelTex('バースプーン','#1a1a1a','#e8e8e8',256,96,34),transparent:true}));spl.position.set(0,.05,.03);sh.add(spl);
  const sp=makeSpoon();sp.position.set(0,.02,0);sp.rotation.z=.12;sh.add(sp);const sph=new THREE.Mesh(new THREE.BoxGeometry(.07,.34,.07),new THREE.MeshBasicMaterial());sph.visible=false;sph.position.y=.17;sh.add(sph);addPick(sh,{kind:'spoon'});ST.spoon=sh;ST.spoonMesh=sp;
  // shaker home
  const ring=cyl(.05,.05,.005,M.rubber,-.76,.9,-.2,24);const hs={id:'H',kind:'home',pos:V(-.76,.905,-.2),glass:null,mesh:ring};ring.userData.act={kind:'slot',slot:hs};PICK.push(ring);SLOTS.push(hs);
@@ -678,12 +700,21 @@ function buildStation(){
   addPick(g,{kind:'rack',t});ST.rack[t]={g,tex,plate,metas:[],shown:-1}});
  // sink
  const sk=new THREE.Group();sk.position.set(1.52,.9,-.27);scene.add(sk);
- box(.34,.006,.04,M.steel,0,.0,-.16,sk);box(.34,.006,.04,M.steel,0,.0,.16,sk);box(.04,.006,.3,M.steel,-.17,0,0,sk);box(.04,.006,.3,M.steel,.17,0,0,sk);
- const basin=box(.3,.004,.28,std({color:0x2a3034,metalness:.7,roughness:.4}),0,-.08,0,sk);
- const water=new THREE.Mesh(new THREE.PlaneGeometry(.3,.28),M.water);water.rotation.x=-Math.PI/2;water.position.y=-.035;sk.add(water);
- const fa=new THREE.Mesh(new THREE.TorusGeometry(.07,.008,8,20,Math.PI),M.chrome);fa.position.set(0,.07,-.15);sk.add(fa);cyl(.008,.008,.07,M.chrome,-.07,.035,-.15,8,sk);
- const sponge=box(.06,.025,.04,std({color:0xf0d040,roughness:1}),.12,.015,.12,sk);
- const hitS=new THREE.Mesh(new THREE.BoxGeometry(.34,.12,.34),new THREE.MeshBasicMaterial());hitS.visible=false;hitS.position.y=-.02;sk.add(hitS);
+ const ss=std({color:0xd8dde2,metalness:.9,roughness:.25,envMapIntensity:1}),sin=std({color:0x8a9298,metalness:.85,roughness:.35});
+ box(.38,.012,.05,ss,0,.002,-.165,sk);box(.38,.012,.05,ss,0,.002,.165,sk);box(.05,.012,.3,ss,-.165,.002,0,sk);box(.05,.012,.3,ss,.165,.002,0,sk);
+ box(.28,.13,.006,sin,0,-.06,-.138,sk);box(.28,.13,.006,sin,0,-.06,.138,sk);box(.006,.13,.27,sin,-.138,-.06,0,sk);box(.006,.13,.27,sin,.138,-.06,0,sk);
+ const basin=box(.28,.006,.28,std({color:0x5a6268,metalness:.8,roughness:.4}),0,-.125,0,sk);
+ const drain=cyl(.022,.022,.004,std({color:0x222,metalness:.9,roughness:.3}),0,-.12,0,20,sk);
+ const water=new THREE.Mesh(new THREE.PlaneGeometry(.27,.27),std({color:0x6a8890,roughness:.05,metalness:.2,transparent:true,opacity:.75,envMapIntensity:1.5}));water.rotation.x=-Math.PI/2;water.position.y=-.07;sk.add(water);
+ for(let i=0;i<14;i++){const b=new THREE.Mesh(new THREE.SphereGeometry(rnd(.006,.014),8,6),std({color:0xffffff,transparent:true,opacity:.8,roughness:.2}));b.position.set(rnd(-.11,.11),-.068,rnd(-.11,.11));b.scale.y=.6;sk.add(b)}
+ const fp=[V(0,.0,-.2),V(0,.16,-.2),V(0,.22,-.15),V(0,.2,-.06),V(0,.15,-.04)];const fau=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(fp),30,.009,10,false),M.chrome);sk.add(fau);
+ cyl(.02,.024,.02,M.chrome,0,.01,-.2,16,sk);for(const sd of [-1,1]){const hd=cyl(.006,.006,.05,M.chrome,sd*.045,.035,-.2,8,sk);hd.rotation.z=sd*.6;const kb=new THREE.Mesh(new THREE.SphereGeometry(.01,10,8),std({color:sd<0?0xd04040:0x4080d0,roughness:.3}));kb.position.set(sd*.06,.055,-.2);sk.add(kb)}
+ const sponge=box(.07,.028,.045,std({color:0xf0d040,roughness:1}),.12,.02,.19,sk);box(.07,.008,.045,std({color:0x2a8a3a,roughness:1}),.12,.038,.19,sk);
+ // dish rack (drying)
+ const dr=new THREE.Group();dr.position.set(0,0,-.27);sk.add(dr);const wire=std({color:0xc8ccd0,metalness:.8,roughness:.3});
+ box(.34,.008,.1,wire,0,.004,0,dr);for(let k=0;k<6;k++)box(.004,.05,.1,wire,-.15+k*.06,.03,0,dr);
+ ST.dryRack=dr;ST.dryMeshes=[];
+ const hitS=new THREE.Mesh(new THREE.BoxGeometry(.38,.16,.5),new THREE.MeshBasicMaterial());hitS.visible=false;hitS.position.set(0,-.03,-.08);sk.add(hitS);
  addPick(sk,{kind:'sink'});ST.sink={g:sk,dirtyMeshes:[],sponge};
  // seat zones + money
  for(let i=0;i<7;i++){const z=new THREE.Mesh(new THREE.BoxGeometry(.42,.06,.38),new THREE.MeshBasicMaterial());z.visible=false;z.position.set(SEATX[i],1.15,-.81);scene.add(z);addPick(z,{kind:'seat',i});
@@ -694,7 +725,14 @@ function buildStation(){
 const SEATOBJ=[];
 function makeScoop(full){const g=new THREE.Group();const c=new THREE.Mesh(new THREE.CylinderGeometry(.035,.035,.08,16,1,true,0,Math.PI),std({color:0xc4ccd2,metalness:.85,roughness:.3,side:THREE.DoubleSide}));c.rotation.z=Math.PI/2;g.add(c);const h=cyl(.008,.008,.07,M.darkWood,.075,0,0,8,g);h.rotation.z=Math.PI/2;
  if(full){for(let i=0;i<4;i++){const ic=new THREE.Mesh(new THREE.BoxGeometry(.02,.02,.02),M.ice);ic.position.set(rnd(-.03,.03),-.012,rnd(-.015,.015));g.add(ic)}}return g}
-function makeSpoon(){const g=new THREE.Group();const s=cyl(.003,.003,.3,M.chrome,0,.15,0,8,g);const b=new THREE.Mesh(new THREE.SphereGeometry(.009,12,8),M.chrome);b.scale.set(1,.4,1.6);g.add(b);const t=new THREE.Mesh(new THREE.TorusGeometry(.007,.002,6,12),M.chrome);t.position.y=.3;g.add(t);return g}
+function makeSpoon(){const g=new THREE.Group();const L=.32;
+ const shaft=cyl(.0028,.0028,L,M.chrome,0,L/2+.012,0,10,g);
+ const pts=[];for(let i=0;i<=120;i++){const tt=i/120;pts.push(V(Math.cos(tt*Math.PI*28)*.0032,.03+tt*(L-.06),Math.sin(tt*Math.PI*28)*.0032))}
+ const tw=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),240,.0011,5,false),M.chrome);g.add(tw);
+ const bowl=new THREE.Mesh(new THREE.SphereGeometry(.012,16,10,0,Math.PI*2,0,Math.PI*.55),M.chrome);bowl.scale.set(1,.45,1.7);bowl.rotation.x=Math.PI;bowl.position.set(0,.008,.004);g.add(bowl);
+ const neck=cyl(.0022,.0028,.016,M.chrome,0,.018,0,8,g);
+ const disc=cyl(.011,.011,.003,M.chrome,0,L+.018,0,20,g);const knob=new THREE.Mesh(new THREE.SphereGeometry(.004,8,6),M.chrome);knob.position.y=L+.021;g.add(knob);
+ return g}
 function makeGarnishMesh(k){const c=new THREE.Color(ING[k].color);
  if(k==='g_olive'){const g=new THREE.Group();const p=cyl(.0015,.0015,.11,std({color:0xd8c08a}),0,.0,0,6,g);p.rotation.z=.5;const o=new THREE.Mesh(new THREE.SphereGeometry(.011,12,8),std({color:c,roughness:.4}));o.position.set(.02,-.04,0);g.add(o);return g}
  const m=new THREE.Mesh(new THREE.CylinderGeometry(.022,.022,.005,24),[std({color:c}),std({color:0xfff6c8,emissive:c,emissiveIntensity:.12}),std({color:0xfff6c8})]);m.rotation.x=Math.PI/2;const g=new THREE.Group();g.add(m);return g}
@@ -742,12 +780,14 @@ class Glass{
 }
 function hex(h){h=h.replace('#','');return[parseInt(h.substr(0,2),16),parseInt(h.substr(2,2),16),parseInt(h.substr(4,2),16)]}
 function mixColor(ings){let r=0,g=0,b=0,t=0;for(const k in ings){const v=ings[k];if(v<=0)continue;const c=hex(ING[k].color);r+=c[0]*v;g+=c[1]*v;b+=c[2]*v;t+=v}if(!t)return'#dfe8ee';return`rgb(${r/t|0},${g/t|0},${b/t|0})`}
-function rackRefresh(){for(const t in ST.rack){const R=ST.rack[t],n=G?G.clean[t]:S.glasses[t];if(R.shown===n)continue;R.shown=n;
+let lvlT=0;function bottleLevels(dt){lvlT-=dt;if(lvlT>0)return;lvlT=.5;for(const k in ST.bottles){const b=ST.bottles[k];const lq=b.userData.liq;if(!lq)continue;const I=ING[k];const r=clamp(S.stock[k]/(I.unit*(I.type==='spirit'?1:2)),0,1);const hh=Math.max(.002,b.userData.lh*r);lq.scale.y=hh;lq.position.y=.006+hh/2;lq.visible=r>0}}
+function rackRefresh(){for(const t in ST.rack){const R=ST.rack[t],n=G?G.clean[t]:S.glasses[t];const key=n+'_'+(G&&G.wet&&G.wet[t]||0);if(R.shown===key)continue;R.shown=key;
   R.metas.forEach(m=>R.g.remove(m));R.metas=[];const def=GL[t];
   for(let j=0;j<Math.min(n,1);j++){const m=lathe(def.prof,def.copper?M.copper:M.glass,20);m.renderOrder=3;m.position.set(0,0,-.2);R.g.add(m);R.metas.push(m);if(def.copper){const h=new THREE.Mesh(new THREE.TorusGeometry(.028,.007,8,16,Math.PI),M.copper);h.position.set(.045,.055,0);h.rotation.z=-Math.PI/2;m.add(h)}}
-  const {c,x}=R.tex.userData;x.clearRect(0,0,256,96);x.fillStyle=n>0?'rgba(20,12,7,.85)':'rgba(120,20,20,.9)';x.beginPath();x.roundRect(4,4,248,88,18);x.fill();x.fillStyle=n>0?'#ffd77a':'#fff';x.font='900 36px "Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic UI","Meiryo","Noto Sans JP",sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText(`${def.name} ×${n}`,128,50);R.tex.needsUpdate=true}}
-function sinkRefresh(){const sk=ST.sink;const n=G?Math.min(G.dirty.length,8):0;if(sk.dirtyMeshes.length===n)return;sk.dirtyMeshes.forEach(m=>sk.g.remove(m));sk.dirtyMeshes=[];
- for(let i=0;i<n;i++){const t=G.dirty[i];const m=lathe(GL[t].prof,GL[t].copper?M.copper:M.glass,16);m.renderOrder=3;m.rotation.set(Math.PI/2,0,i*.7);m.position.set(-.09+(i%4)*.06,-.05+Math.floor(i/4)*.03,-.06+Math.floor(i/4)*.09);sk.g.add(m);sk.dirtyMeshes.push(m)}}
+  const {c,x}=R.tex.userData;x.clearRect(0,0,256,96);x.fillStyle=n>0?'rgba(20,12,7,.85)':'rgba(120,20,20,.9)';x.beginPath();x.roundRect(4,4,248,88,18);x.fill();x.fillStyle=n>0?'#ffd77a':'#fff';x.font='900 36px "Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic UI","Meiryo","Noto Sans JP",sans-serif';x.textAlign='center';x.textBaseline='middle';const wt=G&&G.wet&&G.wet[t]||0;x.fillText(`${def.name} ×${n}`,128,wt?40:50);if(wt){x.font='800 22px '+FONTS;x.fillStyle='#9fe8ff';x.fillText(`濡れ${wt}`,128,74)}R.tex.needsUpdate=true}}
+function dryRefresh(){if(!G||!ST.dryRack)return;const n=Math.min(5,Object.values(G.wet||{}).reduce((a,b)=>a+b,0));if(ST.dryMeshes.length===n)return;ST.dryMeshes.forEach(m=>ST.dryRack.remove(m));ST.dryMeshes=[];const ts=[];for(const t in G.wet)for(let i=0;i<G.wet[t];i++)ts.push(t);for(let i=0;i<n;i++){const t=ts[i];const m=lathe(GL[t].prof,GL[t].copper?M.copper:M.glass,16);m.renderOrder=3;m.rotation.x=Math.PI;m.position.set(-.12+i*.06,(GL[t].inner.t||.15)+.01,0);ST.dryRack.add(m);ST.dryMeshes.push(m)}}
+function sinkRefresh(){dryRefresh();const sk=ST.sink;const n=G?Math.min(G.dirty.length,8):0;if(sk.dirtyMeshes.length===n&&!sk.force)return;sk.dirtyMeshes.forEach(m=>sk.g.remove(m));sk.dirtyMeshes=[];
+ for(let i=0;i<n;i++){const t=G.dirty[i];const m=lathe(GL[t].prof,GL[t].copper?M.copper:M.glass,16);m.renderOrder=3;m.rotation.set(Math.PI/2,0,i*.7);m.position.set(-.09+(i%4)*.06,-.1+Math.floor(i/4)*.03,-.06+Math.floor(i/4)*.09);sk.g.add(m);sk.dirtyMeshes.push(m)}}
 
 /* ====================== CUSTOMERS 3D ====================== */
 const SKINS=['#f7d7b8','#eec29b','#dba87c','#b97f55','#8d5a3b'],HAIRS=['#1d1410','#3b2416','#6b4423','#c49a5a','#9a9a9a','#7a2a2a','#2a2a4a'],SHIRTS=['#3a6ea5','#a53a3a','#3a8a5a','#6a4a8a','#d48a2a','#2a2a2a','#e8e0d0','#4a7a8a','#8a3a6a'];
@@ -809,10 +849,10 @@ let H=null; // item in hand
 const P={x:640,y:400,down:false,act:null,dx:0,dy:0};
 const D={ticket:1};
 function newDay(){
- for(const gl of [...GLASSOBJS])gl.dispose();for(const s of SLOTS)s.glass=null;
+ for(const gl of [...GLASSOBJS])gl.dispose();for(const s of SLOTS)s.glass=null;for(const pu of [...PUDDLES])removePuddle(pu);FLAIR=null;
  if(G)for(const c of G.customers){scene.remove(c.m.g);c.bub&&c.bub.remove()}
  G={time:0,dayLen:({easy:300,normal:270,hard:240})[S.diff||'normal']||270,customers:[],seats:[],active:null,clean:{...S.glasses},dirty:[],spawnT:4,phaseShown:0,nid:1,closing:false,paused:false,ended:false,evalT:0,repStart:S.rep,moneyStart:S.money,dishT:0,scrubAcc:0,
-  stats:{served:0,perfect:0,sales:0,tips:0,angry:0,cost:0,waste:0,scoreSum:0},combo:0,regSeen:{},hl:{best:null,fast:null,tricks:{},maxCombo:0,talks:[],xp:0,ranks:[]}};
+  stats:{served:0,perfect:0,sales:0,tips:0,angry:0,cost:0,waste:0,scoreSum:0},combo:0,slides:[],tilt:0,wet:{},cut:{g_lemon:DX().cutStart,g_lime:DX().cutStart,g_orange:DX().cutStart},niceCut:0,beatStreak:0,regSeen:{},hl:{best:null,fast:null,tricks:{},maxCombo:0,talks:[],xp:0,ranks:[]}};
  for(let i=0;i<7;i++)G.seats.push({i,cust:null,glasses:[],money:0});
  if(H)H=null;resetHandVisual();
  const sh=new Glass('shaker');placeGlass(sh,SLOTS.find(s=>s.id==='H'));G.shaker=sh;
@@ -896,11 +936,20 @@ function human(c,t){const P0=pers(c);if(c.en)return t;const f=Math.random()<.35?
 const REGVOICE={sato:{vp:.75,vr:1,vi:1},mika:{vp:1.35,vr:1.1,vi:0},john:{vp:1,vr:1.05,vi:0,en:1},gen:{vp:.55,vr:.88,vi:1},yuta:{vp:1.15,vr:1.12,vi:2},reiko:{vp:1.05,vr:.9,vi:0}};
 function callOut(c){bellCall();const L0=c.reg?['すみません、マスター','注文いいかな？','マスター、いいかい？']:c.en?VL.callT.tourist:(Math.random()<.5&&VL.callT[c.ty])?VL.callT[c.ty]:pers(c).call;const t=pick(L0);setTimeout(()=>speakC(c,human(c,t),true),260)}
 function say(c,t,d=2.2){c.say=t;c.sayT=d;c.dirty=1}
+const REQS={strong:{t:'濃いめ',ok:r=>Object.keys(r.ings).some(k=>ING[k].type==='spirit'&&typeof r.ings[k]==='number'),f:r=>{for(const k in r.ings)if(ING[k].type==='spirit'&&typeof r.ings[k]==='number')r.ings[k]=Math.round(r.ings[k]*1.5)}},
+ light:{t:'薄め',ok:r=>Object.keys(r.ings).some(k=>ING[k].type==='spirit'&&typeof r.ings[k]==='number'),f:r=>{for(const k in r.ings)if(ING[k].type==='spirit'&&typeof r.ings[k]==='number')r.ings[k]=Math.round(r.ings[k]*.6)}},
+ lessFoam:{t:'泡少なめ',ok:r=>r.method==='tap',f:r=>{r.foam=[.04,.16]}},moreFoam:{t:'泡多め',ok:r=>r.method==='tap',f:r=>{r.foam=[.32,.5]}},
+ noIce:{t:'氷なし',ok:r=>r.ice&&r.method!=='shake',f:r=>{r.ice=false}},noGarnish:{t:'飾りなし',ok:r=>!!r.garnish,f:r=>{r.garnish=null}}};
+const DESC={pale:'フルーティで軽めのビール',ipa:'苦みが強くて香りのいいビール',stout:'真っ黒なビール',weizen:'白っぽい小麦のビール、オレンジ添えで',highball:'ウイスキーの炭酸割り、レモン付き',gintonic:'ジンの爽やかな炭酸のやつ、ライム付き',cassis:'甘くてオレンジ色のカクテル',shandy:'ビールをジンジャーで割ったやつ',mule:'銅のマグで出てくるウォッカのやつ',daiquiri:'ラムを振った、すっぱいカクテル',martini:'オリーブが入った辛口のカクテル'};
+function makeEff(c){const base=RECIPES[c.order];c.eff=null;c.req=null;c.vague=false;c.revealed=false;if(G.tutorial)return;const X=DX();
+ if(Math.random()<X.req){const opts=Object.keys(REQS).filter(k=>REQS[k].ok(base));if(opts.length){const k=pick(opts);const e=JSON.parse(JSON.stringify(base));REQS[k].f(e);e.req=REQS[k].t;e.name=base.name;c.eff=e;c.req=k}}
+ if(!c.req&&Math.random()<X.vague&&!c.reg)c.vague=true}
+function orderLabel(c){const r=RC(c);if(c.vague&&!c.revealed)return `「${DESC[c.order]||r.name}」`;return r.name+(r.req?`（${r.req}）`:'')}
 function takeOrder(c){const o=G.forceOrder||chooseOrder(c);G.forceOrder=null;c.orderT=0;
  if(c.reg&&o){const st=S.regs[c.reg]||(S.regs[c.reg]={aff:0,met:0});if(!st.met){st.met=1;talk(c.reg,0)}else if(Math.random()<.5)say(c,pick(['いつものを','やあ、また来たよ','こんばんは']),1.6)}
  if(!o){say(c,'品切れか…帰るよ');leave(c,'sad');S.rep=clamp(S.rep-.05,.5,5);return}
- const r=RECIPES[o];c.order=o;c.status='ordered';c.pat=c.patMax=(40+(r.method==='shake'||r.method==='stir'?14:0)+(Object.keys(r.ings).length>1?8:0))*DF().patOrder*patMul(c);
- if(!activeCust())G.active=c.id;printer();{const nm=r.name.replace(/<[^>]*>/g,'').replace(/&[a-z#0-9]+;/g,'');const ln=c.reg&&Math.random()<.7?VL.orderReg(nm):c.en?VL.orderEn(nm):(Math.random()<.6?pers(c).order(nm):VL.order(nm));const t=pick(ln);say(c,t,2.2);setTimeout(()=>speakC(c,human(c,t),true),350)}floatAt(c.m.g.position.clone().add(V(0,1.95,0)),r.name+' お願い！','#fff',16);c.dirty=1;D.ticket=1;
+ const r=RECIPES[o];c.order=o;makeEff(c);c.status='ordered';c.pat=c.patMax=(40+(r.method==='shake'||r.method==='stir'?14:0)+(Object.keys(r.ings).length>1?8:0))*DF().patOrder*patMul(c);
+ if(!activeCust())G.active=c.id;printer();{let nm=r.name.replace(/<[^>]*>/g,'').replace(/&[a-z#0-9]+;/g,'');if(c.vague)nm=DESC[c.order]||nm;else if(c.req)nm=nm+'を'+REQS[c.req].t;const ln=c.reg&&Math.random()<.7?VL.orderReg(nm):c.en?VL.orderEn(nm):(Math.random()<.6?pers(c).order(nm):VL.order(nm));const t=pick(ln);say(c,t,2.2);setTimeout(()=>speakC(c,human(c,t),true),350)}floatAt(c.m.g.position.clone().add(V(0,1.95,0)),r.name+' お願い！','#fff',16);c.dirty=1;D.ticket=1;
 }
 function activeCust(){return G&&G.customers.find(c=>c.id===G.active&&c.status==='ordered')}
 function orders(){return G.customers.filter(c=>c.status==='ordered').sort((a,b)=>a.id-b.id)}
@@ -918,7 +967,7 @@ function updateCust(c,dt){if(c.m.star){c.m.star.rotation.y+=dt*2;c.m.star.positi
   if(c.t>2.5&&c.reg&&!c.greeted){c.greeted=1;const st=S.regs[c.reg]||{};const ln=[...(VL.reg[c.reg]||['また来たよー']),...((st.aff||0)>=3?VL.regClose:[])];const t=pick(ln);say(c,t,2.4);speakC(c,t,true)}
   if(c.t>3.3){if(c.reg)setTimeout(()=>callOut(c),1600);else callOut(c);c.status='waiting';c.pat=c.patMax=34*DF().patWait*patMul(c);c.t=0;c.dirty=1;g.rotation.y=0}}
  else if(c.status==='relax'){c.relaxT-=dt;g.position.y=Math.sin(c.t*2+c.ph)*.004;if(c.relaxT<=0){callOut(c);c.status='waiting';c.pat=c.patMax=34*DF().patWait*patMul(c);c.mood='neutral';c.dirty=1}}
- else if(c.status==='waiting'||c.status==='ordered'){if(!G.tutorial)c.pat-=dt;if(c.status==='ordered'){c.orderT+=dt;if(c.ty==='drunk'&&!c.changed&&c.orderT>9&&Math.random()<dt*.12){const o2=chooseOrder(c);if(o2&&o2!==c.order){c.changed=1;c.order=o2;c.pat=Math.min(c.patMax,c.pat+20);say(c,`やっぱ${RECIPES[o2].name}にして〜`,3);sfx.pop();floatAt(c.m.g.position.clone().add(V(0,1.95,0)),'注文変更！','#ffb070',18);D.ticket=1}}}g.position.y=Math.sin(c.t*2+c.ph)*.004;
+ else if(c.status==='waiting'||c.status==='ordered'){if(!G.tutorial)c.pat-=dt;if(c.status==='ordered'){c.orderT+=dt;if(c.ty==='drunk'&&!c.changed&&c.orderT>9&&Math.random()<dt*.12){const o2=chooseOrder(c);if(o2&&o2!==c.order){c.changed=1;c.order=o2;makeEff(c);c.pat=Math.min(c.patMax,c.pat+20);say(c,`やっぱ${RECIPES[o2].name}にして〜`,3);sfx.pop();floatAt(c.m.g.position.clone().add(V(0,1.95,0)),'注文変更！','#ffb070',18);D.ticket=1}}}g.position.y=Math.sin(c.t*2+c.ph)*.004;
   if(c.pat<=0){say(c,'もういいよ！',2);G.stats.angry++;G.combo=0;S.rep=clamp(S.rep-.12,.5,5);floatAt(g.position.clone().add(V(0,1.9,0)),'怒って帰った… 評判↓','#ff7a7a',16);sfx.bad();leave(c,'angry')}
   else if(c.pat/c.patMax<.3&&c.mood!=='angry'){c.mood='angry';c.dirty=1}}
  else if(c.status==='drinking'){c.drinkT-=dt;if(!c.say&&!G.tutorial&&Math.random()<dt*(c.pers==='chatty'?.06:.015)){const t=pick(c.reg&&S.regs[c.reg]?[REGS.find(r=>r.id===c.reg).lines[clamp(S.regs[c.reg].aff,0,5)].slice(0,26)+'…',...(pers(c).small||[])]:(pers(c).small||['……']));say(c,t,3.2);if(Math.random()<.3)speakC(c,human(c,t))}g.rotation.z=Math.sin(c.t*1.3+c.ph)*.02;
@@ -935,29 +984,30 @@ function startClosing(){G.closing=true;toast('🌙 閉店時間！ 最後のお�
 
 /* ====================== CONTAINER OPS ====================== */
 function placeGlass(gl,slot){slot.glass=gl;gl.loc={kind:'slot',slot};gl.g.position.copy(slot.pos);gl.g.rotation.set(0,0,0)}
-function freeSlot(gl,pt,maxD=.3){let best=null,bd=maxD;for(const s of SLOTS){if(s.glass)continue;if(s.kind==='home'&&gl.type!=='shaker')continue;if(gl.type==='shaker'&&s.kind==='tap')continue;const d=Math.hypot(s.pos.x-pt.x,s.pos.z-pt.z);if(d<bd){bd=d;best=s}}return best}
+function freeSlot(gl,pt,maxD=.3){let best=null,bd=maxD;for(const s of SLOTS){if(s.glass)continue;if(PUDDLES.length&&puddleNear(s.pos))continue;if(s.kind==='home'&&gl.type!=='shaker')continue;if(gl.type==='shaker'&&s.kind==='tap')continue;const d=Math.hypot(s.pos.x-pt.x,s.pos.z-pt.z);if(d<bd){bd=d;best=s}}return best}
 function slotGlassNear(pt,maxD=.13,exclude){let best=null,bd=maxD;for(const s of SLOTS){if(!s.glass||s.glass===exclude)continue;const d=Math.hypot(s.pos.x-pt.x,s.pos.z-pt.z);if(d<bd){bd=d;best=s.glass}}return best}
 function takeGlass(gl){if(gl.loc&&gl.loc.kind==='slot')gl.loc.slot.glass=null;gl.loc={kind:'hand'};H={kind:'glass',glass:gl};sfx.clink()}
 function addLiquid(gl,k,amt){const c=gl.c;S.stock[k]-=amt;G.stats.cost+=amt*ING[k].price/ING[k].unit;
- const free=gl.cap()-gl.vol();if(free<=0){if(!c.overflow)floatAt(gl.g.position.clone().add(V(0,.2,0)),'こぼれた！','#ff7a7a',18);c.overflow=true;G.stats.waste+=amt;return}
+ const free=gl.cap()-gl.vol();if(free<=0){if(!c.overflow){floatAt(gl.g.position.clone().add(V(0,.2,0)),'こぼれた！','#ff7a7a',18);addPuddle(gl.g.position)}c.overflow=true;G.stats.waste+=amt;return}
  const a=Math.min(amt,free);c.ings[k]=(c.ings[k]||0)+a;if(a<amt){c.overflow=true;floatAt(gl.g.position.clone().add(V(0,.2,0)),'こぼれた！','#ff7a7a',18)}}
 function msgNoStock(k){msg(ING[k].name+'の在庫切れ！ 閉店後に仕入れよう')}
 function dumpGlass(gl){G.stats.waste+=gl.liquid();if(gl.type==='shaker'){gl.c=newCont();placeGlass(gl,SLOTS.find(s=>s.id==='H'))}else{G.dirty.push(gl.type);gl.dispose()}sfx.splash();if(H&&H.glass===gl)H=null}
 function finishGauge(kind,v){
  const gg=DF().gauge;const q=(v>=gg.p[0]&&v<=gg.p[1])?'perfect':(v>=gg.o[0]&&v<=gg.o[1])?'ok':'bad';
- const gl=kind==='shake'?G.shaker:arguments[2];let qq=q;if(kind==='shake'&&!gl.c.ice&&q==='perfect')qq='ok';
+ const gl=kind==='shake'?G.shaker:arguments[2];let qq=q;
+ if(kind==='shake'&&DX().cap&&v>gg.o[1]+.12){for(const k in gl.c.ings)gl.c.ings[k]*=.55;gl.c.water=0;addPuddle(gl.g.position);crash(gl.g.position.clone().add(V(0,.2,0)));msg('振りすぎてシェイカーのふたが飛んだ！ 中身が半分こぼれた…');}if(kind==='shake'&&!gl.c.ice&&q==='perfect')qq='ok';
  gl.c[kind==='shake'?'shaken':'stirred']=qq;
  if(gl.c.ice&&!gl.c.water)gl.c.water=gl.liquid()*(kind==='shake'?.2:(gl.type==='shaker'?.15:.04));
  const lab={perfect:'パーフェクト！',ok:'OK',bad:v<.5?'足りない…':'やりすぎ…'}[qq];
  floatAt(gl.g.position.clone().add(V(0,.25,0)),lab+(kind==='shake'&&!gl.c.ice?'（氷なし）':''),qq==='perfect'?'#7cff9a':qq==='ok'?'#ffd77a':'#ff7a7a',22);
- qq==='perfect'?sfx.good():qq==='ok'?sfx.ok():sfx.bad();D.ticket=1;
+ qq==='perfect'?sfx.good():qq==='ok'?sfx.ok():sfx.bad();onBeat();D.ticket=1;
 }
 function collect(seat){if(!seat.glasses.length&&!seat.money)return;
  const p=V(SEATX[seat.i],1.25,-.8);
  if(seat.money){S.money+=seat.money;floatAt(p,'+'+yen(seat.money),'#ffd34a',22);sfx.coin();seat.money=0}
  if(seat.glasses.length){for(const gl of seat.glasses){G.dirty.push(gl.type);gl.dispose()}seat.glasses=[];sfx.clink()}
  layoutSeat(seat)}
-function washOne(){if(!G.dirty.length)return;const t=G.dirty.shift();G.clean[t]++;sfx.clink()}
+function washOne(){if(!G.dirty.length)return;const t=G.dirty.shift();G.clean[t]++;if(DF().name!=='かんたん')G.wet[t]=(G.wet[t]||0)+1;sfx.clink()}
 
 /* ====================== EVALUATION ====================== */
 function tol(){return DF().tol+(S.up.jigger?.07:0)+(S.flags&&S.flags.gen?.05:0)}
@@ -966,7 +1016,7 @@ function fillBand(r){const lo=DF().fillLo;return r.method==='tap'?[Math.min(.88,
 const FOAM=[.18,.35];
 function foamR(gl){const l=gl.liquid()+gl.c.foam;return l>0?gl.c.foam/l:0}
 function evaluate(gl,rid){
- const r=RECIPES[rid],c=gl.c;let s=100;const n=[];
+ const r=RR(rid),c=gl.c;const fb=r.foam||FOAM;let s=100;const n=[];
  if(gl.type!==r.glass){s-=35;n.push('グラスが違う')}
  if(!!c.ice!==r.ice){s-=12;n.push(r.ice?'氷が入っていない':'氷は不要')}
  const fills=Object.keys(r.ings).filter(k=>r.ings[k]==='fill');
@@ -976,19 +1026,20 @@ function evaluate(gl,rid){
  if(fills.length){const f=gl.fill(),[lo]=fillBand(r);if(c.overflow){s-=10;n.push('こぼした')}
   if(f<lo){s-=Math.min(30,Math.round((lo-f)*110));n.push(`量が少ない（${Math.round(f*100)}%）`)}
   if(fills.length>1){const tot=fills.reduce((a,k)=>a+(c.ings[k]||0),0);if(tot>0)for(const k of fills){if(Math.abs((c.ings[k]||0)/tot-1/fills.length)>.15){s-=12;n.push('割合が偏っている（半々に）');break}}}}
- if(r.method==='tap'){const fr=foamR(gl);if(fr<FOAM[0]){s-=Math.min(22,Math.round((FOAM[0]-fr)*120)+4);n.push(`泡が少ない（${Math.round(fr*100)}%・理想は2〜3割）`)}else if(fr>FOAM[1]){s-=Math.min(25,Math.round((fr-FOAM[1])*100)+4);n.push(`泡が多すぎ（${Math.round(fr*100)}%）`)}}
+ if(r.method==='tap'){const fr=foamR(gl);if(fr<fb[0]){s-=Math.min(22,Math.round((fb[0]-fr)*120)+4);n.push(`泡が少ない（${Math.round(fr*100)}%・理想は2〜3割）`)}else if(fr>fb[1]){s-=Math.min(25,Math.round((fr-fb[1])*100)+4);n.push(`泡が多すぎ（${Math.round(fr*100)}%）`)}}
  if(r.method==='shake'){if(!c.shaken){s-=30;n.push('シェイクしていない')}else if(c.shaken==='ok')s-=6;else if(c.shaken==='bad'){s-=16;n.push('シェイクの加減がイマイチ')}}
  else if(c.shaken){s-=10;n.push('シェイクは不要')}
  if(r.method==='stir'){if(!c.stirred){s-=12;n.push('ステアしていない')}else if(c.stirred==='ok')s-=3;else if(c.stirred==='bad'){s-=9;n.push('ステアの加減がイマイチ')}}
  if(r.garnish){if(!c.garnish){s-=10;n.push(ING[r.garnish].name+'を飾り忘れ')}else if(c.garnish!==r.garnish){s-=6;n.push('ガーニッシュが違う')}}else if(c.garnish)s-=3;
  return{score:clamp(s,0,100),notes:n}}
 function serve(c,gl){
- const r=RECIPES[c.order];const ev=evaluate(gl,c.order);const pr=c.pat/c.patMax;
+ const r=RC(c);const ev=evaluate(gl,r);if(gl.wet&&DX().wetPen){ev.score=Math.max(0,ev.score-DX().wetPen);ev.notes.push('グラスが濡れている（拭こう）')}const pr=c.pat/c.patMax;
  const ct=CT[c.ty]||CT.office;const tricks=[...(gl.c.tricks||[])];if(c.orderT<=20&&ev.score>=70)tricks.push('神速サーブ');
+ onBeat();if((G.beatStreak||0)>=4&&isPeak()){tricks.push('リズム職人');G.beatStreak=0}
  if(ev.score>=90){G.combo=(G.combo||0)+1}else G.combo=0;G.hl.maxCombo=Math.max(G.hl.maxCombo,G.combo||0);
  let price=r.price,tip=0;if(ev.score>=90)tip=price*.3*(.5+pr);else if(ev.score>=70)tip=price*.12*(.5+pr);if(S.up.tipjar)tip*=1.4;
  tip*=ct.tip*(1+.2*tricks.length)*(1+Math.min(.5,.05*Math.max(0,(G.combo||0)-1)))*(rankIdx()>=4?1.2:rankIdx()>=2?1.1:1);if(tricks.length&&ev.score>=50&&tip<100)tip+=100*tricks.length;
- tip=Math.round(tip/10)*10;if(ev.score<40)price=Math.round(price*.5/10)*10;
+ if(c.tipCut)tip*=c.tipCut;if(gl.shiny)tip*=1.08;tip=Math.round(tip/10)*10;if(ev.score<40)price=Math.round(price*.5/10)*10;
  for(const t of tricks){G.hl.tricks[t]=(G.hl.tricks[t]||0)+1}
  if(!G.hl.best||ev.score>=G.hl.best.score)G.hl.best={score:ev.score,name:r.name,who:custLabel(c)};if(ev.score>=70&&(!G.hl.fast||c.orderT<G.hl.fast.t))G.hl.fast={t:c.orderT,name:r.name};
  const xp=Math.round(ev.score/10)+(ev.score>=90?5:0)+tricks.length*8+(G.combo>=3?3:0);addXP(xp);
@@ -1008,13 +1059,15 @@ function showEval(){const e=G.lastEval,p=$('#evalPop');const st=e.score>=90?'★
  p.innerHTML=`<div style="font-size:13px;font-weight:800">${e.name}</div><div class="sc" style="color:${col}">${st} ${e.score}点</div>${e.tricks&&e.tricks.length?`<div style="color:#ff9ae0;font-weight:900">✨ ${e.tricks.join(' ・ ')}</div>`:''}${e.combo>=2?`<div style="color:#ffe14a;font-weight:900">COMBO ×${e.combo}</div>`:''}${e.tip?`<div style="color:#ffd34a;font-weight:800">チップ ${yen(e.tip)}</div>`:''}<div class="nt">${e.notes.length?e.notes.slice(0,3).join('<br>'):'完璧な一杯！'}</div>`;p.style.display='block'}
 
 /* ====================== STEPS / HINT ====================== */
-function workGlass(rid){const r=RECIPES[rid];
+function RC(c){return (c&&c.eff)||RECIPES[c.order]}
+function RR(r){return typeof r==='object'?r:RECIPES[r]}
+function workGlass(rid){const r=RR(rid);
  if(H&&H.kind==='glass'&&H.glass.type!=='shaker')return H.glass;
  const gs=SLOTS.filter(s=>s.glass&&s.glass.type!=='shaker').map(s=>s.glass);
  return gs.find(g=>g.type===r.glass&&g.hasIngs())||gs.find(g=>g.hasIngs())||gs.find(g=>g.type===r.glass)||gs[0]||null}
 function tapIndex(k){return TAPS.indexOf(k)}
 function steps(rid){
- const r=RECIPES[rid],st=[],gn=GL[r.glass].full,gnS=GL[r.glass].name;const w=workGlass(rid);const sh=G.shaker;
+ const r=RR(rid),st=[],gn=GL[r.glass].full,gnS=GL[r.glass].name;const w=workGlass(rid);const sh=G.shaker;
  const fills=Object.keys(r.ings).filter(k=>r.ings[k]==='fill');
  const inHand=(kind,k)=>H&&H.kind===kind&&(k===undefined||H.k===k);
  if(r.method==='shake'){
@@ -1031,7 +1084,7 @@ function steps(rid){
   if(r.ice)st.push({t:'氷を入れる',d:!!(w&&w.c.ice),h:inHand('scoop')?'グラスの上でクリックして氷を入れる':'氷入れをクリックしてすくう',hl:inHand('scoop')?'glass':'ice'});
   for(const k in r.ings)if(r.ings[k]!=='fill'){const t=r.ings[k],a=w?(w.c.ings[k]||0):0;st.push({t:`${ING[k].name} ${t}ml`,d:amtOk(a,t),amt:`${Math.round(a)}ml`,h:inHand('bottle',k)?(DF().assist?`グラスの上で長押し（${t}mlで自動ストップ）`:`グラスの上で長押し（下ドラッグで傾き↑）→ ${t}mlで離す`):`「${ING[k].short}」のボトルをクリックして持つ`,hl:inHand('bottle',k)?'glass':'bottle:'+k})}
   if(fills.length){const f=w?w.fill():0,[lo]=fillBand(r);const ok=w&&f>=lo&&!w.c.overflow;
-   if(tapR){const k=fills[0],fr=w?foamR(w):0;st.push({t:`タップを引いて注ぐ（泡2〜3割）`,d:ok&&fr>=FOAM[0]&&fr<=FOAM[1],amt:w?`${Math.round(f*100)}% 泡${Math.round(fr*100)}%`:'',h:H&&H.kind==='glass'?`グラスを持ったまま「${ING[k].short}」タップのハンドルを押して、手前（下）へドラッグ！${DF().assist?'（ちょうどで自動ストップ）':'水色の線の間で離す'}`:`「${ING[k].short}」タップのハンドルを押したまま手前（下）へドラッグ。${DF().assist?'ちょうどで自動ストップ':'水色の線の間で離す'}`,hl:'tap:'+k})}
+   if(tapR){const k=fills[0],fr=w?foamR(w):0;st.push({t:`タップを引いて注ぐ（泡${Math.round((r.foam||FOAM)[0]*100)}〜${Math.round((r.foam||FOAM)[1]*100)}%）`,d:ok&&fr>=(r.foam||FOAM)[0]&&fr<=(r.foam||FOAM)[1],amt:w?`${Math.round(f*100)}% 泡${Math.round(fr*100)}%`:'',h:H&&H.kind==='glass'?`グラスを持ったまま「${ING[k].short}」タップのハンドルを押して、手前（下）へドラッグ！${DF().assist?'（ちょうどで自動ストップ）':'水色の線の間で離す'}`:`「${ING[k].short}」タップのハンドルを押したまま手前（下）へドラッグ。${DF().assist?'ちょうどで自動ストップ':'水色の線の間で離す'}`,hl:'tap:'+k})}
    else{let cur=fills[0];if(fills.length>1&&w&&(w.c.ings[fills[0]]||0)>GL[r.glass].cap*.3)cur=fills[1];const I=ING[cur];
     const how=I.type==='tap'?`グラスを持ったまま「${I.short}」タップのハンドルを手前に引いて半分まで`:(inHand('bottle',cur)?`グラスの上で長押し → 水色の線の間で離す`:`「${I.short}」のボトルをクリックして持つ`);
     st.push({t:fills.length>1?`${fills.map(k=>ING[k].short).join('と')}を半々で線まで`:`${I.name}を線まで注ぐ`,d:ok,amt:w?Math.round(f*100)+'%':'',h:how,hl:I.type==='tap'?'tap:'+cur:(inHand('bottle',cur)?'glass':'bottle:'+cur)})}}
@@ -1044,9 +1097,10 @@ function nextHint(){
  if(!G||S.phase!=='service')return{t:''};
  if(G.closing)return{t:'閉店時間です。お客さんを見送りましょう'};
  const a=activeCust();
- if(a){const r=RECIPES[a.order];
-  const w=workGlass(a.order);if(w&&w.hasIngs()){if(r.method!=='shake'&&w.type!==r.glass)return{t:'グラスが違います。グラスを持ってシンクをクリックで捨てよう',hl:'sink'};for(const k in w.c.ings)if(!(k in r.ings)&&w.c.ings[k]>2)return{t:`${ING[k].name}は使いません。グラスを持ってシンクで捨てて作り直そう`,hl:'sink'}}
-  const s=steps(a.order).find(x=>!x.d);return s?{t:s.h,hl:s.hl}:{t:''}}
+ if(a&&a.vague&&!a.revealed)return{t:'お客さんの説明から、何のお酒か考えよう（📖レシピ帳／伝票の🔍で答え）'};
+ if(a){const r=RC(a);
+  const w=workGlass(RC(a));if(w&&w.hasIngs()){if(r.method!=='shake'&&w.type!==r.glass)return{t:'グラスが違います。グラスを持ってシンクをクリックで捨てよう',hl:'sink'};for(const k in w.c.ings)if(!(k in r.ings)&&w.c.ings[k]>2)return{t:`${ING[k].name}は使いません。グラスを持ってシンクで捨てて作り直そう`,hl:'sink'}}
+  const s=steps(RC(a)).find(x=>!x.d);return s?{t:s.h,hl:s.hl}:{t:''}}
  if(G.customers.some(c=>c.status==='waiting'))return{t:'「🙋注文！」のお客さんをクリックして注文を聞こう',hl:'callers'};
  if(G.seats.some(s=>s.money||(!s.cust&&s.glasses.length)))return{t:'カウンターのお会計・空きグラスをクリックして片付けよう（片付けないと次のお客さんが座れない）',hl:'tables'};
  if(G.dirty.length>=3&&!S.up.dish)return{t:'シンクを押したままマウスを左右にこすってグラスを洗おう',hl:'sink'};
@@ -1069,7 +1123,7 @@ function anchors(){const L=[];
  for(const sl of SLOTS)if(sl.glass&&!(H&&H.kind==='glass'&&H.glass===sl.glass))L.push({act:{kind:'glass',glass:sl.glass},p:sl.glass.g.position.clone().add(V(0,sl.glass.def.inner.t*.55,0)),r:32});
  return L}
 function sameAct(x,y){return x.kind===y.kind&&x.k===y.k&&x.t===y.t&&x.i===y.i&&x.glass===y.glass}
-function pickAnchor(){let best=null,bd=1e9,all=[];const sc=touchMode?1.5:1;for(const a of anchors()){const q=toScreen(a.p);if(!q.vis)continue;const d=Math.hypot(q.x-P.x,q.y-P.y);a.nd=d/(a.r*sc);all.push(a);if(a.nd<1&&a.nd<bd){bd=a.nd;best=a}}if(best)best.all=all;return best}
+function pickAnchor(){let best=null,bd=1e9,all=[];const sc=touchMode?1.7:1.3;for(const a of anchors()){const q=toScreen(a.p);if(!q.vis)continue;const d=Math.hypot(q.x-P.x,q.y-P.y);a.nd=d/(a.r*sc);all.push(a);if(a.nd<1&&a.nd<bd){bd=a.nd;best=a}}if(best)best.all=all;return best}
 function pickAt(){const ra=pickRay();const an=pickAnchor();
  if(!an)return ra;const A0={act:an.act,point:an.p};
  if(!ra)return A0;const k=ra.act.kind;
@@ -1091,6 +1145,7 @@ function computeHand(){setRay();const o=ray.ray.origin,d=ray.ray.direction;const
  const m=camera.matrixWorld.elements;const fw=V(-m[8],-m[9],-m[10]),rt=V(m[0],m[1],m[2]),up=V(m[4],m[5],m[6]);handPt.copy(camera.position).addScaledVector(fw,.5).addScaledVector(rt,.2).addScaledVector(up,-.2);handFloat=true}
 function stagePos(e){const r=cv.getBoundingClientRect();return[(e.clientX-r.left)/r.width*1280,(e.clientY-r.top)/r.height*720]}
 cv.addEventListener('contextmenu',e=>e.preventDefault());
+cv.addEventListener('wheel',e=>{if(!G||S.phase!=='service')return;e.preventDefault();if(!DX().autoTilt){G.tilt=clamp((G.tilt||0)+(e.deltaY>0?.12:-.12),0,1);floatAt(V(1.04,1.3,-.42),`グラスの傾き ${Math.round(G.tilt*100)}%`,'#bff6f2',13)}},{passive:false});
 cv.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'&&touchMode&&!IS_TOUCH){touchMode=false;document.body.classList.remove('touch')}const [x,y]=stagePos(e);P.dx=x-P.x;P.dy=y-P.y;P.x=x;P.y=y;onDrag(Math.hypot(P.dx,P.dy))});
 cv.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'&&!touchMode){touchMode=true;document.body.classList.add('touch')}const [x,y]=stagePos(e);P.x=x;P.y=y;if(!G||S.phase!=='service'||G.paused)return;ac();
  try{cv.setPointerCapture(e.pointerId)}catch(_){}
@@ -1107,12 +1162,14 @@ function returnHand(){if(!H)return;
   const s=freeSlot(gl,handPt,9);if(s){placeGlass(gl,s);H=null;sfx.clink()}else msg('置ける場所がありません');return}
  H=null;sfx.pop()}
 const TOOLK=['bottle','ice','garnish','spoon'];
-function autoServe(c){if(!c||c.status!=='ordered')return false;const w=workGlass(c.order);if(!w||!w.hasIngs()||w.type==='shaker')return false;const st=steps(c.order);if(st.slice(0,-1).some(s=>!s.d))return false;if(w.loc.kind==='slot')w.loc.slot.glass=null;serve(c,w);return true}
+function autoServe(c){if(!c||c.status!=='ordered')return false;const w=workGlass(RC(c));if(!w||!w.hasIngs()||w.type==='shaker')return false;const st=steps(RC(c));if(st.slice(0,-1).some(s=>!s.d))return false;if(w.loc.kind==='slot')w.loc.slot.glass=null;serve(c,w);return true}
 function onDown(depth=0){
+ if(FLAIR){catchFlair();return}
+ {const pu=hoverPuddle();if(pu&&!H){P.act={kind:'wipe',pu,acc:0};return}}
  const hit=pickAt();const a=hit&&hit.act;computeHand();if(depth>2)return;
- if(a&&a.kind==='tap'){if(!ingUnlocked(a.k)){msg('メニュー解禁で使えるようになります');return}
+ if(a&&a.kind==='tap'){if(!ingUnlocked(a.k)){msg('メニュー解禁で使えるようになります');return}onBeat();
   if(H&&H.kind==='glass'&&H.glass.type!=='shaker'){const s=SLOTS.find(x=>x.id==='T'+a.i);if(!s.glass){placeGlass(H.glass,s);H=null;sfx.clink()}}
-  P.act={kind:'tap',i:a.i,y0:P.y};return}
+  P.act={kind:'tap',i:a.i,y0:P.y,x0:P.x,tilt0:G.tilt||0};return}
  if(H&&H.kind!=='glass'){const tg0=handFloat?null:slotGlassNear(handPt,.15);const usable=tg0&&!(H.kind==='garnish'&&tg0.type==='shaker');
   const same=a&&((H.kind==='bottle'&&a.kind==='bottle'&&a.k===H.k)||(H.kind==='scoop'&&a.kind==='ice')||(H.kind==='spoon'&&a.kind==='spoon')||(H.kind==='garnish'&&a.kind==='garnish'&&a.k===H.k));
   if(!usable&&a&&!same&&['bottle','ice','garnish','spoon','rack','glass','slot','cust','seat','sink'].includes(a.kind)){H=null;onDown(depth+1);return}}
@@ -1122,14 +1179,14 @@ function onDown(depth=0){
   switch(a.kind){
    case 'cust':if(!autoServe(a.c))clickCust(a.c);break;
    case 'seat':{const s=G.seats[a.i];if(s.glasses.length||s.money)collect(s);else if(s.cust&&!autoServe(s.cust))clickCust(s.cust);break}
-   case 'rack':if(G.clean[a.t]<=0){msg(GL[a.t].name+'の清潔なグラスがありません。シンクで洗おう！');break}G.clean[a.t]--;{const gl=new Glass(a.t);gl.loc={kind:'hand'};H={kind:'glass',glass:gl};sfx.clink()}break;
+   case 'rack':if(G.clean[a.t]<=0){msg(GL[a.t].name+'の清潔なグラスがありません。シンクで洗おう！');break}{const gl=takeRackGlass(a.t);gl.loc={kind:'hand'};H={kind:'glass',glass:gl};sfx.clink();if(gl.wet&&DF().name!=='かんたん')floatAt(gl.g.position.clone().add(V(0,.2,0)),'濡れたグラス（シンクで拭ける）','#9fe8ff',13)}break;
    case 'glass':if(a.glass.loc.kind==='slot')takeGlass(a.glass);else if(a.glass.loc.kind==='bar')collect(G.seats[a.glass.loc.seat]);break;
    case 'slot':if(a.slot.glass)takeGlass(a.slot.glass);break;
    case 'bottle':if(!ingUnlocked(a.k)){msg('メニュー解禁で使えるようになります');break}if(S.stock[a.k]<=0){msgNoStock(a.k);break}H={kind:'bottle',k:a.k};sfx.clink();break;
    case 'ice':H={kind:'scoop'};sfx.ice();break;
-   case 'garnish':if(!ingUnlocked(a.k)){msg('メニュー解禁で使えるようになります');break}if(S.stock[a.k]<1){msgNoStock(a.k);break}H={kind:'garnish',k:a.k};sfx.pop();break;
+   case 'garnish':if(!ingUnlocked(a.k)){msg('メニュー解禁で使えるようになります');break}if(citrus(a.k)&&!DF().assist){if((G.cut[a.k]||0)<1){openCut(a.k);break}H={kind:'garnish',k:a.k};sfx.pop();break}if(S.stock[a.k]<1){msgNoStock(a.k);break}H={kind:'garnish',k:a.k};sfx.pop();break;
    case 'spoon':H={kind:'spoon'};sfx.clink();break;
-   case 'sink':if(!G.dirty.length){msg('洗うグラスがありません');break}P.act={kind:'scrub'};break;
+   case 'sink':if(!G.dirty.length&&!Object.values(G.wet).some(v=>v>0)){msg('洗うグラスも拭くグラスもありません');break}P.act={kind:'scrub',turn:0,turnAbs:0,pol:0};break;
   }
   return}
  if(H.kind==='glass'){const gl=H.glass;
@@ -1138,14 +1195,15 @@ function onDown(depth=0){
   if(a&&a.kind==='sink'){if(gl.empty()&&gl.type!=='shaker'){G.clean[gl.type]++;gl.dispose();H=null;sfx.clink();return}dumpGlass(gl);floatAt(V(1.52,1.05,-.27),'捨てた','#ccc',15);return}
   if(a&&a.kind==='rack'&&gl.empty()&&gl.type===a.t){G.clean[gl.type]++;gl.dispose();H=null;sfx.clink();return}
   if(gl.type==='shaker'){const tg=slotGlassNear(handPt,.14);if(tg&&gl.hasIngs()&&!handFloat){P.act={kind:'strain',glass:tg,y0:P.y,tilt:.4};return}P.act={kind:'pendShake',hit:a,energy:0};return}
-  if(a&&(a.kind==='surface'||a.kind==='slot'||a.kind==='drip'||a.kind==='glass'||a.kind==='rack'||a.kind==='bottle'||a.kind==='block')||!handFloat){const s=freeSlot(gl,handPt,.3);if(s){placeGlass(gl,s);H=null;sfx.clink()}else msg('置ける場所がありません（マット・タップの受け皿）');return}
+  if(gl.hasIngs()&&gl.type!=='shaker'){P.act={kind:'pendSlide',hit:a,hist:[{t:performance.now(),x:P.x,y:P.y}]};return}
+  if(a&&(a.kind==='surface'||a.kind==='slot'||a.kind==='drip'||a.kind==='glass'||a.kind==='rack'||a.kind==='bottle'||a.kind==='block')||!handFloat){placeHeldGlass(a);return}
   return}
  const tg=handFloat?null:slotGlassNear(handPt,.15);
- if(H.kind==='bottle'){if(tg){if(S.stock[H.k]<=0){msgNoStock(H.k);return}P.act={kind:'pour',glass:tg,k:H.k,y0:P.y,tilt:.35,tv:0,start:tg.c.ings[H.k]||0,t0:performance.now()};return}
-  if(a&&a.kind==='bottle'&&a.k!==H.k){if(!ingUnlocked(a.k))return;H={kind:'bottle',k:a.k};sfx.clink();return}H=null;sfx.pop();return}
+ if(H.kind==='bottle'){if(tg){if(S.stock[H.k]<=0){msgNoStock(H.k);return}onBeat();if(G.flairReady){G.flairReady=false;addTrick(tg,'フレア')}P.act={kind:'pour',glass:tg,k:H.k,y0:P.y,tilt:.35,tv:0,start:tg.c.ings[H.k]||0,t0:performance.now()};return}
+  if(a&&a.kind==='bottle'&&a.k!==H.k){if(!ingUnlocked(a.k))return;H={kind:'bottle',k:a.k};sfx.clink();return}P.act={kind:'pendBottle',turn:0,la:undefined};return}
  if(H.kind==='spoon'){if(tg){P.act={kind:'stir',glass:tg,acc:0,last:null,t0:performance.now()};return}H=null;return}
  if(H.kind==='scoop'){if(tg){if(tg.c.ice){msg('氷はもう入っています');return}if(tg.fill()>.62){msg('液体が多すぎて氷が入りません');return}tg.c.ice=true;sfx.ice();floatAt(tg.g.position.clone().add(V(0,.25,0)),'🧊 氷IN！','#bfefff',18);for(let k=0;k<8;k++)emit(tg.g.position.clone().add(V(0,tg.def.inner.t*.8,0)),'#e8f8ff',1,.3);H=null;return}if(a&&a.kind==='ice')return;H=null;return}
- if(H.kind==='garnish'){if(tg&&tg.type!=='shaker'){if(tg.c.garnish===H.k)return;S.stock[H.k]--;G.stats.cost+=ING[H.k].price/ING[H.k].unit;tg.c.garnish=H.k;sfx.pop();H=null;return}H=null;return}
+ if(H.kind==='garnish'){if(tg&&tg.type!=='shaker'){if(tg.c.garnish===H.k)return;if(citrus(H.k)&&!DF().assist){G.cut[H.k]--;if(G.niceCut>0){G.niceCut--;addTrick(tg,'きれいなカット')}}else{S.stock[H.k]--;G.stats.cost+=ING[H.k].price/ING[H.k].unit}tg.c.garnish=H.k;sfx.pop();onBeat();H=null;return}H=null;return}
 }
 function handGlassToCust(c,gl){
  if(c.status==='waiting'){takeOrder(c);return}
@@ -1154,30 +1212,86 @@ function handGlassToCust(c,gl){
  if(!gl.hasIngs()){msg('空のグラスです');return}
  serve(c,gl)}
 function custTap(c){if(!G||S.phase!=='service'||G.paused||c.status==='leave')return;ac();if(H&&H.kind==='glass'){handGlassToCust(c,H.glass);return}if(!autoServe(c))clickCust(c)}
-function clickCust(c){if(c.status==='waiting')takeOrder(c);else if(c.status==='ordered'){const w=workGlass(c.order);if(w&&w.hasIngs()&&w.type!=='shaker'&&G.active===c.id){if(G.pendServe===c.id&&performance.now()-G.pendT<3500){if(w.loc.kind==='slot')w.loc.slot.glass=null;G.pendServe=null;serve(c,w);return}G.pendServe=c.id;G.pendT=performance.now();msg('まだ完成していません：'+(nextHint().t||'')+'（もう一度クリックでこのまま提供）');return}G.active=c.id;D.ticket=1;for(const x of G.customers)x.dirty=1;sfx.pop()}else if(c.status==='drinking')say(c,pick(['うまい！','いい店だね','♪','最高の夜だ']),1.6)}
+function clickCust(c){if(c.status==='waiting')takeOrder(c);else if(c.status==='ordered'){const w=workGlass(RC(c));if(w&&w.hasIngs()&&w.type!=='shaker'&&G.active===c.id){if(G.pendServe===c.id&&performance.now()-G.pendT<3500){if(w.loc.kind==='slot')w.loc.slot.glass=null;G.pendServe=null;serve(c,w);return}G.pendServe=c.id;G.pendT=performance.now();msg('まだ完成していません：'+(nextHint().t||'')+'（もう一度クリックでこのまま提供）');return}G.active=c.id;D.ticket=1;for(const x of G.customers)x.dirty=1;sfx.pop()}else if(c.status==='drinking')say(c,pick(['うまい！','いい店だね','♪','最高の夜だ']),1.6)}
+function turnAcc(A,dist){if(dist>3){const ang=Math.atan2(P.dy,P.dx);if(A.la!==undefined){let d=ang-A.la;if(d>Math.PI)d-=2*Math.PI;if(d<-Math.PI)d+=2*Math.PI;if(Math.abs(d)<1.3){A.turn=(A.turn||0)+d;A.turnAbs=(A.turnAbs||0)+Math.abs(d)}}A.la=ang}}
 function onDrag(dist){if(!P.down||!P.act)return;P.moved+=dist;const A=P.act;
+ if(A.kind==='pendBottle'){turnAcc(A,dist);if(Math.abs(A.turn)>Math.PI*2.2&&P.moved>140){P.act=null;startFlair()}return}
+ if(A.kind==='pendSlide'){const now=performance.now();A.hist.push({t:now,x:P.x,y:P.y});while(A.hist.length>2&&now-A.hist[0].t>140)A.hist.shift();return}
+ if(A.kind==='wipe'){A.acc+=dist;if(Math.random()<dist/50)sfx.scrub();if(A.acc>520){removePuddle(A.pu);P.act=null;floatAt(A.pu.pos.clone().add(V(0,.08,0)),'ふきふき✨','#9fe8ff',16)}return}
+ if(A.kind==='tap'){A.tiltDx=(A.x0-P.x)}
  if(A.kind==='tap'){}
  else if(A.kind==='pendShake'){A.energy+=dist;if(P.moved>16){P.act={kind:'shake',energy:A.energy,v:0};showGauge('シェイク！ ブンブン振って、緑で離す')}}
  else if(A.kind==='shake'){A.energy+=dist;A.v=A.energy/5200;if(dist>4){const ang=Math.atan2(P.dy,P.dx);if(A.la!==undefined){let d=ang-A.la;if(d>Math.PI)d-=2*Math.PI;if(d<-Math.PI)d+=2*Math.PI;if(Math.abs(d)<1.2)A.turn=(A.turn||0)+d}A.la=ang;if(Math.abs(A.turn||0)>Math.PI*4&&!A.rolled&&rankIdx()>=2){A.rolled=1;addTrick(G.shaker,'ローリングシェイク')}}if(Math.random()<dist/60)sfx.shake();if(DF().assist&&A.v>=.8&&G.shaker.hasIngs()){P.act=null;$('#gaugeBox').style.display='none';finishGauge('shake',.8)}}
  else if(A.kind==='stir'){const c=toScreen(A.glass.g.position.clone().add(V(0,.1,0)));const ang=Math.atan2(P.y-c.y,P.x-c.x);const r=Math.hypot(P.y-c.y,P.x-c.x);
   if(r>12&&A.last!==null){let d=ang-A.last;if(d>Math.PI)d-=2*Math.PI;if(d<-Math.PI)d+=2*Math.PI;A.acc+=Math.abs(d);A.spin=(A.spin||0)+d;if(Math.random()<Math.abs(d))sfx.stir()}
   A.last=r>12?ang:A.last;A.v=A.acc/(Math.PI*2*6);if(A.v>0&&$('#gaugeBox').style.display!=='block')showGauge('ステア！ ぐるぐる回して、緑で離す');if(DF().assist&&A.v>=.8){P.act=null;$('#gaugeBox').style.display='none';if(A.glass.hasIngs())finishGauge('stir',.8,A.glass)}}
- else if(A.kind==='scrub'){G.scrubAcc+=dist;if(Math.random()<dist/50)sfx.scrub();if(G.scrubAcc>700){G.scrubAcc=0;washOne();floatAt(V(1.52,1.05,-.27),'ピカピカ！','#9fe8ff',15)}}
+ else if(A.kind==='scrub'){turnAcc(A,dist);const circ=A.turnAbs>Math.PI*1.5&&Math.abs(A.turn)>Math.PI;if(Math.random()<dist/50)sfx.scrub();
+  if(circ&&Object.values(G.wet).some(v=>v>0)){A.pol+=dist;if(A.pol>600){A.pol=0;polishOne();floatAt(V(1.52,1.05,-.45),'キュッキュッ✨ 拭けた','#ffe9a8',15);tone(2400,.08,'sine',.04)}}
+  else if(G.dirty.length){G.scrubAcc+=dist;if(G.scrubAcc>700){G.scrubAcc=0;washOne();floatAt(V(1.52,1.05,-.27),'洗えた！'+(DF().name!=='かんたん'?'（濡れ→ぐるぐるで拭く）':''),'#9fe8ff',15)}}}
 }
 function onUp(){const A=P.act;P.act=null;$('#gaugeBox').style.display='none';loopSet('pour',false);if(!A)return;
+ if(A.kind==='pendBottle'){if(P.moved<12){H=null;sfx.pop()}return}
+ if(A.kind==='pendSlide'){const h=A.hist;let v=0;if(h.length>=2){const a0=h[0],a1=h[h.length-1];const dt=(a1.t-a0.t)/1000;if(dt>0)v=(a0.y-a1.y)/dt}
+  if(P.moved>40&&v>250){trySlide(A,v);return}
+  if(P.moved<14){placeHeldGlass(A.hit)}return}
  if(A.kind==='pendShake'){const gl=H&&H.glass;if(!gl)return;const a=A.hit;if(a&&TOOLK.includes(a.kind)){const s2=SLOTS.find(x=>x.kind==='mat'&&!x.glass)||freeSlot(gl,handPt,9);if(s2){placeGlass(gl,s2);H=null;sfx.clink();onDown(1)}return}if(a&&(a.kind==='surface'||a.kind==='slot'||a.kind==='glass'||a.kind==='block')||!handFloat){const s=freeSlot(gl,handPt,.3);if(s){placeGlass(gl,s);H=null;sfx.clink()}}return}
  if(A.kind==='shake'){if(!G.shaker.hasIngs()){msg('材料を入れてから振ろう');return}finishGauge('shake',A.v);return}
  if(A.kind==='stir'){if(A.v>.05){if(!A.glass.hasIngs()){msg('材料を入れてからステアしよう');return}finishGauge('stir',A.v,A.glass)}else if(performance.now()-A.t0<230&&P.moved<6){H=null;if(A.glass.loc.kind==='slot')takeGlass(A.glass)}return}
  if(A.kind==='tap'){ST.taps[A.i].pull=0}
  if((A.kind==='pour'||A.kind==='stir')&&performance.now()-A.t0<230&&P.moved<6&&(A.kind==='stir'?A.acc<.3:(A.glass.c.ings[A.k]||0)-A.start<.5)){H=null;if(A.glass.loc.kind==='slot')takeGlass(A.glass);return}
- if(A.kind==='pour'&&!DF().assist){const ac=activeCust();const t=ac&&RECIPES[ac.order].ings[A.k];const amt=A.glass.c.ings[A.k]||0;if(typeof t==='number'&&A.start<.5&&Math.abs(amt-t)/t<=.05)addTrick(A.glass,'ジャストポア')}
+ if(A.kind==='pour'&&!DF().assist){const ac=activeCust();const t=ac&&RC(ac).ings[A.k];const amt=A.glass.c.ings[A.k]||0;if(typeof t==='number'&&A.start<.5&&Math.abs(amt-t)/t<=.05)addTrick(A.glass,'ジャストポア')}
 }
 
 function showGauge(t){const g=DF().gauge,sc=v=>(v/1.25*100).toFixed(1);$('#gaugeBox .gt').style.background=`linear-gradient(90deg,#c0392b 0 ${sc(g.o[0])}%,#e0b030 ${sc(g.o[0])}% ${sc(g.p[0])}%,#2ecc71 ${sc(g.p[0])}% ${sc(g.p[1])}%,#e0b030 ${sc(g.p[1])}% ${sc(g.o[1])}%,#c0392b ${sc(g.o[1])}%)`;$('#gaugeBox').style.display='block';$('#glab').textContent=t+(DF().assist?'（かんたん：緑で自動完了）':'')}
-function assistPour(A){if(!DF().assist)return;const ac=activeCust();if(!ac)return;const r=RECIPES[ac.order];const t=r.ings[A.k];const gl=A.glass;let stop=false;
+function assistPour(A){if(!DF().assist)return;const ac=activeCust();if(!ac)return;const r=RC(ac);const t=r.ings[A.k];const gl=A.glass;let stop=false;
  if(typeof t==='number'){if((gl.c.ings[A.k]||0)>=t)stop=true}
  else if(t==='fill'){const fills=Object.keys(r.ings).filter(x=>r.ings[x]==='fill');const [lo,hi]=fillBand(r);let goal=(lo+hi)/2;if(fills.length>1&&A.k===fills[0])goal=goal/2+(gl.c.ice?.17:0);if(gl.fill()>=goal)stop=true}
  if(stop){P.act=null;loopSet('pour',false);floatAt(gl.g.position.clone().add(V(0,.25,0)),'ぴったり！','#7cff9a',20);sfx.ok()}}
+function placeHeldGlass(a){if(!H||H.kind!=='glass')return;const gl=H.glass;const s=freeSlot(gl,handPt,.3);if(s){placeGlass(gl,s);H=null;sfx.clink()}else msg(puddleNear(handPt)?'こぼれていて置けません。濡れた所をこすって拭こう':'置ける場所がありません（マット・タップの受け皿）')}
+// --- flair
+let FLAIR=null;
+function startFlair(){if(!H||H.kind!=='bottle')return;FLAIR={k:H.k,t:0,dur:DX().flairDur,win:DX().flairWin,base:handPt.clone()};tone(660,.15,'triangle',.06);noise(.2,1500,.06,1);floatAt(handPt.clone().add(V(0,.25,0)),'フレア！ 落ちてくる所でクリック','#ffe14a',16)}
+function catchFlair(){const F=FLAIR;if(F.t>=F.dur-F.win&&F.t<=F.dur+.1){FLAIR=null;G.flairReady=true;addXP(3);applause();sfx.good();floatAt(handPt.clone().add(V(0,.25,0)),'✨ナイスキャッチ！','#ff9ae0',22);(G.hl.tricks['フレア']=(G.hl.tricks['フレア']||0)+1)}else dropFlair('早すぎ！')}
+function dropFlair(why){const F=FLAIR;FLAIR=null;const p=F.base.clone();crash(p);if(DX().brk){const loss=Math.min(150,S.stock[F.k]);S.stock[F.k]-=loss;G.stats.waste+=loss;msg(`${why||'取りそこねた！'} ボトルが割れた…（${ING[F.k].name} -${Math.round(loss)}ml）`);H=null;addPuddle(p)}else{msg(`${why||'取りそこねた！'}（かんたん：割れずにセーフ）`)}}
+function updFlair(dt){if(!FLAIR)return;FLAIR.t+=dt;if(FLAIR.t>FLAIR.dur+FLAIR.win*.4+.1)dropFlair()}
+// --- slide serve
+function trySlide(A,v){const gl=H&&H.glass;if(!gl)return;let best=null,bd=1e9;for(const c of G.customers){if(c.status!=='ordered')continue;const q=toScreen(V(SEATX[c.seat],1.15,-.8));const d=Math.abs(q.x-P.x);if(d<bd){bd=d;best=c}}
+ if(!best||bd>220){msg('届けるお客さんがいません（注文中のお客さんの方へ弾こう）');return}
+ const [mn,mx]=DX().slide;if(v<mn){msg('弱すぎて届かない！ もっと素早く上へ弾こう');return}
+ H=null;gl.loc={kind:'sliding'};const from=gl.g.position.clone();const to=V(SEATX[best.seat]+.05,1.125,-.78);
+ if(v>mx){G.slides.push({gl,from,to:to.clone().add(V(0,.25,-1.1)),t:0,dur:.55,c:best,fail:true});msg('強すぎ！ グラスが飛んでいった…');return}
+ G.slides.push({gl,from,to,t:0,dur:.6,c:best,fail:false});noise(.5,700,.05,.8)}
+function updSlides(dt){for(const S0 of [...G.slides]){S0.t+=dt;const k=clamp(S0.t/S0.dur,0,1);const e=1-Math.pow(1-k,2);S0.gl.g.position.lerpVectors(S0.from,S0.to,e);S0.gl.g.position.y+=Math.sin(k*Math.PI)*.12;S0.gl.g.rotation.y+=dt*(S0.fail?12:2);
+ if(k>=1){G.slides.splice(G.slides.indexOf(S0),1);if(S0.fail){crash(S0.gl.g.position.clone());if(DX().brk&&S.glasses[S0.gl.type]>1){S.glasses[S0.gl.type]--;msg(`グラスが割れた…（${GL[S0.gl.type].name} 在庫-1）`)}S0.gl.dispose()}
+  else{if(S0.c.status==='ordered'){S0.gl.c.tricks=[...(S0.gl.c.tricks||[]),'スライドサーブ'];serve(S0.c,S0.gl)}else{S0.gl.dispose()}}}}}
+function crash(p){for(let i=0;i<22;i++)emit(p,'#e8f4ff',1,.6);noise(.35,4200,.18,.6);tone(2800,.15,'triangle',.06);tone(1900,.2,'triangle',.05,.04)}
+// --- puddles
+const PUDDLES=[];const PUDM=new THREE.MeshStandardMaterial({color:0xc8a860,transparent:true,opacity:.5,roughness:.05,metalness:.2,envMapIntensity:2});
+function addPuddle(p){if(PUDDLES.length>5)return;const m=new THREE.Mesh(new THREE.CircleGeometry(rnd(.07,.1),20),PUDM);m.rotation.x=-Math.PI/2;m.position.set(clamp(p.x,-1.5,1.7),.903,clamp(p.z,-.55,-.08));m.raycast=()=>{};scene.add(m);PUDDLES.push({m,pos:m.position.clone(),t:0})}
+function removePuddle(pu){scene.remove(pu.m);PUDDLES.splice(PUDDLES.indexOf(pu),1)}
+function puddleNear(pt){return PUDDLES.find(pu=>Math.hypot(pu.pos.x-pt.x,pu.pos.z-pt.z)<.13)}
+function hoverPuddle(){for(const pu of PUDDLES){const q=toScreen(pu.pos);if(Math.hypot(q.x-P.x,q.y-P.y)<40*(touchMode?1.5:1))return pu}return null}
+function updPuddles(dt){for(const pu of [...PUDDLES]){pu.t+=dt;if(pu.t>DX().dry){removePuddle(pu)}}}
+// --- citrus cutting
+function openCut(k){if(S.stock[k]<1){msgNoStock(k);return}const el=$('#cutPanel');G.cutting={k};
+ const c=ING[k].color;el.innerHTML=`<div class="cph">🔪 ${ING[k].name}をカット <small>（上から下へ、まっすぐ素早くスッとなぞる）</small><span id="cutX">✕</span></div><div class="cpb" id="cutBoard"><svg viewBox="0 0 300 220" width="300" height="220"><rect x="10" y="20" width="280" height="190" rx="18" fill="#c89a5a"/><rect x="10" y="20" width="280" height="190" rx="18" fill="url(#cbg)" opacity=".25"/><ellipse cx="150" cy="115" rx="78" ry="60" fill="${c}"/><ellipse cx="150" cy="115" rx="64" ry="48" fill="#fff6c8" opacity=".55"/><line x1="150" y1="30" x2="150" y2="200" stroke="#ffffff" stroke-width="3" stroke-dasharray="8 7" opacity=".8"/></svg><div id="cutLine"></div></div>`;
+ el.style.display='block';$('#cutX').onclick=()=>{el.style.display='none';G.cutting=null};
+ const bd=$('#cutBoard');let st=null;
+ bd.onpointerdown=e=>{e.stopPropagation();e.preventDefault();const r=bd.getBoundingClientRect();st={x:e.clientX,y:e.clientY,t:performance.now(),r};try{bd.setPointerCapture(e.pointerId)}catch(_){}};
+ bd.onpointermove=e=>{if(!st)return;const ln=$('#cutLine');const k2=bd.getBoundingClientRect().width/300;ln.style.cssText=`left:${(st.x-st.r.left)/k2}px;top:${(st.y-st.r.top)/k2}px;height:${Math.hypot(e.clientX-st.x,e.clientY-st.y)/k2}px;transform:rotate(${Math.atan2(-(e.clientX-st.x),e.clientY-st.y)}rad)`};
+ bd.onpointerup=e=>{if(!st)return;const sc=bd.getBoundingClientRect().width/300;const dy=(e.clientY-st.y)/sc,dx=Math.abs(e.clientX-st.x)/sc,dt=(performance.now()-st.t)/1000;st=null;
+  if(dy<110){msg('もっと長く、上から下まで切ろう');return}
+  if(dx>DX().cutTol||dt>1.2){noise(.2,900,.08,1);msg('ガタガタ… もう一度まっすぐ切ろう');return}
+  S.stock[k]--;G.stats.cost+=ING[k].price/ING[k].unit;G.cut[k]=(G.cut[k]||0)+3;const nice=dx<DX().cutTol*.45&&dt<.6;if(nice){G.niceCut=(G.niceCut||0)+3;floatAt(ST.garn[k].position.clone().add(V(0,.15,0)),'✨きれいなカット！','#ff9ae0',18);sfx.good()}else{sfx.ok()}
+  noise(.12,5000,.1,2);el.style.display='none';G.cutting=null;H={kind:'garnish',k};floatAt(ST.garn[k].position.clone().add(V(0,.1,0)),'スライス×3','#ffe14a',15)}}
+function citrus(k){return k==='g_lemon'||k==='g_lime'||k==='g_orange'}
+// --- wet / shiny glasses
+function takeRackGlass(t){const shiny=G.clean[t]-(G.wet[t]||0);const gl=new Glass(t);if(shiny>0){gl.shiny=!!DX().wetPen||DF().name!=='かんたん';}else{gl.wet=true;G.wet[t]--}G.clean[t]--;return gl}
+function polishOne(){for(const t in G.wet){if(G.wet[t]>0){G.wet[t]--;return t}}return null}
+// --- rhythm
+function beatPhase(){if(!AC||!BGM.bars||!BGM.bars.length||!(S&&S.bgm)||muted)return null;const now=AC.currentTime;let b=null;for(let i=BGM.bars.length-1;i>=0;i--){if(BGM.bars[i].t<=now){b=BGM.bars[i];break}}if(!b)return null;const ph=((now-b.t)/b.beat)%1;return{ph,beat:b.beat}}
+function isPeak(){return G&&!G.tutorial&&G.time/G.dayLen>.3&&G.time/G.dayLen<.7}
+function onBeat(){if(!isPeak())return;const b=beatPhase();if(!b)return;const d=Math.min(b.ph,1-b.ph)*b.beat;if(d<DX().beat){G.beatStreak=(G.beatStreak||0)+1;const el=$('#beat');el.classList.add('hit');setTimeout(()=>el.classList.remove('hit'),180);if(G.beatStreak>=2)floatAt(handPt.clone().add(V(0,.2,0)),'♪ ON BEAT ×'+G.beatStreak,'#9ae6ff',14)}else G.beatStreak=0}
 /* ====================== UPDATE ====================== */
 function update(dt){
  if(G.tutorial){tutUpdate()}else G.time+=dt;
@@ -1189,10 +1303,11 @@ function update(dt){
  ST.taps.forEach((tp,i)=>{let target=0;if(A&&A.kind==='tap'&&A.i===i)target=clamp((P.y-A.y0)/110,0,1);tp.pull+=(target-tp.pull)*Math.min(1,dt*14);tp.piv.rotation.x=tp.pull*.85;
   const flow=tp.pull>.06?tp.pull:0;const slot=SLOTS.find(s=>s.id==='T'+i);const gl=slot.glass;
   if(flow>0){pouring=true;const k=tp.k;let amt=150*flow*dt;if(S.stock[k]<=0){if(!tp.warned){msgNoStock(k);tp.warned=1}amt=0}else{tp.warned=0;amt=Math.min(amt,S.stock[k])}
-   if(amt>0){if(gl){gl.wob=Math.min(1.2,(gl.wob||0)+dt*4*flow);if(Math.random()<flow*dt*50)emit(surf(gl),Math.random()<.5?'#fff6e4':ING[k].color,1,.15);const ff=.06+.55*Math.pow(flow,3);const foam=amt*ff;const liq=amt-foam;addLiquid(gl,k,liq);const free=gl.cap()-gl.vol();if(free>0)gl.c.foam+=Math.min(foam*1.6,free);else{gl.c.overflow=true}}else{S.stock[k]-=amt;G.stats.waste+=amt}}
-   if(gl&&DF().assist&&A&&A.kind==='tap'&&A.i===i){const ac=activeCust();const r=ac&&RECIPES[ac.order];const fills=r?Object.keys(r.ings).filter(x=>r.ings[x]==='fill'):[];const goal=fills.length>1?.47:.94;if(gl.fill()>=goal){P.act=null;loopSet('pour',false);floatAt(gl.g.position.clone().add(V(0,.25,0)),'ちょうどいい！','#7cff9a',20);sfx.ok()}}
+   if(amt>0){if(gl){gl.wob=Math.min(1.2,(gl.wob||0)+dt*4*flow);if(Math.random()<flow*dt*50)emit(surf(gl),Math.random()<.5?'#fff6e4':ING[k].color,1,.15);if(DX().autoTilt)G.tilt+=((gl.fill()<.55?.85:0)-G.tilt)*Math.min(1,dt*3);const ff=(.06+.55*Math.pow(flow,3))*DX().foamMul*(1-.65*(G.tilt||0));const foam=amt*ff;const liq=amt-foam;addLiquid(gl,k,liq);const free=gl.cap()-gl.vol();if(free>0)gl.c.foam+=Math.min(foam*1.6,free);else{gl.c.overflow=true}}else{S.stock[k]-=amt;G.stats.waste+=amt}}
+   if(gl&&DF().assist&&A&&A.kind==='tap'&&A.i===i){const ac=activeCust();const r=ac&&RC(ac);const fills=r?Object.keys(r.ings).filter(x=>r.ings[x]==='fill'):[];const goal=fills.length>1?.47:.94;if(gl.fill()>=goal){P.act=null;loopSet('pour',false);floatAt(gl.g.position.clone().add(V(0,.25,0)),'ちょうどいい！','#7cff9a',20);sfx.ok()}}
    const top=gl?gl.g.position.y+gl.def.inner.b+gl.levelH(Math.min(1,gl.fill())):.91;const y0=1.13;tp.stream.visible=true;tp.stream.scale.set(1+flow,y0-top,1+flow);tp.stream.position.set(tp.x,(y0+top)/2,-.42)}
   else tp.stream.visible=false});
+ if(A&&A.kind==='tap'&&!DX().autoTilt&&A.tiltDx!==undefined){G.tilt=clamp(A.tilt0+A.tiltDx/140,0,1)}
  if(A&&A.kind==='tap'){const gT=SLOTS.find(s=>s.id==='T'+A.i).glass;loopSet('pour',ST.taps[A.i].pull>.06,450+(gT?gT.fill():0)*1000,.04+.08*ST.taps[A.i].pull);if(gT&&A&&!A.inZ){const r0=activeCust()&&RECIPES[activeCust().order];if(r0&&gT.fill()>=fillBand(r0)[0]){A.inZ=1;ding()}}}
  // pour bottle
  if(A&&A.kind==='pour'){const up=A.y0-P.y;A.raise=rankIdx()>=1?clamp((up-10)/130,0,1):0;A.tilt=clamp(.35+(P.y-A.y0)/120,.35,1);if(A.raise>0)A.tilt=.6;A.tv=(A.tv||0)+(A.tilt-(A.tv||0))*Math.min(1,dt*9);
@@ -1211,7 +1326,7 @@ function update(dt){
  {const n=G.customers.filter(c=>c.status!=='leave').length;const v=muted?0:SET.envVol*Math.min(1,n/4)*.07;loopSet('amb',v>.001,320+Math.sin(G.time*.7)*60,v);if(n&&Math.random()<dt*.25*n*SET.envVol&&!muted)tone(rnd(2500,4200),.08,'sine',.012*SET.envVol)}
  if(S.up.dish){G.dishT+=dt;if(G.dishT>=3){G.dishT=0;if(G.dirty.length)washOne()}}
  if(G.evalT>0){G.evalT-=dt;if(G.evalT<=0)$('#evalPop').style.display='none'}
- updateDoor(dt);
+ updateDoor(dt);updFlair(dt);updSlides(dt);updPuddles(dt);
  if(G.closing&&!G.ended&&G.customers.length===0&&!G.tutorial)endDay();
  D.ticket=1;
 }
@@ -1234,7 +1349,8 @@ function updateHandVisual(t){
   else if(A&&A.kind==='strain'){const tg=A.glass;const th=-(1.3+.6*A.tilt);const L=.17;const top=tg.g.position.clone().add(V(0,tg.def.inner.t+.05,0));g.position.set(top.x-L*Math.sin(-th)*.95,top.y-L*Math.cos(th)*.4,top.z);g.rotation.set(0,0,th)}
   else{g.position.copy(handPt).add(V(0,handFloat?-.06:.03,0));g.rotation.set(handFloat?-.2:0,0,Math.sin(t*2)*.02)}}
  if(handObj){
-  if(H.kind==='bottle'){if(A&&A.kind==='pour'){const tg=A.glass;const tv=A.tv||0;const th=-(.2+1.05*clamp(tv/.35,0,1)+.75*clamp((tv-.35)/.65,0,1));const L=handObj.userData.neck;const top=tg.g.position.clone().add(V(0,tg.def.inner.t+.04+(A.raise||0)*.22+Math.sin(t*30)*.002,0));handObj.position.set(top.x+L*Math.sin(th),top.y-L*Math.cos(th),top.z);handObj.rotation.set(0,0,th)}
+  if(H.kind==='bottle'&&FLAIR){const k=FLAIR.t/FLAIR.dur;const hgt=4*k*(1-k)*.55;handObj.position.copy(FLAIR.base).add(V(0,hgt+.02,0));handObj.rotation.set(0,0,FLAIR.t*11)}
+  else if(H.kind==='bottle'){if(A&&A.kind==='pour'){const tg=A.glass;const tv=A.tv||0;const th=-(.2+1.05*clamp(tv/.35,0,1)+.75*clamp((tv-.35)/.65,0,1));const L=handObj.userData.neck;const top=tg.g.position.clone().add(V(0,tg.def.inner.t+.04+(A.raise||0)*.22+Math.sin(t*30)*.002,0));handObj.position.set(top.x+L*Math.sin(th),top.y-L*Math.cos(th),top.z);handObj.rotation.set(0,0,th)}
    else{handObj.position.copy(handPt).add(V(0,handFloat?-.12:.04,0));handObj.rotation.set(0,0,-.15)}}
   else if(H.kind==='spoon'){if(A&&A.kind==='stir'){const tg=A.glass;const ang=(A.spin||0);const r=tg.radAt(.04)*.5;handObj.position.set(tg.g.position.x+Math.cos(-ang)*r,tg.g.position.y+tg.def.inner.b+.01,tg.g.position.z+Math.sin(-ang)*r);handObj.rotation.set(0,0,.08)}
    else{handObj.position.copy(handPt).add(V(0,.0,0));handObj.rotation.set(0,0,.5)}}
@@ -1247,10 +1363,12 @@ function updateHandVisual(t){
 let STREAM=null;
 let camYaw=0,camPitch=-.5;
 const LOOK={x:640,y:520};
-function updateCamera(dt,t){const src=touchMode?LOOK:P;const nx=src.x/1280*2-1,ny=src.y/720;
- const dz=.4;let yt=0;if(Math.abs(nx)>dz)yt=-Math.sign(nx)*(Math.abs(nx)-dz)/(1-dz)*.42;
- const pt=-(.16+.56*clamp((ny-.08)/.84,0,1));
- const k=Math.min(1,dt*3.2);camYaw+=(yt-camYaw)*k;camPitch+=(pt-camPitch)*k;
+const CV={x:0,y:.6,vy:0,vp:0};
+const sstep=v=>v*v*(3-2*v);
+function updateCamera(dt,t){const src=touchMode?LOOK:P;const kin=1-Math.exp(-dt*6);CV.x+=((src.x/1280*2-1)-CV.x)*kin;CV.y+=((src.y/720)-CV.y)*kin;
+ const nx=CV.x,ny=CV.y;const dz=.38;let yt=0;if(Math.abs(nx)>dz)yt=-Math.sign(nx)*sstep(clamp((Math.abs(nx)-dz)/(1-dz),0,1))*.44;
+ const pt=-(.16+.56*sstep(clamp((ny-.08)/.84,0,1)));
+ const w=7,z=1;CV.vy+=((yt-camYaw)*w*w-2*z*w*CV.vy)*dt;CV.vp+=((pt-camPitch)*w*w-2*z*w*CV.vp)*dt;camYaw+=CV.vy*dt;camPitch+=CV.vp*dt;
  let sh=0;if(P.act&&P.act.kind==='shake')sh=.004;
  camera.position.set(CAM0.x+Math.sin(t*.7)*.004+rnd(-sh,sh),CAM0.y+Math.sin(t*1.3)*.003+rnd(-sh,sh),CAM0.z);camera.rotation.set(camPitch,camYaw,0)}
 // glow
@@ -1262,22 +1380,22 @@ function hlTargets(hl){const out=[];if(!hl||!G)return out;const [a,b]=hl.split('
  else if(a==='shaker'){if(G.shaker.loc.kind==='slot')out.push(G.shaker.g)}
  else if(a==='mat')SLOTS.filter(s=>s.kind==='mat'&&!s.glass).forEach(s=>out.push(s.mesh));
  else if(a==='drip'){}
- else if(a==='glass'){const ac=activeCust();const w=ac&&workGlass(ac.order);if(w&&w.loc.kind==='slot')out.push(w.g)}
+ else if(a==='glass'){const ac=activeCust();const w=ac&&workGlass(RC(ac));if(w&&w.loc.kind==='slot')out.push(w.g)}
  else if(a==='serve'){const ac=activeCust();if(ac)out.push(ac.m.g)}
  else if(a==='callers')G.customers.filter(c=>c.status==='waiting').forEach(c=>out.push(c.m.g));
  else if(a==='tables')G.seats.filter(s=>s.money||s.glasses.length).forEach(s=>out.push(SEATOBJ[s.i].money.visible?SEATOBJ[s.i].money:(s.glasses[0]&&s.glasses[0].g)));
  return out.filter(Boolean)}
 let hover=null;
-function updateGlow(t,hl){clearGlow();const pul=.18+.18*Math.sin(t*6);if(G){const hc=G.customers.find(c=>c.id===G.hoverOid);if(hc)glowRoot(hc.m.g,new THREE.Color(SEATCOL[hc.seat]).getHex(),.35)}for(const r of hlTargets(hl))glowRoot(r,0x3fd0c9,pul);if(hover&&hover.root)glowRoot(hover.root,0xffe2a0,.28)}
+function updateGlow(t,hl){clearGlow();const pul=.18+.18*Math.sin(t*6);if(G){const hc=G.customers.find(c=>c.id===G.hoverOid);if(hc)glowRoot(hc.m.g,new THREE.Color(SEATCOL[hc.seat]).getHex(),.35)}for(const r of hlTargets(hl))glowRoot(r,0x3fd0c9,pul);if(hover&&hover.root)glowRoot(hover.root,0xffe2a0,.42)}
 function actRoot(a){if(!a)return null;switch(a.kind){case 'bottle':return ST.bottles[a.k];case 'tap':return ST.taps[a.i].piv;case 'garnish':return ST.garn[a.k];case 'rack':return ST.rack[a.t].g;case 'ice':return ST.ice;case 'spoon':return ST.spoon;case 'sink':return ST.sink.g;case 'glass':return a.glass.g;case 'cust':return a.c.m.g;case 'slot':return a.slot.glass?a.slot.glass.g:a.slot.mesh;default:return null}}
 function tipText(a){if(!a)return'';switch(a.kind){
- case 'bottle':{const I=ING[a.k];if(!ingUnlocked(a.k))return `${I.name}<small>🔒 メニュー解禁で使用可</small>`;return `${I.name}　在庫 ${fmtStock(a.k)}<small>${H&&H.kind==='bottle'?'クリックで持ち替え':'クリックで持つ → グラスの上で長押しで注ぐ'}</small>`}
+ case 'bottle':{const I=ING[a.k];if(H&&H.kind==='bottle'&&H.k===a.k)return `${I.name}<small>持ったまま押して円を2周描く＝フレア</small>`;if(!ingUnlocked(a.k))return `${I.name}<small>🔒 メニュー解禁で使用可</small>`;return `${I.name}　在庫 ${fmtStock(a.k)}<small>${H&&H.kind==='bottle'?'クリックで持ち替え':'クリックで持つ → グラスの上で長押しで注ぐ'}</small>`}
  case 'tap':{const I=ING[a.k];return `${I.name} タップ　在庫 ${fmtStock(a.k)}<small>押したまま手前（下）にドラッグで注ぐ</small>`}
- case 'garnish':return `${ING[a.k].name}（残${S.stock[a.k]}）<small>クリックで持つ → グラスの上でクリック</small>`;
+ case 'garnish':return citrus(a.k)&&!DF().assist?`${ING[a.k].name}（スライス${G.cut[a.k]||0}枚・丸ごと${S.stock[a.k]}個）<small>${(G.cut[a.k]||0)>0?'クリックで持つ → グラスの上でクリック':'クリックでカット（上から下へスッと）'}</small>`:`${ING[a.k].name}（残${S.stock[a.k]}）<small>クリックで持つ → グラスの上でクリック</small>`;
  case 'rack':return `${GL[a.t].full}（清潔 ${G.clean[a.t]}個）<small>クリックで1個持つ</small>`;
  case 'ice':return `氷入れ<small>クリックですくう → グラスの上でクリック</small>`;
  case 'spoon':return `バースプーン<small>持ってグラスの上で押したまま、ぐるぐる回す</small>`;
- case 'sink':return `シンク（汚れ ${G.dirty.length}個）<small>${H&&H.kind==='glass'?'クリックでグラスの中身を捨てる':'押したまま左右にこすって洗う'}</small>`;
+ case 'sink':return `シンク（汚れ ${G.dirty.length}個・濡れ ${Object.values(G.wet).reduce((a,b)=>a+b,0)}個）<small>${H&&H.kind==='glass'?'クリックでグラスの中身を捨てる':'押したまま 左右にこする＝洗う ／ ぐるぐる＝拭く'}</small>`;
  case 'glass':{const gl=a.glass;if(gl.loc.kind==='bar')return '空きグラス<small>クリックで下げる</small>';const parts=Object.keys(gl.c.ings).map(k=>`${ING[k].short}${Math.round(gl.c.ings[k])}ml`);return `${GL[gl.type].full}　${Math.round(gl.fill()*100)}%${gl.c.ice?' 🧊':''}<small>${parts.join(' / ')||'空'}${gl.type==='shaker'?' ・ 持って押したまま振るとシェイク':''}</small>`}
  case 'cust':{const c=a.c;const lab=custLabel(c);const PN={cheerful:'明るい',calm:'落ち着いている',shy:'シャイ',grumpy:'ぶっきらぼう',chatty:'おしゃべり',polite:'丁寧'};if(c.status==='waiting')return `${lab}（性格：${PN[c.pers]||'—'}）<small>クリックで注文を聞く ・ ${CT[c.ty].trait}</small>`;if(c.status==='ordered')return `${RECIPES[c.order].name} を待っている<small>${H&&H.kind==='glass'?'クリックで提供':'クリックで伝票を選ぶ'}</small>`;return 'お客さん'}
  case 'seat':{const s=G.seats[a.i];if(s.money||s.glasses.length)return `お会計 ${yen(s.money)}<small>クリックで回収・片付け</small>`;return ''}
@@ -1299,12 +1417,13 @@ function renderTop(){$('#dayN').textContent=S.day;const ri=rankIdx(),nx=RANKS[ri
 let lastTabs='';
 function renderTicket(){const os=orders();$('#ordCount').textContent=os.length?`${os.length}件`:'';
  const tabsKey=os.map(c=>c.id+(c.id===G.active?'*':'')).join(',');
- if(tabsKey!==lastTabs){lastTabs=tabsKey;$('#orderTabs').innerHTML=os.map(c=>`<div class="otab ${c.id===G.active?'on':''}" data-oid="${c.id}"><span class="sn" style="background:${SEATCOL[c.seat]}">${c.seat+1}</span>${RECIPES[c.order].name}<div class="pb"><i data-pb="${c.id}"></i></div></div>`).join('')}
+ if(tabsKey!==lastTabs){lastTabs=tabsKey;$('#orderTabs').innerHTML=os.map(c=>`<div class="otab ${c.id===G.active?'on':''}" data-oid="${c.id}"><span class="sn" style="background:${SEATCOL[c.seat]}">${c.seat+1}</span>${c.vague&&!c.revealed?'？？？':RECIPES[c.order].name}${c.req?'＊':''}<div class="pb"><i data-pb="${c.id}"></i></div></div>`).join('')}
  os.forEach(c=>{const e=document.querySelector(`[data-pb="${c.id}"]`);if(e){const p=clamp(c.pat/c.patMax,0,1);e.style.width=p*100+'%';e.style.background=p>.5?'#7cd67c':p>.25?'#f0c040':'#ff5a5a'}});
  const a=activeCust();let h;
  if(!a)h=`<div class="tktEmpty">「🙋注文！」のお客さんをクリックすると、ここに伝票（作り方）が出ます</div>`;
- else{const r=RECIPES[a.order],st=steps(a.order);let cur=false;h=`<h2><span><span class="sn big" style="background:${SEATCOL[a.seat]}">${a.seat+1}</span>${r.name}</span><small>${a.seat+1}番席：${custLabel(a)}・${yen(r.price)}</small></h2><div class="steps">`+st.map((s,i)=>{let cls=s.d?'done':'';if(!s.d&&!cur){cls='cur';cur=true}return `<div class="step ${cls}"><span class="ck">${s.d?'✓':i+1}</span>${s.t}${s.amt?`<span class="amt">${s.amt}</span>`:''}</div>`}).join('')+'</div>'}
- if(h!==renderTicket.last){$('#tkt').innerHTML=h;renderTicket.last=h}}
+ else if(a.vague&&!a.revealed){h=`<h2><span><span class="sn big" style="background:${SEATCOL[a.seat]}">${a.seat+1}</span>？？？</span><small>${a.seat+1}番席：${custLabel(a)}</small></h2><div style="font-size:15px;font-weight:800">お客さん：「${DESC[a.order]||''}」<br><span style="font-size:12px;color:#8a6a4a">何のお酒か当ててね（📖レシピ帳がヒント）</span> <button class="btn sm sec" id="revealBtn" style="pointer-events:auto">🔍 答えを見る（チップ半分）</button></div>`}
+ else{const r=RC(a),st=steps(r);let cur=false;h=`<h2><span><span class="sn big" style="background:${SEATCOL[a.seat]}">${a.seat+1}</span>${r.name}${r.req?` <b style="color:#c0392b">【${r.req}】</b>`:''}</span><small>${a.seat+1}番席：${custLabel(a)}・${yen(r.price)}</small></h2><div class="steps">`+st.map((s,i)=>{let cls=s.d?'done':'';if(!s.d&&!cur){cls='cur';cur=true}return `<div class="step ${cls}"><span class="ck">${s.d?'✓':i+1}</span>${s.t}${s.amt?`<span class="amt">${s.amt}</span>`:''}</div>`}).join('')+'</div>'}
+ if(h!==renderTicket.last){$('#tkt').innerHTML=h;renderTicket.last=h;const rb=$('#revealBtn');if(rb)rb.onpointerdown=e=>{e.stopPropagation();a.revealed=true;a.tipCut=.5;sfx.pop();for(const c of G.customers)c.dirty=1;lastTabs=''}}}
 $('#orderTabs').addEventListener('pointerover',e=>{const o=e.target.closest('[data-oid]');G&&(G.hoverOid=o?+o.dataset.oid:null)});$('#orderTabs').addEventListener('pointerleave',()=>{if(G)G.hoverOid=null});
 $('#orderTabs').addEventListener('pointerdown',e=>{const o=e.target.closest('[data-oid]');if(o&&G){G.active=+o.dataset.oid;lastTabs='';for(const c of G.customers)c.dirty=1;sfx.pop()}});
 function renderBubbles(){for(const c of G.customers){const b=c.bub;const p=toScreen(c.m.g.position.clone().add(V(0,1.86,0)));
@@ -1312,7 +1431,7 @@ function renderBubbles(){for(const c of G.customers){const b=c.bub;const p=toScr
   let html='',cls='bub';
   if(c.say){cls+=' say';html=c.say}
   else if(c.status==='waiting'){cls+=' call';html=`<span class="sn" style="background:${SEATCOL[c.seat]}">${c.seat+1}</span>${c.reg?'⭐'+REGS.find(r=>r.id===c.reg).name:CT[c.ty].icon} 注文！`}
-  else if(c.status==='ordered'){html=`<span class="sn" style="background:${SEATCOL[c.seat]}">${c.seat+1}</span>${c.reg?'⭐':CT[c.ty].icon} ${RECIPES[c.order].name}`;if(G.active===c.id){cls+=' act';html='<div class="actl">▼ いま作っている注文</div>'+html}}
+  else if(c.status==='ordered'){html=`<span class="sn" style="background:${SEATCOL[c.seat]}">${c.seat+1}</span>${c.reg?'⭐':CT[c.ty].icon} ${orderLabel(c)}`;if(G.active===c.id){cls+=' act';html='<div class="actl">▼ いま作っている注文</div>'+html}}
   else if(c.reg){html=`⭐${REGS.find(r=>r.id===c.reg).name}`;cls+=' regtag'}
   else{b.style.display='none';continue}
   if(c.status==='waiting'||c.status==='ordered'){const pp=clamp(c.pat/c.patMax,0,1);html+=`<div class="pb"><i style="width:${pp*100}%;background:${pp>.5?'#7cd67c':pp>.25?'#f0c040':'#ff5a5a'}"></i></div>`}
@@ -1330,25 +1449,28 @@ function renderHUD(t){
  if(h.t!==lastHint){$('#hintTxt').textContent=h.t;$('#nextTxt').textContent=h.t||'—';lastHint=h.t}
  $('#nextLine').style.display=SET.hint?'flex':'none';
  $('#hintBar').style.display=(G.tutorial||!SET.hint)?'none':'flex';
+ {const be=$('#beat');if(isPeak()&&S.bgm&&!muted){be.style.display='block';const b=beatPhase();if(b)be.style.transform=`scale(${1+.35*Math.max(0,1-b.ph*4)})`}else be.style.display='none'}
+ {const cr=$('#catchRing');if(FLAIR){const q=toScreen(FLAIR.base.clone().add(V(0,.05,0)));const rem=Math.max(0,FLAIR.dur-FLAIR.t);const sz=40+rem*160;cr.style.display='block';cr.style.left=q.x+'px';cr.style.top=q.y+'px';cr.style.width=cr.style.height=sz+'px';cr.classList.toggle('go',FLAIR.t>=FLAIR.dur-FLAIR.win)}else cr.style.display='none'}
+ {const hr=$('#hring');if(hover&&hover.point&&!P.act&&!touchMode){const q=toScreen(hover.point);hr.style.display='block';hr.style.left=q.x+'px';hr.style.top=q.y+'px'}else hr.style.display='none'}
  updateGlow(t,h.hl);renderLabels(h.hl);renderArrow(h.hl,h.t);if(G.tutorial)tutRender();
  // hand
- const hn=!H?'なし':H.kind==='glass'?GL[H.glass.type].full+(H.glass.hasIngs()?'（中身あり）':''):H.kind==='bottle'?ING[H.k].name:H.kind==='spoon'?'バースプーン':H.kind==='scoop'?'氷（スコップ）':ING[H.k].name;
+ const hn=!H?'なし':H.kind==='glass'&&H.glass.hasIngs()&&H.glass.type!=='shaker'?GL[H.glass.type].full+'（上へシュッと弾くとスライド提供）':H.kind==='glass'?GL[H.glass.type].full+(H.glass.hasIngs()?'（中身あり）':''):H.kind==='bottle'?ING[H.k].name:H.kind==='spoon'?'バースプーン':H.kind==='scoop'?'氷（スコップ）':ING[H.k].name;
  const hs=`手：<b>${hn}</b>${H?`<br><button class="ret" id="retBtn">✋ 置く・戻す</button>${touchMode?'':'<span style="color:#aaa;font-size:10.5px"> （右クリックでもOK）</span>'}`:''}`;if($('#hand').innerHTML!==hs)$('#hand').innerHTML=hs;
  // tooltip
  const tip=$('#tip');const tt=P.act?'':tipText(hover&&hover.act);if(tt){tip.style.display='block';if(tip.innerHTML!==tt)tip.innerHTML=tt;tip.style.left=Math.min(P.x,1080)+'px';tip.style.top=Math.min(P.y,660)+'px'}else tip.style.display='none';
  // readout
- const ro=$('#readout');const A=P.act;let gl=null,txt='';const a=activeCust();const r=a?RECIPES[a.order]:null;
+ const ro=$('#readout');const A=P.act;let gl=null,txt='';const a=activeCust();const r=a?RC(a):null;
  if(A&&A.kind==='pour'){gl=A.glass;const amt=gl.c.ings[A.k]||0;const tv=r&&typeof r.ings[A.k]==='number'?r.ings[A.k]:null;
   if(tv){const mx=tv*1.6,lo=tv*(1-tol()),hi=tv*(1+tol());txt=`${ING[A.k].short} <span style="color:${amtOk(amt,tv)?'#7cff9a':amt>tv?'#ff7a7a':'#fff'}">${Math.round(amt)}</span> / ${tv}ml<div class="meter"><em style="left:${lo/mx*100}%;width:${(hi-lo)/mx*100}%"></em><i style="width:${clamp(amt/mx,0,1)*100}%;background:${amtOk(amt,tv)?'#7cff9a':'#fff'}"></i></div><small>${A.raise>.3?'⬆ ハイポア中！':'下へドラッグで傾き↑'}${rankIdx()>=1?' ／ 上へドラッグでハイポア':''}</small>`}
   else txt=`${ING[A.k].short} ${Math.round(amt)}ml ・ ${Math.round(gl.fill()*100)}%<small>水色の線の間で離す</small>`}
- else if(A&&A.kind==='tap'){const sl=SLOTS.find(s=>s.id==='T'+A.i);gl=sl.glass;const pl=ST.taps[A.i].pull;if(gl)txt=`${Math.round(gl.fill()*100)}% ・ 泡 <span style="color:${foamR(gl)>=FOAM[0]&&foamR(gl)<=FOAM[1]?'#7cff9a':'#ffd77a'}">${Math.round(foamR(gl)*100)}%</span><small>ハンドル ${Math.round(pl*100)}%　${pl>.85?'全開：泡が多め':pl>.4?'中：液体多め':'弱め'}</small>`;else{txt='グラスがない！<small>受け皿にこぼれています</small>';gl=null;}}
+ else if(A&&A.kind==='tap'){const sl=SLOTS.find(s=>s.id==='T'+A.i);gl=sl.glass;const pl=ST.taps[A.i].pull;if(gl)txt=`${Math.round(gl.fill()*100)}% ・ 泡 <span style="color:${foamR(gl)>=(r&&r.foam||FOAM)[0]&&foamR(gl)<=(r&&r.foam||FOAM)[1]?'#7cff9a':'#ffd77a'}">${Math.round(foamR(gl)*100)}%</span><small>グラスの傾き ${Math.round((G.tilt||0)*100)}%${DX().autoTilt?'（自動）':'（左右ドラッグ／ホイール）'}・ハンドル ${Math.round(pl*100)}%　${pl>.85?'全開：泡が多め':pl>.4?'中：液体多め':'弱め'}</small>`;else{txt='グラスがない！<small>受け皿にこぼれています</small>';gl=null;}}
  else if(A&&A.kind==='strain'){gl=A.glass;txt=`注いでいます… ${Math.round(gl.fill()*100)}%`}
  else if(H&&H.kind==='glass'&&H.glass.hasIngs()&&!handFloat){}
  if(txt){const p=gl?toScreen(gl.g.position.clone().add(V(0,gl.def.inner.t+.12,0))):{x:640,y:300};ro.style.display='block';ro.style.left=p.x+'px';ro.style.top=p.y+'px';if(ro.innerHTML!==txt)ro.innerHTML=txt}else ro.style.display='none';
  if(A&&(A.kind==='shake'||A.kind==='stir')&&A.v>0){$('#needle').style.left=(clamp(A.v,0,1.25)/1.25*100)+'%'}
  if(A&&A.kind==='scrub'){if(!txt){const p=toScreen(V(1.52,1.05,-.27));ro.style.display='block';ro.style.left=p.x+'px';ro.style.top=p.y+'px';ro.innerHTML=`ゴシゴシ… ${Math.round(G.scrubAcc/7)}%<small>残り ${G.dirty.length}個</small>`}}
  // target rings
- updParts(FDT);{const ac=activeCust();if(ACTRING){ACTRING.visible=!!ac;if(ac){ACTRING.position.set(SEATX[ac.seat]+.05,1.13,-.78);ACTRING.material.color.set(SEATCOL[ac.seat]);const k=1+Math.sin(T*5)*.08;ACTRING.scale.set(k,k,k)}}}
+ updParts(FDT);for(const sl of SLOTS){if(sl.kind==='tap'&&sl.glass){sl.glass.g.rotation.z=-(G?G.tilt||0:0)*.55}}{const ac=activeCust();if(ACTRING){ACTRING.visible=!!ac;if(ac){ACTRING.position.set(SEATX[ac.seat]+.05,1.13,-.78);ACTRING.material.color.set(SEATCOL[ac.seat]);const k=1+Math.sin(T*5)*.08;ACTRING.scale.set(k,k,k)}}}
 for(const g2 of GLASSOBJS){if(g2.wob>0){g2.wob=Math.max(0,g2.wob-FDT*1.6);const w=g2.wob;g2.liq.rotation.z=Math.sin(T*15)*.07*w;g2.liq.rotation.x=Math.cos(T*12)*.05*w;g2.foamM.rotation.copy(g2.liq.rotation)}}
  for(const g2 of GLASSOBJS){let lines=null;if(r&&g2.type===r.glass&&g2.loc&&(g2.loc.kind==='slot'||g2.loc.kind==='hand')&&Object.values(r.ings).includes('fill'))lines=fillBand(r);g2.refresh(lines)}
  // cursor
@@ -1361,7 +1483,7 @@ let FDT=.016;
 function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;T+=dt;FDT=dt;
  if(!(S&&S.phase==='service'&&G&&!G.paused))loopSet('amb',false);
  if(S&&S.phase==='service'&&G&&!G.paused){update(dt);computeHand();hover=P.act?null:pickAt();if(hover)hover.root=actRoot(hover.act)}else hover=null;
- updateCamera(dt,T);if(G){updateHandVisual(T);rackRefresh();sinkRefresh()}
+ updateCamera(dt,T);if(G){updateHandVisual(T);rackRefresh();sinkRefresh();bottleLevels(dt)}
  if(S)renderHUD(T);
  renderer.render(scene,camera);requestAnimationFrame(frame)}
 
@@ -1508,7 +1630,7 @@ function addTrick(gl,name){gl.c.tricks=gl.c.tricks||[];if(gl.c.tricks.includes(n
 function applause(){if(muted)return;for(let i=0;i<22;i++)setTimeout(()=>noise(.05,rnd(1500,3200),.07,1.5),rnd(0,1100))}
 function ding(){tone(1568,.25,'sine',.06);tone(2093,.3,'sine',.035,.06)}
 function glug(f){tone(150+f*300,.07,'sine',.06);tone(300+f*600,.05,'triangle',.02)}
-function zoneCheck(A){if(A.inZ)return;const ac=activeCust();if(!ac)return;const r=RECIPES[ac.order];const t=r.ings[A.k];const gl=A.glass;
+function zoneCheck(A){if(A.inZ)return;const ac=activeCust();if(!ac)return;const r=RC(ac);const t=r.ings[A.k];const gl=A.glass;
  if(typeof t==='number'){if(amtOk(gl.c.ings[A.k]||0,t)){A.inZ=1;ding();floatAt(gl.g.position.clone().add(V(0,.3,0)),'OKゾーン！','#7cff9a',15)}}
  else if(t==='fill'&&gl.fill()>=fillBand(r)[0]){A.inZ=1;ding();floatAt(gl.g.position.clone().add(V(0,.3,0)),'OKゾーン！','#7cff9a',15)}}
 function surf(gl){return gl.g.position.clone().add(V(rnd(-.01,.01),gl.def.inner.b+gl.levelH(Math.min(1,gl.fill()))+.004,rnd(-.01,.01)))}
@@ -1606,7 +1728,7 @@ function bindShopCommon(){document.querySelectorAll('[data-tab]').forEach(b=>b.o
 /* ====================== BGM (generative lo-fi jazz) ====================== */
 const BGM={gain:null,timer:null,next:0,bar:0};
 const PROG=[[50,53,57,60,64],[43,53,55,59,64],[48,52,55,59,62],[45,52,55,60,64],[50,53,57,60,64],[43,53,55,59,62],[52,55,59,62,65],[45,55,57,60,64]];
-const BEAT=60/66;const PENTA=[72,74,76,79,81,84,86];
+let BEAT=60/66;const PENTA=[72,74,76,79,81,84,86];
 function mtof(m){return 440*Math.pow(2,(m-69)/12)}
 function bgmVol(){if(SFXG&&AC)SFXG.gain.setTargetAtTime(SET.sfxVol,AC.currentTime,.05);if(!BGM.gain||!AC)return;BGM.gain.gain.setTargetAtTime((S&&S.bgm&&!muted)?.6*SET.bgmVol:0,AC.currentTime,.2)}
 function bgmStart(){const a=AC;if(!a||BGM.timer)return;const g=a.createGain();g.gain.value=0;const lp=a.createBiquadFilter();lp.type='lowpass';lp.frequency.value=2600;g.connect(lp).connect(a.destination);BGM.gain=g;BGM.next=a.currentTime+.3;BGM.timer=setInterval(bgmTick,80);bgmVol()}
@@ -1614,7 +1736,7 @@ function bgmTick(){const a=AC;if(!a)return;if(!(S&&S.bgm)||muted)return;if(BGM.n
 function bv(t,type,freq,dur,vol,att=.01){const a=AC,o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+att);g.gain.exponentialRampToValueAtTime(.0008,t+dur);o.connect(g).connect(BGM.gain);o.start(t);o.stop(t+dur+.05)}
 function bn(t,dur,freq,vol,type='bandpass',q=1){const a=AC,src=a.createBufferSource();src.buffer=nbuf();const f=a.createBiquadFilter();f.type=type;f.frequency.value=freq;f.Q.value=q;const g=a.createGain();g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0008,t+dur);src.connect(f).connect(g).connect(BGM.gain);src.start(t,Math.random());src.stop(t+dur+.05)}
 function ep(t,m,dur,v){bv(t,'sine',mtof(m),dur,v,.015);bv(t,'sine',mtof(m)*2,dur*.35,v*.18,.005);bv(t,'triangle',mtof(m),dur*.6,v*.25,.02)}
-function schedBar(t,bar){const ch=PROG[bar%PROG.length],nx=PROG[(bar+1)%PROG.length];const sw=BEAT*.66;
+function schedBar(t,bar){BEAT=60/(isPeak()?84:66);BGM.bars=BGM.bars||[];BGM.bars.push({t,beat:BEAT});if(BGM.bars.length>8)BGM.bars.shift();const ch=PROG[bar%PROG.length],nx=PROG[(bar+1)%PROG.length];const sw=BEAT*.66;
  ch.slice(1).forEach((m,i)=>ep(t+i*.012,m,BEAT*3.6,.05));
  if(Math.random()<.7)ch.slice(2).forEach((m,i)=>ep(t+BEAT*1.66+i*.01,m,BEAT*1.5,.03));
  const root=ch[0]-12;const walk=[root,root+(Math.random()<.5?7:3),root+(Math.random()<.5?12:5),nx[0]-12+(Math.random()<.5?-1:1)];
@@ -1677,13 +1799,13 @@ function showSettings(){const was=G&&G.paused;if(G&&S.phase==='service')G.paused
 const LABELS=[
  {n:'① グラス棚',sub:'グラスを取る',p:V(-1.18,1.12,-.3),k:'rack'},
  {n:'② シェイカー',sub:'カクテル用',p:V(-.76,1.13,-.2),k:'shaker'},
- {n:'③ バースプーン',sub:'混ぜる',p:V(-.76,1.2,-.42),k:'spoon'},
+ {n:'③ バースプーン',sub:'混ぜる',p:V(-.76,1.08,-.42),k:'spoon'},
  {n:'④ 氷',sub:'すくう',p:V(-.52,1.05,-.22),k:'ice'},
  {n:'⑤ ボトル棚',sub:'奥：お酒 ／ 手前：割り材',p:V(.02,1.3,-.51),k:'bottle'},
  {n:'⑥ 作業マット',sub:'ここで作る',p:V(.01,.93,-.08),k:'mat'},
  {n:'⑦ フルーツ',sub:'飾り',p:V(.55,1.0,-.25),k:'garnish'},
  {n:'⑧ ビールタップ',sub:'ハンドルを手前に引く',p:V(1.04,1.48,-.54),k:'tap'},
- {n:'⑨ シンク',sub:'洗う・捨てる',p:V(1.52,1.0,-.27),k:'sink'},
+ {n:'⑨ シンク',sub:'左右＝洗う／ぐるぐる＝拭く',p:V(1.52,1.05,-.27),k:'sink'},
 ];
 function renderLabels(hl){const box=$('#labels');if(!SET.labels&&!G.tutorial){if(box.innerHTML)box.innerHTML='';return}
  const hk=(hl||'').split(':')[0];let h='';
