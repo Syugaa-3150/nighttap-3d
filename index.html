@@ -357,7 +357,9 @@ body.touch #hand{transform:scale(var(--ts));transform-origin:bottom left;bottom:
 body.touch #tiltW{transform:scale(var(--ts));transform-origin:top right;top:76px;pointer-events:auto}
 body.touch #talkBox{transform:scale(var(--ts));transform-origin:bottom right;bottom:230px}
 body.touch #tidyBar{transform:translateX(-50%) scale(1.25);transform-origin:top center}
-body.touch #viewPad{transform:scale(1.25);transform-origin:bottom right}
+body.touch #viewPad{transform:scale(var(--bs,1.3));transform-origin:bottom right}
+body.lefty #viewPad{right:auto;left:12px;transform-origin:bottom left}body.touch.lefty #viewPad{transform-origin:bottom left}body.lefty #hand{left:auto;right:10px;transform-origin:bottom right!important}
+#viewPad button:active,#viewPad button.on{background:#e8c27a;color:#1a0f09}
 body.touch #evalPop{transform:scale(var(--ts))!important;transform-origin:bottom right;bottom:250px!important}
 body.touch .slab{font-size:15px}
 body.touch #ticket button,body.touch #autoBtn{min-height:34px}
@@ -372,7 +374,7 @@ body.touch #ticket button,body.touch #autoBtn{min-height:34px}
 #tkt .step{white-space:nowrap;flex:none}
 #nextLine{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:3px 10px!important}
 body.touch #ticket{left:50%!important;width:1150px!important;transform:translateX(-50%) scale(1.08)!important}
-body.touch.vpad #ticket{left:44%!important;width:960px!important}
+body.touch.vpad #ticket{left:39%!important;width:820px!important}body.touch.vpad.lefty #ticket{left:61%!important}
 body.touch #tkt .step{font-size:15px;line-height:1.8}
 body.touch #tkt h2{font-size:20px!important}
 body.touch #nextLine{font-size:16px}
@@ -540,10 +542,11 @@ const DIFF={
 function DX(){return DF().x}
 function DF(){return DIFF[(S&&S.diff)||'normal']}
 function applyDiff(){FOAM[0]=DF().foam[0];FOAM[1]=DF().foam[1]}
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&SET.autoPause!==0&&G&&S&&S.phase==='service'&&!G.paused&&!$('#ov').classList.contains('show'))togglePause()});
 function vib(ms){try{if(SET.vib&&touchMode&&navigator.vibrate)navigator.vibrate(ms)}catch(e){}}
-function applyBodySet(){const b=document.body;b.classList.toggle('vpad',!!SET.vpad);b.classList.toggle('ui-s',SET.uiScale==='s');b.classList.toggle('ui-l',SET.uiScale==='l')}
+function applyBodySet(){const b=document.body;if(SET.vpad&&SET.lookMode==='drag'){SET.lookMode='both';SET.vpad=0}b.classList.toggle('vpad',SET.lookMode==='btn'||SET.lookMode==='both');b.classList.toggle('lefty',!!SET.lefty);b.style.setProperty('--bs',({s:1,m:1.3,l:1.65})[SET.btnSize||'m']);b.classList.toggle('ui-s',SET.uiScale==='s');b.classList.toggle('ui-l',SET.uiScale==='l')}
 const SETKEY='nighttap3d_settings';
-const SET=(()=>{const d={bgmVol:.55,sfxVol:.8,voiceVol:.9,envVol:.5,arrow:1,labels:1,hint:1,quality:'auto',gyro:0,voice:1,sens:1,viewMode:'fps',nameMode:'easy',labelMode:'smart',tsens:1,invY:0,gsens:1,vpad:0,uiScale:'m',vib:1,fps30:0,mobSetup:0};try{const t=JSON.parse(localStorage.getItem(SETKEY)||'{}');return{...d,...t}}catch(e){return d}})();
+const SET=(()=>{const d={bgmVol:.55,sfxVol:.8,voiceVol:.9,envVol:.5,arrow:1,labels:1,hint:1,quality:'auto',gyro:0,voice:1,sens:1,viewMode:'fps',nameMode:'easy',labelMode:'smart',tsens:1,invY:0,gsens:1,vpad:0,uiScale:'m',vib:1,fps30:0,mobSetup:0,lookMode:'drag',btnSize:'m',btnSpeed:1,lefty:0,camShake:1,autoPause:1};try{const t=JSON.parse(localStorage.getItem(SETKEY)||'{}');return{...d,...t}}catch(e){return d}})();
 function saveSet(){try{localStorage.setItem(SETKEY,JSON.stringify(SET))}catch(e){}}
 const IS_TOUCH=(()=>{try{return matchMedia('(pointer:coarse)').matches||('ontouchstart' in window&&navigator.maxTouchPoints>0)}catch(e){return false}})();
 let touchMode=IS_TOUCH;
@@ -1195,7 +1198,7 @@ function updateCust(c,dt){if(c.m.star){c.m.star.rotation.y+=dt*2;c.m.star.positi
   if(c.t>2.5&&c.reg&&!c.greeted){c.greeted=1;const st=S.regs[c.reg]||{};const ln=[...(VL.reg[c.reg]||['また来たよー']),...((st.aff||0)>=3?VL.regClose:[])];const t=pick(ln);say(c,t,2.4);speakC(c,t,true)}
   if(c.t>3.3){walkAnim(c,false,dt);c.m.legs&&c.m.legs.forEach(l=>l.rotation.x=0);if(c.reg)setTimeout(()=>callOut(c),1600);else callOut(c);c.status='waiting';c.pat=c.patMax=34*DF().patWait*patMul(c);c.t=0;c.dirty=1;g.rotation.y=0}}
  else if(c.status==='relax'){c.relaxT-=dt;g.position.y=Math.sin(c.t*2+c.ph)*.004;if(c.relaxT<=0){callOut(c);c.status='waiting';c.pat=c.patMax=34*DF().patWait*patMul(c);c.mood='neutral';c.dirty=1}}
- else if(c.status==='waiting'||c.status==='ordered'){if(!G.tutorial)c.pat-=dt;if(DF().noAngry)c.pat=Math.max(c.pat,c.patMax*.12);if(S.light==='candle'&&!G.tutorial)c.pat+=dt*.13;if(c.status==='ordered'){c.orderT+=dt;if(c.ty==='drunk'&&!c.changed&&c.orderT>9&&Math.random()<dt*.12){const o2=chooseOrder(c);if(o2&&o2!==c.order){c.changed=1;c.order=o2;makeEff(c);c.pat=Math.min(c.patMax,c.pat+20);say(c,`やっぱ${RECIPES[o2].name}にして〜`,3);sfx.pop();floatAt(c.m.g.position.clone().add(V(0,1.95,0)),'注文変更！','#ffb070',18);D.ticket=1}}}g.position.y=Math.sin(c.t*2+c.ph)*.004;
+ else if(c.status==='waiting'||c.status==='ordered'){if(!G.tutorial)c.pat-=dt;if(DF().noAngry)c.pat=Math.max(c.pat,c.patMax*.12);{const LP=(LIGHTSET[S.light]||{}).pat;if(LP&&!G.tutorial)c.pat+=dt*(LP-1)*.9}if(c.status==='ordered'){c.orderT+=dt;if(c.ty==='drunk'&&!c.changed&&c.orderT>9&&Math.random()<dt*.12){const o2=chooseOrder(c);if(o2&&o2!==c.order){c.changed=1;c.order=o2;makeEff(c);c.pat=Math.min(c.patMax,c.pat+20);say(c,`やっぱ${RECIPES[o2].name}にして〜`,3);sfx.pop();floatAt(c.m.g.position.clone().add(V(0,1.95,0)),'注文変更！','#ffb070',18);D.ticket=1}}}g.position.y=Math.sin(c.t*2+c.ph)*.004;
   if(c.pat<=0){say(c,'もういいよ！',2);G.stats.angry++;G.combo=0;S.rep=clamp(S.rep-.12,.5,5);floatAt(g.position.clone().add(V(0,1.9,0)),'怒って帰った… 評判↓','#ff7a7a',16);sfx.bad();leave(c,'angry')}
   else if(c.pat/c.patMax<.3&&c.mood!=='angry'){c.mood='angry';c.dirty=1}}
  else if(c.status==='drinking'){c.drinkT-=dt;if(!c.say&&!G.tutorial&&Math.random()<dt*(c.pers==='chatty'?.06:.015)){const t=pick(c.reg&&S.regs[c.reg]?[REGS.find(r=>r.id===c.reg).lines[clamp(S.regs[c.reg].aff,0,5)].slice(0,26)+'…',...(pers(c).small||[])]:(pers(c).small||['……']));say(c,t,3.2);if(Math.random()<.3)speakC(c,human(c,t))}g.rotation.z=Math.sin(c.t*1.3+c.ph)*.02;
@@ -1403,7 +1406,7 @@ function stagePos(e){const r=cv.getBoundingClientRect();return[(e.clientX-r.left
 cv.addEventListener('contextmenu',e=>e.preventDefault());
 
 cv.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'&&touchMode&&!IS_TOUCH){touchMode=false;document.body.classList.remove('touch')}
- if(touchMode&&P.down&&e.pointerType!=='mouse'&&(P.pid===undefined||e.pointerId===P.pid)){const A=P.act;const lookAll=!A||A.kind==='pendBottle',lookH=A&&A.kind==='pendSlide';const [x2,y2]=stagePos(e);const dx=x2-P.lx,dy=y2-P.ly;P.lx=x2;P.ly=y2;
+ if(touchMode&&P.down&&e.pointerType!=='mouse'&&(P.pid===undefined||e.pointerId===P.pid)&&SET.lookMode!=='btn'){const A=P.act;const lookAll=!A||A.kind==='pendBottle',lookH=A&&A.kind==='pendSlide';const [x2,y2]=stagePos(e);const dx=x2-P.lx,dy=y2-P.ly;P.lx=x2;P.ly=y2;
   if(A&&!lookAll&&!lookH)P.hadAct=1;if(!A&&P.hadAct)return;
   if(lookAll||lookH){const k=.0026*(SET.tsens||1);CAMT.yaw-=dx*k*(SET.invX?-1:1);if(lookAll)CAMT.pitch-=dy*k*(SET.invY?-1:1);camClamp();if(Math.abs(dx)+Math.abs(dy)>2)P.looked=1;
    if(!A)return}}
@@ -1427,6 +1430,7 @@ function rbTilt(dx){if(!tiltOK())return false;RB.moved+=Math.abs(dx);G.tilt=clam
 cv.addEventListener('mousedown',e=>{if(e.button!==2)return;RB.down=1;RB.moved=0;RB.x=stagePos(e)[0]});
 addEventListener('mouseup',e=>{if(e.button!==2||!RB.down)return;RB.down=0;if(RB.moved<6&&G&&S.phase==='service'&&!G.paused)returnHand()});
 addEventListener('blur',()=>{if(P.down){P.down=false;onUp()}});
+addEventListener('pointercancel',e=>{if(P.down&&(P.pid===undefined||e.pointerId===P.pid)){P.down=false;onUp()}});
 $('#hand').addEventListener('pointerdown',e=>{if(e.target.closest('#tasteBtn')){e.stopPropagation();if(G&&S.phase==='service'&&!G.paused)tasteGlass();return}if(e.target.closest('#retBtn')){e.stopPropagation();if(G&&S.phase==='service'&&!G.paused)returnHand()}});
 addEventListener('keydown',e=>{if(!G||S.phase!=='service'||e.repeat)return;const k=(e.key||'').toLowerCase();
  if(k==='enter'){const b=$('#tutBtn');if(b){b.click();return}}
@@ -1707,13 +1711,13 @@ const CAMT={yaw:0,pitch:-.55,gy:0,gp:0};
 function camClamp(){CAMT.yaw=clamp(CAMT.yaw,-1.05,1.05);CAMT.pitch=clamp(CAMT.pitch,-1.15,.12)}
 function updateCamera(dt,t){
  if(FPS.on){camYaw=FPS.yaw;camPitch=FPS.pitch}
- else if(touchMode){const ty=clamp(CAMT.yaw+CAMT.gy,-1.1,1.1),tp=clamp(CAMT.pitch+CAMT.gp,-1.2,.15);const k=1-Math.exp(-dt*16);camYaw+=(ty-camYaw)*k;camPitch+=(tp-camPitch)*k}
+ else if(touchMode){if(VP.dir){const sp=1.25*(SET.btnSpeed||1)*dt;if(VP.dir==='left')CAMT.yaw+=sp;else if(VP.dir==='right')CAMT.yaw-=sp;else if(VP.dir==='up')CAMT.pitch+=sp*.8;else if(VP.dir==='down')CAMT.pitch-=sp*.8;camClamp()}const ty=clamp(CAMT.yaw+CAMT.gy,-1.1,1.1),tp=clamp(CAMT.pitch+CAMT.gp,-1.2,.15);const k=1-Math.exp(-dt*16);camYaw+=(ty-camYaw)*k;camPitch+=(tp-camPitch)*k}
  else if(!(fpsWanted()&&G&&S.phase==='service')){const src=touchMode?LOOK:P;const nx=src.x/1280*2-1,ny=src.y/720;
  const dz=.36;let yt=0;if(Math.abs(nx)>dz)yt=-Math.sign(nx)*sstep(clamp((Math.abs(nx)-dz)/(1-dz),0,1))*.5;
  const pt=-(.16+.56*clamp((ny-.08)/.84,0,1));
  const k=1-Math.exp(-dt*(touchMode?4:8)*(SET.sens||1));camYaw+=(yt-camYaw)*k;camPitch+=(pt-camPitch)*k}
  if(G){G.lookAcc=(G.lookAcc||0)+Math.abs(camYaw-(updateCamera.py??camYaw))+Math.abs(camPitch-(updateCamera.pp??camPitch))}updateCamera.py=camYaw;updateCamera.pp=camPitch;
- let sh=0;if(P.act&&P.act.kind==='shake')sh=.004;
+ let sh=0;if(P.act&&P.act.kind==='shake'&&SET.camShake!==0)sh=.004;
  camera.position.set(CAM0.x+Math.sin(t*.7)*.004+rnd(-sh,sh),CAM0.y+Math.sin(t*1.3)*.003+rnd(-sh,sh),CAM0.z);camera.rotation.set(camPitch,camYaw,0)}
 // glow
 let glowing=[];
@@ -1832,7 +1836,9 @@ for(const g2 of GLASSOBJS){if(g2.wob>0){g2.wob=Math.max(0,g2.wob-FDT*1.6);const 
 /* ====================== LOOP ====================== */
 let last=performance.now(),T=0;
 let FDT=.016;
-function frame(now){if(SET.fps30&&now-last<30){requestAnimationFrame(frame);return}const dt=Math.min(.05,(now-last)/1000);last=now;lightFlicker(now/1000);T+=dt;FDT=dt;
+let pauseOrphan=0;
+function frame(now){if(SET.fps30&&now-last<30){requestAnimationFrame(frame);return}const dt=Math.min(.05,(now-last)/1000);last=now;
+ if(G&&S&&S.phase==='service'&&G.paused&&!$('#ov').classList.contains('show')){pauseOrphan+=dt;if(pauseOrphan>.4){G.paused=false;const bp=$('#btnPause');if(bp)bp.textContent='Ⅱ 一時停止'}}else pauseOrphan=0;lightFlicker(now/1000);T+=dt;FDT=dt;
  if(!(S&&S.phase==='service'&&G&&!G.paused))loopSet('amb',false);
  if(S&&S.phase==='service'&&G&&!G.paused){update(dt);computeHand();hover=P.act?null:pickAt();if(hover)hover.root=actRoot(hover.act)}else hover=null;
  updateCamera(dt,T);if(G){updateHandVisual(T);rackRefresh();sinkRefresh();bottleLevels(dt)}
@@ -1938,7 +1944,7 @@ $('#btnMute').onclick=()=>{muted=!muted;$('#btnMute').textContent=muted?'🔇':'
 $('#btnPause').onclick=togglePause;
 $('#btnSet').onclick=()=>showSettings();
 $('#btnMood').onclick=()=>showMood();
-document.querySelectorAll('[data-look]').forEach(b=>b.addEventListener('pointerdown',e=>{e.preventDefault();ac();const k=b.dataset.look;if(k==='up')CAMT.pitch=-.12;else if(k==='down')CAMT.pitch=-.62;else if(k==='left')CAMT.yaw+=.45;else if(k==='right')CAMT.yaw-=.45;else{CAMT.yaw=0;CAMT.pitch=-.55}camClamp();if(GY.on)gyroRecenter()}));
+const VP={dir:null};document.querySelectorAll('[data-look]').forEach(b=>{b.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();ac();const k=b.dataset.look;try{b.setPointerCapture(e.pointerId)}catch(_){}if(k==='center'){CAMT.yaw=0;CAMT.pitch=-.55;camClamp();if(GY.on)gyroRecenter();return}VP.dir=k;b.classList.add('on')});const end=()=>{if(VP.dir===b.dataset.look)VP.dir=null;b.classList.remove('on')};b.addEventListener('pointerup',end);b.addEventListener('pointercancel',end);b.addEventListener('lostpointercapture',end)});
 if(IS_TOUCH)document.body.classList.add('touch');
 
 
@@ -2093,24 +2099,29 @@ function bgmVol(){if(SFXG&&AC)SFXG.gain.setTargetAtTime(SET.sfxVol,AC.currentTim
 const MUSIC={jazz:{id:'jazz',n:'🎷 ジャズ',t:[66,84],d:'落ち着いた大人の雰囲気。紳士・会社員が来やすい',w:{gent:1.7,office:1.3}},bossa:{id:'bossa',n:'🌴 ボサノバ',t:[78,94],d:'陽気でゆったり。観光客・ほろ酔いさんが来やすい',w:{tourist:1.9,drunk:1.4}},lofi:{id:'lofi',n:'🎧 ローファイ',t:[72,80],d:'まったりビート。学生・ビール通が来やすい',w:{student:1.9,beerfan:1.4}}};
 const LIGHTSET={warm:{n:'🕯 あたたか',d:'いつもの電球色。会社員が少し増える',pend:0xffc888,pi:5,spot:11,spotC:0xffe6c8,amb:0xffe0c0,ai:.16,hs:0xffd9b0,hg:0x1a0c06,hi:.35,bg:0x0d0705,exp:1.15,halo:null,vig:'rgba(10,4,0,.42)',tint:'rgba(0,0,0,0)',w:{office:1.2}},
  blue:{n:'🌙 ムーディー',d:'青い夜の照明。評論家・セレブが来やすい（チップ高め・採点きびしめ）',pend:0x4a6cff,pi:7,spot:8,spotC:0x9cc0ff,amb:0x5a78ff,ai:.32,hs:0x6a8cff,hg:0x04061a,hi:.5,bg:0x04071a,exp:1.0,halo:0x5a80ff,vig:'rgba(0,4,30,.6)',tint:'rgba(40,70,220,.13)',w:{critic:1.6,vip:1.5}},
+ neon:{n:'💜 ネオン',d:'ピンクと紫のネオン。学生・観光客が来やすい',pend:0xff3ad0,pi:6,spot:8,spotC:0xc8a0ff,amb:0xb040ff,ai:.3,hs:0xff60e0,hg:0x10021a,hi:.45,bg:0x0e0214,exp:1.05,halo:0xff40e0,vig:'rgba(20,0,30,.6)',tint:'rgba(220,40,200,.11)',w:{student:1.6,tourist:1.4}},
+ sunset:{n:'🌇 サンセット',d:'夕焼けのオレンジと赤。会社員・紳士が来やすい',pend:0xff6a3a,pi:6,spot:10,spotC:0xffc080,amb:0xff7040,ai:.25,hs:0xffa060,hg:0x1a0604,hi:.45,bg:0x140604,exp:1.1,halo:0xff7040,vig:'rgba(30,6,0,.5)',tint:'rgba(255,90,40,.1)',w:{office:1.4,gent:1.3}},
+ forest:{n:'🌿 フォレスト',d:'緑のやすらぎ。ビール通がじっくり飲みに来る',pend:0x6ad890,pi:5,spot:9,spotC:0xd8ffd8,amb:0x60c080,ai:.26,hs:0x80e0a0,hg:0x031008,hi:.42,bg:0x030d06,exp:1.05,halo:0x60e090,vig:'rgba(0,14,4,.55)',tint:'rgba(40,200,100,.08)',w:{beerfan:1.8},pat:1.05},
+ bright:{n:'☀ ひるま',d:'明るい白色灯。作業が見やすい（せっかちさんが増える）',pend:0xffffff,pi:7,spot:14,spotC:0xffffff,amb:0xffffff,ai:.5,hs:0xffffff,hg:0x302820,hi:.8,bg:0x2a2420,exp:1.25,halo:0xffffff,vig:'rgba(0,0,0,.25)',tint:'rgba(255,255,255,.04)',w:{hurry:1.8}},
+ disco:{n:'🪩 ディスコ',d:'色がくるくる変わる！ ほろ酔いさん・学生が大はしゃぎ',pend:0xff40a0,pi:6,spot:8,spotC:0xffffff,amb:0x8040ff,ai:.3,hs:0xff80ff,hg:0x08001a,hi:.45,bg:0x080410,exp:1.05,halo:0xff40ff,vig:'rgba(0,0,20,.55)',tint:'rgba(120,40,255,.08)',disco:1,w:{drunk:1.8,student:1.4}},
  candle:{n:'🔥 キャンドル',d:'ほの暗く静か。炎がゆらめく。お客さんの待てる時間 +15%',pend:0xff7a20,pi:2.6,spot:4.5,spotC:0xffa860,amb:0xff8040,ai:.08,hs:0xff9a50,hg:0x0a0300,hi:.18,bg:0x060201,exp:.9,halo:0xff7a20,vig:'rgba(8,2,0,.72)',tint:'rgba(255,110,20,.08)',flick:1,w:{gent:1.3},pat:1.15}};
 function applyLight(){const L=LIGHTSET[(S&&S.light)||'warm']||LIGHTSET.warm;for(const p of LIGHTS.pend){p.color.setHex(L.pend);p.intensity=L.pi;p.userData.base=L.pi}
  if(LIGHTS.spot){LIGHTS.spot.intensity=L.spot;LIGHTS.spot.color.setHex(L.spotC);LIGHTS.spot.userData.base=L.spot}if(LIGHTS.amb){LIGHTS.amb.color.setHex(L.amb);LIGHTS.amb.intensity=L.ai}
  if(LIGHTS.hemi){LIGHTS.hemi.color.setHex(L.hs);LIGHTS.hemi.groundColor.setHex(L.hg);LIGHTS.hemi.intensity=L.hi}
  scene.background.setHex(L.bg);if(scene.fog)scene.fog.color.setHex(L.bg);renderer.toneMappingExposure=L.exp;
  for(const h of HALOS){if(L.halo){h.material.color.setHex(L.halo)}else h.material.color.copy(h.userData.c0)}
- const vg=document.getElementById('vign');if(vg)vg.style.background=`radial-gradient(ellipse at 50% 46%,rgba(0,0,0,0) 50%,${L.vig} 100%),${L.tint}`;LIGHTS.flick=!!L.flick}
+ const vg=document.getElementById('vign');if(vg)vg.style.background=`radial-gradient(ellipse at 50% 46%,rgba(0,0,0,0) 50%,${L.vig} 100%),${L.tint}`;LIGHTS.flick=!!L.flick;LIGHTS.disco=!!L.disco}
 function lightFlash(){const f=document.createElement('div');f.style.cssText='position:absolute;inset:0;background:#000;opacity:.85;pointer-events:none;z-index:50;transition:opacity .9s';$('#stage').appendChild(f);requestAnimationFrame(()=>requestAnimationFrame(()=>{f.style.opacity=0}));setTimeout(()=>f.remove(),1000)}
-function lightFlicker(t){if(!LIGHTS.flick)return;LIGHTS.pend.forEach((p,i)=>{const b=p.userData.base||3;p.intensity=b*(.78+.14*Math.sin(t*7.3+i*1.7)+.08*Math.sin(t*17.1+i*3.1))});if(LIGHTS.spot)LIGHTS.spot.intensity=(LIGHTS.spot.userData.base||5)*(.9+.06*Math.sin(t*5.1)+.04*Math.sin(t*13.7))}
+function lightFlicker(t){if(LIGHTS.disco){LIGHTS.pend.forEach((p,i)=>{p.color.setHSL(((t*.18+i*.17)%1),1,.55)});if(LIGHTS.amb)LIGHTS.amb.color.setHSL((t*.1)%1,.8,.5);for(const h of HALOS)h.material.color.setHSL((t*.18+h.position.x*.1)%1,1,.6);return}if(!LIGHTS.flick)return;LIGHTS.pend.forEach((p,i)=>{const b=p.userData.base||3;p.intensity=b*(.78+.14*Math.sin(t*7.3+i*1.7)+.08*Math.sin(t*17.1+i*3.1))});if(LIGHTS.spot)LIGHTS.spot.intensity=(LIGHTS.spot.userData.base||5)*(.9+.06*Math.sin(t*5.1)+.04*Math.sin(t*13.7))}
 function moodW(k){const a=MUSIC[(S&&S.music)||'jazz'],b=LIGHTSET[(S&&S.light)||'warm'];return ((a&&a.w[k])||1)*((b&&b.w[k])||1)}
-function showMood(){if(!S)return;const was=G&&G.paused;if(G&&S.phase==='service')G.paused=true;if(G)G.tutMood=1;
+function showMood(was0){if(!S)return;const was=was0!==undefined?was0:(G&&G.paused);if(G&&S.phase==='service')G.paused=true;if(G)G.tutMood=1;
  const card=(grp,k,o,cur)=>`<div class="card ${cur===k?'done':''}" data-${grp}="${k}" style="cursor:pointer;flex-direction:column;align-items:flex-start"><b>${o.n}${cur===k?' ✓':''}</b><small style="color:#f5e6c8bb">${o.d}</small></div>`;
  openOv(`<div class="modal" style="width:640px"><h1>🎵 お店の雰囲気</h1><p style="font-size:13px;color:#f5e6c8bb">音楽と照明で、来店するお客さんのタイプが変わります。</p>
  <b>音楽</b><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:6px 0 12px">${Object.keys(MUSIC).map(k=>card('mu',k,MUSIC[k],S.music||'jazz')).join('')}</div>
- <b>照明</b><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:6px 0 12px">${Object.keys(LIGHTSET).map(k=>card('li',k,LIGHTSET[k],S.light||'warm')).join('')}</div>
+ <b>照明</b><div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin:6px 0 12px">${Object.keys(LIGHTSET).map(k=>card('li',k,LIGHTSET[k],S.light||'warm')).join('')}</div>
  <div style="display:flex;justify-content:flex-end"><button class="btn" id="mClose">閉じる</button></div></div>`);
- document.querySelectorAll('[data-mu]').forEach(b=>b.onclick=()=>{S.music=b.dataset.mu;save();sfx.pop();showMood()});
- document.querySelectorAll('[data-li]').forEach(b=>b.onclick=()=>{S.light=b.dataset.li;applyLight();save();sfx.pop();showMood();lightFlash()});
+ document.querySelectorAll('[data-mu]').forEach(b=>b.onclick=()=>{S.music=b.dataset.mu;save();sfx.pop();showMood(was)});
+ document.querySelectorAll('[data-li]').forEach(b=>b.onclick=()=>{S.light=b.dataset.li;applyLight();save();sfx.pop();showMood(was);lightFlash()});
  $('#mClose').onclick=()=>{closeOv();if(G)G.paused=was}}
 function schedBar2(t,bar,id){const ch=PROG[bar%PROG.length];const root=ch[0]-12;
  if(id==='bossa'){ch.slice(1).forEach((m,i)=>{ep(t+BEAT*.5+i*.01,m,BEAT*.9,.035);ep(t+BEAT*2+i*.01,m,BEAT*.9,.03);ep(t+BEAT*3.5+i*.01,m,BEAT*.5,.025)});
@@ -2178,7 +2189,10 @@ function showSettings(){const was=G&&G.paused;if(G&&S.phase==='service')G.paused
  <div class="setrow"><span>↔ 左右の向き</span><button class="tg ${SET.invX?'':'on'}" data-ix="0">ふつう</button><button class="tg ${SET.invX?'on':''}" data-ix="1">反転</button></div>
  <div class="setrow"><span>↕ 上下の向き</span><button class="tg ${SET.invY?'':'on'}" data-iy="0">ふつう</button><button class="tg ${SET.invY?'on':''}" data-iy="1">反転</button></div>
  <div class="setrow"><span>🔤 文字・パネルの大きさ</span>${[['s','小'],['m','中'],['l','大']].map(([k,l])=>`<button class="tg ${SET.uiScale===k?'on':''}" data-ui="${k}">${l}</button>`).join('')}</div>
- <div class="setrow"><span>🎮 見回しボタン（⬆⬇◀▶）</span><button class="tg ${SET.vpad?'on':''}" id="sVp">${SET.vpad?'表示する':'表示しない'}</button></div>
+ <div class="setrow"><span>👁 見回し方法</span>${[['drag','ドラッグ'],['btn','ボタン'],['both','両方']].map(([k,l])=>`<button class="tg ${SET.lookMode===k?'on':''}" data-lk="${k}">${l}</button>`).join('')}</div>
+ ${SET.lookMode!=='drag'?`<div class="setrow"><span>🎮 ボタンの大きさ</span>${[['s','小'],['m','中'],['l','大']].map(([k,l])=>`<button class="tg ${SET.btnSize===k?'on':''}" data-bsz="${k}">${l}</button>`).join('')}</div>
+ <div class="setrow"><span>🎮 ボタンの感度（回る速さ）</span><input type="range" min="30" max="300" step="5" value="${Math.round((SET.btnSpeed||1)*100)}" id="sBs"><b id="sBsV" style="width:44px;text-align:right">${(SET.btnSpeed||1).toFixed(2)}</b></div>`:''}
+ <div class="setrow"><span>🤚 左利き配置<br><small style="font-size:11px;color:#aaa">ボタンと手のパネルを左右入れ替え</small></span><button class="tg ${SET.lefty?'on':''}" id="sLh">${SET.lefty?'ON':'OFF'}</button></div>
  <div class="setrow"><span>📳 振動（成功したとき）</span><button class="tg ${SET.vib?'on':''}" id="sVib">${SET.vib?'ON':'OFF'}</button></div>
  <div class="setrow"><span>🔋 省電力（30fps）</span><button class="tg ${SET.fps30?'on':''}" id="sF30">${SET.fps30?'ON':'OFF'}</button></div>
  <div class="setrow"><span>🌀 ジャイロ（スマホを傾けて見回す）</span><button class="tg ${GY.on?'on':''}" data-gy="1">使う</button><button class="tg ${GY.on?'':'on'}" data-gy="0">使わない</button>${GY.on?'<button class="tg" id="sGyR">正面リセット</button>':''}</div>
@@ -2195,6 +2209,10 @@ function showSettings(){const was=G&&G.paused;if(G&&S.phase==='service')G.paused
  <div class="setrow"><span>🖱 視点の感度<br><small style="font-size:11px;color:#aaa">FPS：回転の速さ／カーソル：追従の速さ</small></span><input type="range" min="10" max="300" step="5" value="${Math.round((SET.sens||1)*100)}" id="sSens"><b id="sSensV" style="width:44px;text-align:right">${(SET.sens||1).toFixed(2)}</b></div>
  
  `}${(touchMode||IS_TOUCH)?'':`<div class="setrow"><span>📱 ジャイロ操作<br><small style="font-size:11px;color:#aaa">傾けて見回す・振ってシェイク</small></span><button class="tg ${GY.on?'on':''}" id="sGyro">${GY.on?'ON':'OFF'}</button><button class="tg" id="sGyroC">正面リセット</button></div>`}
+ <div style="margin:10px 0 4px;color:#ffd77a;font-weight:900">🛠 便利な設定</div>
+ <div class="setrow"><span>📳 シェイク時の画面ゆれ</span><button class="tg ${SET.camShake!==0?'on':''}" id="sCs">${SET.camShake!==0?'ON':'OFF'}</button></div>
+ <div class="setrow"><span>⏸ 別アプリ・別タブに切り替えたら自動で一時停止</span><button class="tg ${SET.autoPause!==0?'on':''}" id="sAp">${SET.autoPause!==0?'ON':'OFF'}</button></div>
+ <div class="setrow"><span>♻ 設定をはじめの状態に戻す</span><button class="tg" id="sRst">初期化する</button></div>
  <div class="setrow"><span>⛶ 全画面</span><button class="tg" id="sFull">今すぐ全画面</button><button class="tg ${SET.autoFull===0?'':'on'}" id="sAF">開始時に自動：${SET.autoFull===0?'OFF':'ON'}</button></div>
  ${S?`<div class="setrow"><span>🎚 難易度</span>${diffSel()}</div>`:''}
  <div style="display:flex;justify-content:flex-end;margin-top:14px"><button class="btn" id="sClose">閉じる</button></div></div>`);
@@ -2207,7 +2225,7 @@ function showSettings(){const was=G&&G.paused;if(G&&S.phase==='service')G.paused
  document.querySelectorAll('[data-gy]').forEach(b=>b.onclick=async()=>{const on=b.dataset.gy==='1';if(on!==GY.on)await gyroEnable(on);showSettings();if(G&&S.phase==='service')G.paused=true});if($('#sGyR'))$('#sGyR').onclick=()=>{gyroRecenter();toast('いまの向きを正面にしました')};
  if($('#sTs')){$('#sTs').oninput=e=>{SET.tsens=e.target.value/100;$('#sTsV').textContent=SET.tsens.toFixed(2);saveSet()};if($('#sGs'))$('#sGs').oninput=e=>{SET.gsens=e.target.value/100;$('#sGsV').textContent=SET.gsens.toFixed(2);saveSet()};
   document.querySelectorAll('[data-ix]').forEach(b=>b.onclick=()=>{SET.invX=+b.dataset.ix;reS()});document.querySelectorAll('[data-iy]').forEach(b=>b.onclick=()=>{SET.invY=+b.dataset.iy;reS()});document.querySelectorAll('[data-ui]').forEach(b=>b.onclick=()=>{SET.uiScale=b.dataset.ui;reS()});
-  $('#sVp').onclick=()=>{SET.vpad=SET.vpad?0:1;reS()};$('#sVib').onclick=()=>{SET.vib=SET.vib?0:1;if(SET.vib)vib(40);reS()};$('#sF30').onclick=()=>{SET.fps30=SET.fps30?0:1;reS()}}
+  document.querySelectorAll('[data-lk]').forEach(b=>b.onclick=()=>{SET.lookMode=b.dataset.lk;reS()});document.querySelectorAll('[data-bsz]').forEach(b=>b.onclick=()=>{SET.btnSize=b.dataset.bsz;reS()});if($('#sBs'))$('#sBs').oninput=e=>{SET.btnSpeed=e.target.value/100;$('#sBsV').textContent=SET.btnSpeed.toFixed(2);saveSet()};$('#sLh').onclick=()=>{SET.lefty=SET.lefty?0:1;reS()};$('#sVib').onclick=()=>{SET.vib=SET.vib?0:1;if(SET.vib)vib(40);reS()};$('#sF30').onclick=()=>{SET.fps30=SET.fps30?0:1;reS()}}
  document.querySelectorAll('[data-lm]').forEach(b=>b.onclick=()=>{SET.labelMode=b.dataset.lm;saveSet();showSettings();if(G&&S.phase==='service')G.paused=true});
  document.querySelectorAll('[data-nm]').forEach(b=>b.onclick=()=>{SET.nameMode=b.dataset.nm;saveSet();applyNames();if(G)for(const c of G.customers){if(c.eff&&RECIPES[c.order]){c.eff.name=RECIPES[c.order].name;c.eff.sub=RECIPES[c.order].sub}c.dirty=1};lastTabs='';showSettings();if(G&&S.phase==='service')G.paused=true});
  document.querySelectorAll('[data-vm]').forEach(b=>b.onclick=()=>{SET.viewMode=b.dataset.vm;saveSet();showSettings();if(G&&S.phase==='service')G.paused=true});
@@ -2215,6 +2233,8 @@ function showSettings(){const was=G&&G.paused;if(G&&S.phase==='service')G.paused
  document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{SET.quality=b.dataset.q;saveSet();fit();showSettings()});
  if($('#sGyro'))$('#sGyro').onclick=async()=>{await gyroEnable(!GY.on);showSettings();if(G&&S.phase==='service')G.paused=true};if($('#sGyroC'))$('#sGyroC').onclick=()=>{gyroRecenter();toast('いまの向きを正面にしました')};
  $('#sFull').onclick=()=>{try{const el=document.documentElement;(el.requestFullscreen||el.webkitRequestFullscreen).call(el).catch(()=>toast('この画面では全画面にできません'))}catch(e){toast('この画面では全画面にできません')}};
+ {const re2=()=>{saveSet();applyBodySet();showSettings();if(G&&S.phase==='service')G.paused=true};$('#sCs').onclick=()=>{SET.camShake=SET.camShake!==0?0:1;re2()};$('#sAp').onclick=()=>{SET.autoPause=SET.autoPause!==0?0:1;re2()};
+  $('#sRst').onclick=()=>{const b=$('#sRst');if(!b.dataset.c){b.dataset.c=1;b.textContent='もう一度押すと初期化（セーブは消えません）';return}try{localStorage.removeItem(SETKEY)}catch(e){}location.reload()}}
  $('#sAF').onclick=()=>{SET.autoFull=SET.autoFull===0?1:0;saveSet();showSettings();if(G&&S.phase==='service')G.paused=true};
  if(S)bindDiffSel(()=>{showSettings()});
  $('#sClose').onclick=()=>{if(prev==='shop'){openShop();return}if(prev==='title'){showTitle();return}if(prev==='reportset'||prev==='report'){S.phase='report';openOv(REPORT_HTML);bindReport();return}closeOv();if(G)G.paused=was&&false}}
