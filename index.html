@@ -263,6 +263,66 @@ body.touch #ticket{width:640px!important}
 #evalPop{left:auto!important;right:12px;top:auto!important;bottom:12px;transform:none!important;min-width:220px;max-width:240px;padding:8px 12px!important}
 #evalPop .sc{font-size:22px!important}
 body.touch #evalPop{bottom:190px}
+/* ===== UI v3 theme ===== */
+:root{--pn:rgba(16,12,10,.78);--pn2:rgba(26,20,16,.9);--bd:rgba(255,222,170,.16);--gold:#e8b45a;--gold2:#f6d48e;--teal:#47d6c8;--tx:#f6efe2;--mut:#bfb3a2;--red:#ff6b5a;--grn:#6fdc8c}
+#top{height:52px!important;background:linear-gradient(180deg,rgba(10,7,5,.92),rgba(10,7,5,.55))!important;border-bottom:none!important;padding:0 14px!important;gap:8px!important;backdrop-filter:blur(6px)}
+.tb{background:var(--pn)!important;border:1px solid var(--bd)!important;border-radius:999px!important;padding:5px 14px!important;font-size:12.5px!important;color:var(--mut);box-shadow:0 4px 14px #0006}
+.tb b{color:var(--tx)!important;font-size:18px!important;font-weight:800}
+#stars i{color:var(--gold2)!important}
+.tbar,.gbar{height:5px!important;border-radius:3px;background:#ffffff18!important}
+.ic{background:var(--pn)!important;border:1px solid var(--bd)!important;border-radius:999px!important;height:36px!important;min-width:36px;font-size:14px!important;color:var(--tx)!important;box-shadow:0 4px 14px #0006;transition:.15s}
+.ic:hover{background:rgba(232,180,90,.22)!important;border-color:var(--gold)!important}
+#ticket{background:var(--pn)!important;border:1px solid var(--bd)!important;border-radius:18px!important;backdrop-filter:blur(10px);box-shadow:0 10px 30px #000a}
+#ticket h3{color:var(--gold)!important;letter-spacing:.1em}
+.otab{background:#ffffff0d!important;border:1px solid var(--bd)!important;border-radius:10px!important;color:var(--tx);padding:4px 8px!important}
+.otab.on{background:rgba(232,180,90,.22)!important;border-color:var(--gold)!important;color:var(--tx)!important}
+#tkt{background:#ffffff0a!important;color:var(--tx)!important;border:1px solid var(--bd);border-radius:12px!important;box-shadow:none!important}
+#tkt h2{color:var(--tx)!important}#tkt h2 small{color:var(--mut)!important}
+#tkt .step{background:#ffffff0f!important;border-color:#ffffff22!important;color:var(--mut)!important}
+#tkt .step .ck{border-color:#ffffff44!important}
+#tkt .step.cur{background:rgba(232,180,90,.2)!important;border-color:var(--gold)!important;color:var(--tx)!important;box-shadow:0 0 0 2px rgba(232,180,90,.25)!important}
+#tkt .step.cur .ck{background:var(--gold)!important;border-color:var(--gold)!important;color:#1a1008}
+#tkt .step.done{background:rgba(111,220,140,.14)!important;border-color:rgba(111,220,140,.5)!important;color:var(--grn)!important}
+#tkt .step .amt{color:var(--gold2)!important}
+.tktEmpty{color:var(--mut)!important}
+#nextLine{background:linear-gradient(90deg,rgba(71,214,200,.18),rgba(71,214,200,.06))!important;border:1px solid rgba(71,214,200,.55)!important;border-radius:12px!important;color:var(--tx)!important}
+#nextLine b{color:var(--teal)!important}
+#hand{background:var(--pn)!important;border:1px solid var(--bd)!important;border-radius:14px!important;backdrop-filter:blur(8px)}
+#hand .ret{background:linear-gradient(180deg,var(--gold2),var(--gold))!important;border-radius:999px!important}
+.bub{background:rgba(250,244,232,.96)!important;border:none!important;border-radius:14px!important;box-shadow:0 6px 18px #0008!important;color:#2a1a10!important}
+.bub.call{background:linear-gradient(180deg,#ffe08a,#f2b84a)!important}
+.bub.say{background:var(--pn2)!important;color:var(--gold2)!important;border:1px solid var(--bd)!important}
+.slab{background:rgba(10,24,24,.72)!important;border:1px solid rgba(71,214,200,.45)!important;border-radius:10px!important;backdrop-filter:blur(4px)}
+.slab.on{background:var(--teal)!important;color:#05211e!important}
+#arrow .al{background:linear-gradient(180deg,#fff1a8,#ffd84a)!important;border-radius:999px!important;box-shadow:0 4px 12px #0008!important}
+#evalPop{background:var(--pn2)!important;border:1px solid var(--gold)!important;border-radius:16px!important;backdrop-filter:blur(10px);box-shadow:0 10px 30px #000a}
+#combo{color:var(--gold2)!important;text-shadow:0 0 14px rgba(232,180,90,.7),0 2px 0 #000!important}
+#toast{background:var(--pn2)!important;color:var(--gold2)!important;border:1px solid var(--gold);box-shadow:0 8px 24px #000a!important;border-radius:999px!important}
+#msg div{background:rgba(160,40,30,.92)!important;border-radius:999px!important;padding:7px 16px!important;box-shadow:0 6px 18px #0008}
+#tut{background:var(--pn2)!important;border:1px solid var(--gold)!important;border-radius:18px!important;backdrop-filter:blur(10px)}
+#readout{background:var(--pn2)!important;border:1px solid var(--bd)!important;border-radius:12px!important}
+#ov{background:rgba(6,4,3,.7)!important;backdrop-filter:blur(6px)}
+.modal{background:linear-gradient(180deg,rgba(34,26,20,.97),rgba(20,15,12,.97))!important;border:1px solid var(--bd)!important;border-radius:22px!important;box-shadow:0 20px 60px #000c!important;color:var(--tx)}
+.modal h1{color:var(--gold2)!important;font-weight:800!important;letter-spacing:.04em}
+.btn{background:linear-gradient(180deg,var(--gold2),var(--gold))!important;color:#22160a!important;border-radius:999px!important;box-shadow:0 6px 16px rgba(232,180,90,.25)!important;font-weight:800!important}
+.btn.sec{background:#ffffff12!important;color:var(--tx)!important;border:1px solid var(--bd)!important;box-shadow:none!important}
+.btn.sec:hover{border-color:var(--gold)!important}
+.tabs button{background:#ffffff0d!important;border:1px solid var(--bd)!important;border-radius:999px!important;color:var(--tx)!important}
+.tabs button.on{background:var(--gold)!important;color:#22160a!important}
+.card,.hcard,.hlc,.recipe,.dcard,.oprev{background:#ffffff08!important;border:1px solid var(--bd)!important;border-radius:14px!important}
+.card .info b,.hcard b,.recipe b,.dcard b{color:var(--gold2)!important}
+.setrow{border-bottom:1px solid #ffffff10!important}
+.tg{background:#ffffff10!important;border:1px solid var(--bd)!important;border-radius:999px!important;color:var(--tx)!important}
+.tg.on{background:var(--teal)!important;color:#05211e!important;border-color:var(--teal)!important}
+.chip{background:#ffffff10!important;border:1px solid var(--bd)!important;border-radius:999px!important;color:var(--tx)!important}
+.chip.on{background:var(--gold)!important;color:#22160a!important}
+.dsel button{border-radius:999px!important;background:#ffffff10!important;border:1px solid var(--bd)!important;color:var(--tx)!important}
+.dsel button.on{background:var(--teal)!important;color:#05211e!important}
+.title{background:radial-gradient(ellipse at 50% 15%,rgba(80,52,30,.97),rgba(16,11,8,.98) 75%)!important}
+#cutPanel{background:var(--pn2)!important;border:1px solid var(--gold)!important;border-radius:18px!important}
+#autoBtn{margin-left:auto;flex:none;pointer-events:auto;background:linear-gradient(180deg,#bff6f2,#47d6c8);color:#05211e;border:none;border-radius:999px;padding:5px 12px;font-weight:900;font-size:13px;cursor:pointer;font-family:inherit;box-shadow:0 4px 12px #0006}
+#autoBtn:hover{filter:brightness(1.1)}
+#nextLine{pointer-events:auto}
 #loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#ffd77a;background:#0e0806}
 </style>
 </head>
@@ -291,7 +351,7 @@ body.touch #evalPop{bottom:190px}
    <button class="ic" id="btnSet" title="設定（音量・ガイド表示）">⚙ 設定</button><button class="ic" id="btnMute" title="音">🔊</button>
    <button class="ic" id="btnPause" title="一時停止">Ⅱ</button>
   </div>
-  <div id="ticket"><div id="tkL"><h3>🧾 伝票 <span id="ordCount"></span></h3><div id="orderTabs"></div></div><div id="tkR"><div id="tkt"></div><div id="nextLine"><b>次は▶</b><span id="nextTxt"></span></div></div></div>
+  <div id="ticket"><div id="tkL"><h3>🧾 伝票 <span id="ordCount"></span></h3><div id="orderTabs"></div></div><div id="tkR"><div id="tkt"></div><div id="nextLine"><b>次は▶</b><span id="nextTxt"></span><button id="autoBtn" title="次の手順を1つ自動でやります">🪄 おまかせ</button></div></div></div>
   <div id="evalPop"></div>
   <div id="readout"></div>
   <div id="gaugeBox"><div class="glab" id="glab"></div><div class="gt"><div class="nd" id="needle"></div></div></div>
@@ -399,9 +459,9 @@ const ACH=[
 ];
 
 const DIFF={
- easy:{name:'かんたん',icon:'🌱',desc:'お客さんはゆっくり来店（同時に2組まで）<br>待ち時間たっぷり<br>ボトル・タップが<b>ちょうどの量で自動ストップ</b>',spawn:2.0,cap:2,patWait:2.2,patOrder:2.4,tol:.32,foam:[.08,.45],fillLo:.72,gauge:{p:[.45,1.12],o:[.25,1.25]},assist:1,brk:14,x:{flairDur:1.5,flairWin:.75,slide:[350,99999],brk:false,foamMul:1,autoTilt:1,cutTol:9999,cutStart:99,wetPen:0,dry:5,cap:false,beat:.2,req:0,vague:0}},
- normal:{name:'ふつう',icon:'🍺',desc:'ほどよい忙しさ（同時に3組まで）<br>待ち時間ゆったり<br>計量は少し甘め',spawn:1.4,cap:3,patWait:1.5,patOrder:1.6,tol:.22,foam:[.14,.38],fillLo:.78,gauge:{p:[.6,1.0],o:[.4,1.15]},assist:0,brk:9,x:{flairDur:1.3,flairWin:.45,slide:[600,3400],brk:true,foamMul:1.1,autoTilt:0,cutTol:55,cutStart:4,wetPen:0,dry:25,cap:true,beat:.13,req:.35,vague:0}},
- hard:{name:'むずかしい',icon:'🔥',desc:'動画のバーテンダー級のラッシュ<br>待ち時間短め<br>計量も泡も厳しい',spawn:1,cap:6,patWait:1,patOrder:1,tol:.15,foam:[.18,.35],fillLo:.85,gauge:{p:[.7,.95],o:[.5,1.1]},assist:0,brk:5,x:{flairDur:1.15,flairWin:.3,slide:[800,2500],brk:true,foamMul:1.35,autoTilt:0,cutTol:30,cutStart:0,wetPen:5,dry:9999,cap:true,beat:.09,req:.3,vague:.35}}};
+ easy:{name:'かんたん',icon:'🌱',auto:1,noAngry:1,desc:'お客さんは<b>1組ずつ</b>ゆっくり来店<br><b>怒って帰らない</b>・失敗してもOK<br>注ぐ量は自動ストップ<br><b>🪄おまかせボタン</b>で手順を自動でできる',spawn:2.6,cap:1,patWait:4,patOrder:4,tol:.4,foam:[.08,.45],fillLo:.72,gauge:{p:[.35,1.2],o:[.15,1.3]},assist:1,brk:18,x:{flairDur:1.7,flairWin:.9,slide:[300,99999],brk:false,foamMul:.9,autoTilt:1,cutTol:9999,cutStart:99,wetPen:0,dry:4,cap:false,beat:.22,req:0,vague:0}},
+ normal:{name:'ふつう',icon:'🍺',desc:'ほどよい忙しさ（同時に2組まで）<br>待ち時間ゆったり<br>注ぐ量は自動ストップ・計量も甘め<br>ときどき「濃いめ」などの注文',spawn:1.8,cap:2,patWait:2.2,patOrder:2.4,tol:.28,foam:[.1,.42],fillLo:.75,gauge:{p:[.5,1.08],o:[.3,1.22]},assist:1,brk:12,x:{flairDur:1.4,flairWin:.6,slide:[450,4500],brk:false,foamMul:1,autoTilt:1,cutTol:80,cutStart:6,wetPen:0,dry:12,cap:false,beat:.16,req:.25,vague:0}},
+ hard:{name:'むずかしい',icon:'🔥',desc:'動画のバーテンダー級のラッシュ<br>自分で量を見て止める<br>計量も泡も厳しい・特徴だけの注文も',spawn:1.1,cap:5,patWait:1.3,patOrder:1.4,tol:.15,foam:[.18,.35],fillLo:.85,gauge:{p:[.7,.95],o:[.5,1.1]},assist:0,brk:5,x:{flairDur:1.15,flairWin:.3,slide:[800,2500],brk:true,foamMul:1.35,autoTilt:1,cutTol:30,cutStart:0,wetPen:5,dry:9999,cap:true,beat:.09,req:.3,vague:.35}}};
 function DX(){return DF().x}
 function DF(){return DIFF[(S&&S.diff)||'normal']}
 function applyDiff(){FOAM[0]=DF().foam[0];FOAM[1]=DF().foam[1]}
@@ -596,7 +656,7 @@ function buildRoom(){buildBrandTex();buildBoardTex();
   const nose=cyl(.028,.028,5,M.wood,.1,1.1,-1.03,20);nose.rotation.z=Math.PI/2;for(let x=-2.3;x<=2.5;x+=.32)box(.02,1.0,.012,std({color:0x1e1008,roughness:.8}),x,.52,-1.04)}
  box(5,.18,.04,M.darkWood,.1,.99,-.6);
  // work area
- const wsM=std({map:BRUSHTEX,roughnessMap:BRUSHTEX,color:0xd0d6dc,metalness:.8,roughness:.45,envMapIntensity:.7});const ws=box(3.5,.04,.6,wsM,.08,.88,-.31);addPick(ws,{kind:'surface'});
+ const wsM=std({map:BRUSHTEX,roughnessMap:BRUSHTEX,color:0xd0d6dc,metalness:.8,roughness:.45,envMapIntensity:.7});const ws=box(3.0,.04,.6,wsM,-.17,.88,-.31);addPick(ws,{kind:'surface'});for(const [w,x,d,z] of [[.12,1.77,.6,-.31],[.38,1.52,.07,-.045],[.38,1.52,.15,-.535]]){const p2=box(w,.04,d,wsM,x,.88,z);addPick(p2,{kind:'surface'})}
  box(3.5,.86,.04,M.darkWood,.08,.43,-.02);
  // stools
  for(let i=0;i<7;i++){const x=SEATX[i];cyl(.18,.18,.06,std({color:0x5a1a1a,roughness:.6}),x,.78,-1.38);cyl(.025,.025,.75,M.chrome,x,.38,-1.38)}
@@ -641,7 +701,7 @@ function makeBottle(k){
  if(sh.can){const cb=new THREE.Mesh(new THREE.CylinderGeometry(.0335,.0335,.11,28,1,true),std({map:labelTex(I.short,I.bottle,'#fff'),roughness:.4,metalness:.3}));cb.position.y=.075;cb.rotation.y=-Math.PI/2;g.add(cb)}
  else if(sh.seg===4){const lm=std({map:labelTex(I.short,'#f5ead0','#2a1408'),roughness:.6});const lp=new THREE.Mesh(new THREE.PlaneGeometry(.055,.06),lm);lp.position.set(0,sh.lab,.0302);g.add(lp)}
  else{const lab=new THREE.Mesh(new THREE.CylinderGeometry(sh.lr,sh.lr,.075,40,1,true),std({map:labelTex2(k),roughness:.55}));lab.position.y=sh.lab;lab.rotation.y=-Math.PI/2;g.add(lab)}
- if(!sh.can){const r0=sh.p[1][0]*.84,hTop=sh.p[3]?sh.p[3][1]:.12;const lq=new THREE.Mesh(new THREE.CylinderGeometry(r0,r0,1,24),std({color:I.color,transparent:true,opacity:.75,roughness:.2}));lq.renderOrder=1;lq.raycast=()=>{};g.add(lq);g.userData.liq=lq;g.userData.lh=hTop-.01;if(sh.seg===4){lq.geometry=new THREE.BoxGeometry(r0*1.35,1,r0*1.35)}
+ if(!sh.can){const r0=sh.p[1][0]*.84,hTop=sh.p[3]?sh.p[3][1]:.12;const lq=new THREE.Mesh(new THREE.CylinderGeometry(r0,r0,1,24),std({color:I.color,transparent:true,opacity:.75,roughness:.2}));lq.renderOrder=1;lq.raycast=()=>{};g.add(lq);g.userData.liq=lq;g.userData.lh=hTop-.01;{const rr=clamp(((S&&S.stock[k])||0)/(I.unit*(I.type==='spirit'?1:2)),0,1);const hh=Math.max(.002,(hTop-.01)*rr);lq.scale.y=hh;lq.position.y=.006+hh/2;lq.visible=rr>0}if(sh.seg===4){lq.geometry=new THREE.BoxGeometry(r0*1.35,1,r0*1.35)}
   const foil=cyl(.0145,.0145,.03,std({color:I.type==='spirit'?(k==='whisky'?0xb08a3a:k==='cassis'?0x6a1a3a:0x1a1a1a):0xdddddd,metalness:.7,roughness:.3}),0,sh.p[sh.p.length-1][1]-.012,0,16,g)}
  const top=sh.p[sh.p.length-1][1];
  if(!sh.can){cyl(.0135,.0135,.02,I.type==='spirit'?std({color:0x1a1a1a,roughness:.5}):M.chrome,0,top+.005,0,16,g);cyl(.004,.006,.035,M.chrome,0,top+.03,0,8,g)}
@@ -837,12 +897,16 @@ function makeCustomer3D(L){
  if(L.tie){const t=box(.032,.15,.01,std({color:L.tie}),0,1.36,.122,body);const k=box(.03,.025,.012,std({color:L.tie}),0,1.445,.124,body)}
  if(L.bow){const bw=std({color:L.bow});box(.03,.022,.012,bw,-.017,1.47,.123,body);box(.03,.022,.012,bw,.017,1.47,.123,body)}
  if(L.scarf){const sc=new THREE.Mesh(new THREE.TorusGeometry(.068,.028,8,18),std({color:L.scarf,roughness:.95}));sc.rotation.x=Math.PI/2;sc.position.y=1.48;body.add(sc)}
- for(const sd of [-1,1]){const a=V(sd*.19,1.4,0),b=V(sd*.13,1.17,.36);const arm=new THREE.Mesh(new THREE.CapsuleGeometry(.047,a.distanceTo(b),4,10),jackM);arm.position.copy(a).add(b).multiplyScalar(.5);arm.quaternion.setFromUnitVectors(V(0,1,0),b.clone().sub(a).normalize());arm.castShadow=true;body.add(arm);
-  const cuff=new THREE.Mesh(new THREE.CylinderGeometry(.046,.046,.02,12),shirtM);cuff.position.copy(b).add(V(0,.005,-.025));cuff.quaternion.copy(arm.quaternion);body.add(cuff);
-  const hd=new THREE.Mesh(new THREE.SphereGeometry(.042,12,10),skin);hd.scale.set(1,.8,1.2);hd.position.copy(b).add(V(0,-.01,.03));body.add(hd)}
+ const pantsM=std({color:L.pants||pick(['#2a2a34','#3a3026','#1e2a3a','#4a4a50','#5a4a3a']),roughness:.85}),shoeM=std({color:0x1a1210,roughness:.6});const legs=[];
+ for(const sd of [-1,1]){const hip=new THREE.Group();hip.position.set(sd*.075,1.0,0);body.add(hip);const lg=new THREE.Mesh(new THREE.CapsuleGeometry(.062,.82,4,10),pantsM);lg.position.y=-.47;lg.castShadow=true;hip.add(lg);const sh2=box(.09,.06,.17,shoeM,0,-.95,.035,hip);legs.push(hip)}
+ const walkArms=[];for(const sd of [-1,1]){const sp=new THREE.Group();sp.position.set(sd*.2,1.4,0);body.add(sp);const ar=new THREE.Mesh(new THREE.CapsuleGeometry(.047,.42,4,10),jackM);ar.position.y=-.24;sp.add(ar);const hd2=new THREE.Mesh(new THREE.SphereGeometry(.042,12,10),skin);hd2.position.y=-.5;sp.add(hd2);sp.visible=false;walkArms.push(sp)}
+ const barArms=new THREE.Group();body.add(barArms);
+ for(const sd of [-1,1]){const a=V(sd*.19,1.4,0),b=V(sd*.13,1.17,.36);const arm=new THREE.Mesh(new THREE.CapsuleGeometry(.047,a.distanceTo(b),4,10),jackM);arm.position.copy(a).add(b).multiplyScalar(.5);arm.quaternion.setFromUnitVectors(V(0,1,0),b.clone().sub(a).normalize());arm.castShadow=true;barArms.add(arm);
+  const cuff=new THREE.Mesh(new THREE.CylinderGeometry(.046,.046,.02,12),shirtM);cuff.position.copy(b).add(V(0,.005,-.025));cuff.quaternion.copy(arm.quaternion);barArms.add(cuff);
+  const hd=new THREE.Mesh(new THREE.SphereGeometry(.042,12,10),skin);hd.scale.set(1,.8,1.2);hd.position.copy(b).add(V(0,-.01,.03));barArms.add(hd)}
  let star=null;if(L.star){const sh=new THREE.Shape();for(let k=0;k<10;k++){const r=k%2?.025:.06,a=k*Math.PI/5+Math.PI/2;const x=Math.cos(a)*r,y=Math.sin(a)*r;k?sh.lineTo(x,y):sh.moveTo(x,y)}
   star=new THREE.Mesh(new THREE.ExtrudeGeometry(sh,{depth:.015,bevelEnabled:true,bevelSize:.006,bevelThickness:.006,bevelSegments:2}),new THREE.MeshStandardMaterial({color:0xffd34a,emissive:0xffa000,emissiveIntensity:.8,metalness:.6,roughness:.3}));star.position.y=1.95*HH;star.raycast=()=>{};g.add(star)}
- return {g,ftex,star};
+ return {g,ftex,star,legs,walkArms,barArms,body};
 }
 /* ====================== GAME STATE ====================== */
 let H=null; // item in hand
@@ -851,7 +915,7 @@ const D={ticket:1};
 function newDay(){
  for(const gl of [...GLASSOBJS])gl.dispose();for(const s of SLOTS)s.glass=null;for(const pu of [...PUDDLES])removePuddle(pu);FLAIR=null;
  if(G)for(const c of G.customers){scene.remove(c.m.g);c.bub&&c.bub.remove()}
- G={time:0,dayLen:({easy:300,normal:270,hard:240})[S.diff||'normal']||270,customers:[],seats:[],active:null,clean:{...S.glasses},dirty:[],spawnT:4,phaseShown:0,nid:1,closing:false,paused:false,ended:false,evalT:0,repStart:S.rep,moneyStart:S.money,dishT:0,scrubAcc:0,
+ G={time:0,dayLen:({easy:330,normal:290,hard:250})[S.diff||'normal']||270,customers:[],seats:[],active:null,clean:{...S.glasses},dirty:[],spawnT:4,phaseShown:0,nid:1,closing:false,paused:false,ended:false,evalT:0,repStart:S.rep,moneyStart:S.money,dishT:0,scrubAcc:0,
   stats:{served:0,perfect:0,sales:0,tips:0,angry:0,cost:0,waste:0,scoreSum:0},combo:0,slides:[],tilt:0,wet:{},cut:{g_lemon:DX().cutStart,g_lime:DX().cutStart,g_orange:DX().cutStart},niceCut:0,beatStreak:0,regSeen:{},hl:{best:null,fast:null,tricks:{},maxCombo:0,talks:[],xp:0,ranks:[]}};
  for(let i=0;i<7;i++)G.seats.push({i,cust:null,glasses:[],money:0});
  if(H)H=null;resetHandVisual();
@@ -960,14 +1024,15 @@ function leave(c,mood){const seat=G.seats[c.seat];
  c.from=c.m.g.position.clone();if(wa)pickNextActive();D.ticket=1;
 }
 function layoutSeat(seat){const x=SEATX[seat.i];seat.glasses.forEach((gl,j)=>{gl.g.position.set(x-.1-j*.075,1.125,-.82+(j%2)*.05);gl.g.rotation.set(0,0,0);gl.loc={kind:'bar',seat:seat.i}});SEATOBJ[seat.i].money.visible=seat.money>0}
+function walkAnim(c,on,dt){const m=c.m;if(!m.legs)return;if(on){c.wp=(c.wp||0)+dt*9;const sw=Math.sin(c.wp);m.legs[0].rotation.x=sw*.55;m.legs[1].rotation.x=-sw*.55;m.walkArms[0].rotation.x=-sw*.5;m.walkArms[1].rotation.x=sw*.5;m.walkArms.forEach(a=>a.visible=true);m.barArms.visible=false;m.body.position.y=Math.abs(Math.cos(c.wp))*.025}else{m.legs.forEach(l=>l.rotation.x*=.8);m.walkArms.forEach(a=>a.visible=false);m.barArms.visible=true;m.body.position.y=0}}
 function updateCust(c,dt){if(c.m.star){c.m.star.rotation.y+=dt*2;c.m.star.position.y=1.95*(c.L.h||1)+Math.sin(c.t*3)*.02}if(G.tutorial&&c.status==='drinking'&&c.drinkT>5)c.drinkT=5;
  c.t+=dt;if(c.sayT>0){c.sayT-=dt;if(c.sayT<=0){c.say=null;c.dirty=1}}
  const g=c.m.g;
- if(c.status==='enter'){if(c.t<1.1){const k=c.t/1.1;g.position.lerpVectors(OUTSIDE,DOOR,k);g.rotation.y=Math.PI/2;g.position.y=Math.abs(Math.sin(c.t*9))*.03}else{const k=clamp((c.t-1.1)/2.2,0,1);const e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;g.position.lerpVectors(DOOR,c.target,e);g.position.y=Math.abs(Math.sin(c.t*9))*.03*(1-k);g.rotation.y=k<.9?Math.atan2(c.target.x-DOOR.x,c.target.z-DOOR.z)*(1-k)*1.1:0}
+ if(c.status==='enter'){if(c.t<1.1){const k=c.t/1.1;g.position.lerpVectors(OUTSIDE,DOOR,k);g.rotation.y=Math.PI/2;walkAnim(c,true,dt)}else{const k=clamp((c.t-1.1)/2.2,0,1);g.position.lerpVectors(DOOR,c.target,k);const face=Math.atan2(c.target.x-DOOR.x,c.target.z-DOOR.z);g.rotation.y=k<.85?face:face*(1-(k-.85)/.15);walkAnim(c,k<1,dt)}g.position.y=0
   if(c.t>2.5&&c.reg&&!c.greeted){c.greeted=1;const st=S.regs[c.reg]||{};const ln=[...(VL.reg[c.reg]||['また来たよー']),...((st.aff||0)>=3?VL.regClose:[])];const t=pick(ln);say(c,t,2.4);speakC(c,t,true)}
-  if(c.t>3.3){if(c.reg)setTimeout(()=>callOut(c),1600);else callOut(c);c.status='waiting';c.pat=c.patMax=34*DF().patWait*patMul(c);c.t=0;c.dirty=1;g.rotation.y=0}}
+  if(c.t>3.3){walkAnim(c,false,dt);c.m.legs&&c.m.legs.forEach(l=>l.rotation.x=0);if(c.reg)setTimeout(()=>callOut(c),1600);else callOut(c);c.status='waiting';c.pat=c.patMax=34*DF().patWait*patMul(c);c.t=0;c.dirty=1;g.rotation.y=0}}
  else if(c.status==='relax'){c.relaxT-=dt;g.position.y=Math.sin(c.t*2+c.ph)*.004;if(c.relaxT<=0){callOut(c);c.status='waiting';c.pat=c.patMax=34*DF().patWait*patMul(c);c.mood='neutral';c.dirty=1}}
- else if(c.status==='waiting'||c.status==='ordered'){if(!G.tutorial)c.pat-=dt;if(c.status==='ordered'){c.orderT+=dt;if(c.ty==='drunk'&&!c.changed&&c.orderT>9&&Math.random()<dt*.12){const o2=chooseOrder(c);if(o2&&o2!==c.order){c.changed=1;c.order=o2;makeEff(c);c.pat=Math.min(c.patMax,c.pat+20);say(c,`やっぱ${RECIPES[o2].name}にして〜`,3);sfx.pop();floatAt(c.m.g.position.clone().add(V(0,1.95,0)),'注文変更！','#ffb070',18);D.ticket=1}}}g.position.y=Math.sin(c.t*2+c.ph)*.004;
+ else if(c.status==='waiting'||c.status==='ordered'){if(!G.tutorial)c.pat-=dt;if(DF().noAngry)c.pat=Math.max(c.pat,c.patMax*.12);if(c.status==='ordered'){c.orderT+=dt;if(c.ty==='drunk'&&!c.changed&&c.orderT>9&&Math.random()<dt*.12){const o2=chooseOrder(c);if(o2&&o2!==c.order){c.changed=1;c.order=o2;makeEff(c);c.pat=Math.min(c.patMax,c.pat+20);say(c,`やっぱ${RECIPES[o2].name}にして〜`,3);sfx.pop();floatAt(c.m.g.position.clone().add(V(0,1.95,0)),'注文変更！','#ffb070',18);D.ticket=1}}}g.position.y=Math.sin(c.t*2+c.ph)*.004;
   if(c.pat<=0){say(c,'もういいよ！',2);G.stats.angry++;G.combo=0;S.rep=clamp(S.rep-.12,.5,5);floatAt(g.position.clone().add(V(0,1.9,0)),'怒って帰った… 評判↓','#ff7a7a',16);sfx.bad();leave(c,'angry')}
   else if(c.pat/c.patMax<.3&&c.mood!=='angry'){c.mood='angry';c.dirty=1}}
  else if(c.status==='drinking'){c.drinkT-=dt;if(!c.say&&!G.tutorial&&Math.random()<dt*(c.pers==='chatty'?.06:.015)){const t=pick(c.reg&&S.regs[c.reg]?[REGS.find(r=>r.id===c.reg).lines[clamp(S.regs[c.reg].aff,0,5)].slice(0,26)+'…',...(pers(c).small||[])]:(pers(c).small||['……']));say(c,t,3.2);if(Math.random()<.3)speakC(c,human(c,t))}g.rotation.z=Math.sin(c.t*1.3+c.ph)*.02;
@@ -976,7 +1041,7 @@ function updateCust(c,dt){if(c.m.star){c.m.star.rotation.y+=dt*2;c.m.star.positi
   if(c.drinkT<=0){c.drinks++;const seat=G.seats[c.seat];const gl=c.served;c.served=null;gl.dirtyGlass=true;gl.shownFill=.05;seat.glasses.push(gl);layoutSeat(seat);
    if(!G.tutorial&&!G.closing&&c.drinks<3&&Math.random()<.55&&G.time<G.dayLen*.9){c.status='relax';c.relaxT=DF().brk*rnd(.8,1.3);c.mood='happy';c.dirty=1;g.rotation.z=0}
    else{const t=pick(c.reg?VL.leaveReg:c.en?['Thank you!','See you!']:pers(c).leave);say(c,t,1.8);speakC(c,t);leave(c,c.mood==='happy'?'happy':'neutral')}}}
- else if(c.status==='leave'){if(c.t<2){const k=c.t/2;g.position.lerpVectors(c.from,DOOR,k);g.rotation.y=Math.atan2(DOOR.x-c.from.x,DOOR.z-c.from.z)}else{const k=clamp((c.t-2)/1.1,0,1);g.position.lerpVectors(DOOR,OUTSIDE,k);g.rotation.y=-Math.PI/2}g.position.y=Math.abs(Math.sin(c.t*9))*.03;
+ else if(c.status==='leave'){walkAnim(c,true,dt);if(c.t<2){const k=c.t/2;g.position.lerpVectors(c.from,DOOR,k);g.rotation.y=Math.atan2(DOOR.x-c.from.x,DOOR.z-c.from.z)}else{const k=clamp((c.t-2)/1.1,0,1);g.position.lerpVectors(DOOR,OUTSIDE,k);g.rotation.y=-Math.PI/2}g.position.y=0;
   if(c.t>3.1){scene.remove(g);PICK.splice(PICK.indexOf(g),1);c.bub.remove();G.customers.splice(G.customers.indexOf(c),1)}}
 }
 function startClosing(){G.closing=true;toast('🌙 閉店時間！ 最後のお客さんを見送ろう');
@@ -1031,7 +1096,7 @@ function evaluate(gl,rid){
  else if(c.shaken){s-=10;n.push('シェイクは不要')}
  if(r.method==='stir'){if(!c.stirred){s-=12;n.push('ステアしていない')}else if(c.stirred==='ok')s-=3;else if(c.stirred==='bad'){s-=9;n.push('ステアの加減がイマイチ')}}
  if(r.garnish){if(!c.garnish){s-=10;n.push(ING[r.garnish].name+'を飾り忘れ')}else if(c.garnish!==r.garnish){s-=6;n.push('ガーニッシュが違う')}}else if(c.garnish)s-=3;
- return{score:clamp(s,0,100),notes:n}}
+ if(DF().noAngry)s=100-(100-s)*.5;return{score:clamp(Math.round(s),0,100),notes:n}}
 function serve(c,gl){
  const r=RC(c);const ev=evaluate(gl,r);if(gl.wet&&DX().wetPen){ev.score=Math.max(0,ev.score-DX().wetPen);ev.notes.push('グラスが濡れている（拭こう）')}const pr=c.pat/c.patMax;
  const ct=CT[c.ty]||CT.office;const tricks=[...(gl.c.tricks||[])];if(c.orderT<=20&&ev.score>=70)tricks.push('神速サーブ');
@@ -1072,27 +1137,48 @@ function steps(rid){
  const inHand=(kind,k)=>H&&H.kind===kind&&(k===undefined||H.k===k);
  if(r.method==='shake'){
   const shOn=sh.loc.kind==='slot'&&sh.loc.slot.kind==='mat';const strained=w&&w.type===r.glass&&w.c.shaken;
-  st.push({t:'シェイカーをマットに置く',d:shOn||sh.c.ice||strained||(H&&H.glass===sh),h:H&&H.glass===sh?'マットをクリックしてシェイカーを置く':'シェイカーをクリックして持つ → マットをクリックして置く',hl:'shaker'});
-  st.push({t:'氷を入れる',d:sh.c.ice||strained,h:inHand('scoop')?'シェイカーの上でクリックして氷を入れる':'氷入れをクリックしてすくう → シェイカーの上でクリック',hl:inHand('scoop')?'shaker':'ice'});
-  for(const k in r.ings){const t=r.ings[k],a=(strained?w.c.ings[k]:sh.c.ings[k])||0;st.push({t:`${ING[k].name} ${t}ml`,d:strained||amtOk(a,t),amt:`${Math.round(a)}ml`,h:inHand('bottle',k)?(DF().assist?`シェイカーの上で長押し（${t}mlで自動ストップ）`:`シェイカーの上で長押しして注ぐ（下にドラッグで傾き↑）→ ${t}mlで離す`):`「${ING[k].short}」のボトルをクリックして持つ`,hl:inHand('bottle',k)?'shaker':'bottle:'+k})}
-  st.push({t:'シェイクする',d:!!sh.c.shaken||strained,h:H&&H.glass===sh?'押したままマウスを左右にブンブン振る！ ゲージが緑で離す':'シェイカーをクリックして持つ',hl:'shaker'});
-  st.push({t:`${gn}を置く`,d:!!(w&&w.type===r.glass),h:H&&H.glass===sh?'右クリックでシェイカーを置いてから、グラス棚の'+gnS+'をクリック':`グラス棚の「${gnS}」をクリック → マットに置く`,hl:'rack:'+r.glass});
-  st.push({t:`${gn}に注ぐ`,d:strained&&w.hasIngs(),h:H&&H.glass===sh?`${gn}の上で長押しして注ぐ`:'シェイカーをクリックして持つ',hl:H&&H.glass===sh?'glass':'shaker'});
+  st.push({ak:'shaker',t:'シェイカーをマットに置く',d:shOn||sh.c.ice||strained||(H&&H.glass===sh),h:H&&H.glass===sh?'マットをクリックしてシェイカーを置く':'シェイカーをクリックして持つ → マットをクリックして置く',hl:'shaker'});
+  st.push({ak:'shice',t:'氷を入れる',d:sh.c.ice||strained,h:inHand('scoop')?'シェイカーの上でクリックして氷を入れる':'氷入れをクリックしてすくう → シェイカーの上でクリック',hl:inHand('scoop')?'shaker':'ice'});
+  for(const k in r.ings){const t=r.ings[k],a=(strained?w.c.ings[k]:sh.c.ings[k])||0;st.push({ak:'shing:'+k,t:`${ING[k].name} ${t}ml`,d:strained||amtOk(a,t),amt:`${Math.round(a)}ml`,h:inHand('bottle',k)?(DF().assist?`シェイカーの上で長押し（${t}mlで自動ストップ）`:`シェイカーの上で長押しして注ぐ（下にドラッグで傾き↑）→ ${t}mlで離す`):`「${ING[k].short}」のボトルをクリックして持つ`,hl:inHand('bottle',k)?'shaker':'bottle:'+k})}
+  st.push({ak:'shake',t:'シェイクする',d:!!sh.c.shaken||strained,h:H&&H.glass===sh?'押したままマウスを左右にブンブン振る！ ゲージが緑で離す':'シェイカーをクリックして持つ',hl:'shaker'});
+  st.push({ak:'glass',t:`${gn}を置く`,d:!!(w&&w.type===r.glass),h:H&&H.glass===sh?'右クリックでシェイカーを置いてから、グラス棚の'+gnS+'をクリック':`グラス棚の「${gnS}」をクリック → マットに置く`,hl:'rack:'+r.glass});
+  st.push({ak:'strain',t:`${gn}に注ぐ`,d:strained&&w.hasIngs(),h:H&&H.glass===sh?`${gn}の上で長押しして注ぐ`:'シェイカーをクリックして持つ',hl:H&&H.glass===sh?'glass':'shaker'});
  }else{
   const tapR=r.method==='tap';const firstTap=fills.find(k=>ING[k].type==='tap');
-  st.push({t:`${gn}を用意する`,d:!!(w&&w.type===r.glass),h:`グラス棚の「${gnS}」をクリックして持つ`,hl:'rack:'+r.glass});
-  if(r.ice)st.push({t:'氷を入れる',d:!!(w&&w.c.ice),h:inHand('scoop')?'グラスの上でクリックして氷を入れる':'氷入れをクリックしてすくう',hl:inHand('scoop')?'glass':'ice'});
-  for(const k in r.ings)if(r.ings[k]!=='fill'){const t=r.ings[k],a=w?(w.c.ings[k]||0):0;st.push({t:`${ING[k].name} ${t}ml`,d:amtOk(a,t),amt:`${Math.round(a)}ml`,h:inHand('bottle',k)?(DF().assist?`グラスの上で長押し（${t}mlで自動ストップ）`:`グラスの上で長押し（下ドラッグで傾き↑）→ ${t}mlで離す`):`「${ING[k].short}」のボトルをクリックして持つ`,hl:inHand('bottle',k)?'glass':'bottle:'+k})}
+  st.push({ak:'glass',t:`${gn}を用意する`,d:!!(w&&w.type===r.glass),h:`グラス棚の「${gnS}」をクリックして持つ`,hl:'rack:'+r.glass});
+  if(r.ice)st.push({ak:'ice',t:'氷を入れる',d:!!(w&&w.c.ice),h:inHand('scoop')?'グラスの上でクリックして氷を入れる':'氷入れをクリックしてすくう',hl:inHand('scoop')?'glass':'ice'});
+  for(const k in r.ings)if(r.ings[k]!=='fill'){const t=r.ings[k],a=w?(w.c.ings[k]||0):0;st.push({ak:'ing:'+k,t:`${ING[k].name} ${t}ml`,d:amtOk(a,t),amt:`${Math.round(a)}ml`,h:inHand('bottle',k)?(DF().assist?`グラスの上で長押し（${t}mlで自動ストップ）`:`グラスの上で長押し（下ドラッグで傾き↑）→ ${t}mlで離す`):`「${ING[k].short}」のボトルをクリックして持つ`,hl:inHand('bottle',k)?'glass':'bottle:'+k})}
   if(fills.length){const f=w?w.fill():0,[lo]=fillBand(r);const ok=w&&f>=lo&&!w.c.overflow;
-   if(tapR){const k=fills[0],fr=w?foamR(w):0;st.push({t:`タップを引いて注ぐ（泡${Math.round((r.foam||FOAM)[0]*100)}〜${Math.round((r.foam||FOAM)[1]*100)}%）`,d:ok&&fr>=(r.foam||FOAM)[0]&&fr<=(r.foam||FOAM)[1],amt:w?`${Math.round(f*100)}% 泡${Math.round(fr*100)}%`:'',h:H&&H.kind==='glass'?`グラスを持ったまま「${ING[k].short}」タップのハンドルを押して、手前（下）へドラッグ！${DF().assist?'（ちょうどで自動ストップ）':'水色の線の間で離す'}`:`「${ING[k].short}」タップのハンドルを押したまま手前（下）へドラッグ。${DF().assist?'ちょうどで自動ストップ':'水色の線の間で離す'}`,hl:'tap:'+k})}
+   if(tapR){const k=fills[0],fr=w?foamR(w):0;st.push({ak:'fill',t:`タップを引いて注ぐ（泡${Math.round((r.foam||FOAM)[0]*100)}〜${Math.round((r.foam||FOAM)[1]*100)}%）`,d:ok&&fr>=(r.foam||FOAM)[0]&&fr<=(r.foam||FOAM)[1],amt:w?`${Math.round(f*100)}% 泡${Math.round(fr*100)}%`:'',h:H&&H.kind==='glass'?`グラスを持ったまま「${ING[k].short}」タップのハンドルを押して、手前（下）へドラッグ！${DF().assist?'（ちょうどで自動ストップ）':'水色の線の間で離す'}`:`「${ING[k].short}」タップのハンドルを押したまま手前（下）へドラッグ。${DF().assist?'ちょうどで自動ストップ':'水色の線の間で離す'}`,hl:'tap:'+k})}
    else{let cur=fills[0];if(fills.length>1&&w&&(w.c.ings[fills[0]]||0)>GL[r.glass].cap*.3)cur=fills[1];const I=ING[cur];
     const how=I.type==='tap'?`グラスを持ったまま「${I.short}」タップのハンドルを手前に引いて半分まで`:(inHand('bottle',cur)?`グラスの上で長押し → 水色の線の間で離す`:`「${I.short}」のボトルをクリックして持つ`);
-    st.push({t:fills.length>1?`${fills.map(k=>ING[k].short).join('と')}を半々で線まで`:`${I.name}を線まで注ぐ`,d:ok,amt:w?Math.round(f*100)+'%':'',h:how,hl:I.type==='tap'?'tap:'+cur:(inHand('bottle',cur)?'glass':'bottle:'+cur)})}}
-  if(r.method==='stir')st.push({t:'ステアする',d:!!(w&&w.c.stirred),h:inHand('spoon')?'グラスの上で押したまま、マウスでぐるぐる円を描く → ゲージ緑で離す':'バースプーンをクリックして持つ',hl:inHand('spoon')?'glass':'spoon'});
+    st.push({ak:'fill',t:fills.length>1?`${fills.map(k=>ING[k].short).join('と')}を半々で線まで`:`${I.name}を線まで注ぐ`,d:ok,amt:w?Math.round(f*100)+'%':'',h:how,hl:I.type==='tap'?'tap:'+cur:(inHand('bottle',cur)?'glass':'bottle:'+cur)})}}
+  if(r.method==='stir')st.push({ak:'stir',t:'ステアする',d:!!(w&&w.c.stirred),h:inHand('spoon')?'グラスの上で押したまま、マウスでぐるぐる円を描く → ゲージ緑で離す':'バースプーンをクリックして持つ',hl:inHand('spoon')?'glass':'spoon'});
  }
- if(r.garnish)st.push({t:`${ING[r.garnish].name}を飾る`,d:!!(w&&w.c.garnish===r.garnish),h:inHand('garnish',r.garnish)?'グラスの上でクリックして飾る':`ガーニッシュの「${ING[r.garnish].short}」をクリックして持つ`,hl:inHand('garnish',r.garnish)?'glass':'garnish:'+r.garnish});
- const a=activeCust();st.push({t:'お客さんに提供',d:false,h:`完成！ ${a?a.seat+1:''}番席のお客さんをクリックして提供（マウスを上へ）`,hl:'serve'});
+ if(r.garnish)st.push({ak:'garnish',t:`${ING[r.garnish].name}を飾る`,d:!!(w&&w.c.garnish===r.garnish),h:inHand('garnish',r.garnish)?'グラスの上でクリックして飾る':`ガーニッシュの「${ING[r.garnish].short}」をクリックして持つ`,hl:inHand('garnish',r.garnish)?'glass':'garnish:'+r.garnish});
+ const a=activeCust();st.push({ak:'serve',t:'お客さんに提供',d:false,h:`完成！ ${a?a.seat+1:''}番席のお客さんをクリックして提供（マウスを上へ）`,hl:'serve'});
  return st}
+function freeMat(gl){return SLOTS.find(x=>x.kind==='mat'&&!x.glass&&!(PUDDLES.length&&puddleNear(x.pos)))||SLOTS.find(x=>x.kind==='mat'&&!x.glass)}
+function useStock(k,a){a=Math.min(a,S.stock[k]);S.stock[k]-=a;G.stats.cost+=a*ING[k].price/ING[k].unit;return a}
+function autoStep(){const c=activeCust();if(!c){msg('先に注文を聞こう');return}if(c.vague&&!c.revealed){c.revealed=true;c.tipCut=.5;lastTabs='';for(const x of G.customers)x.dirty=1;return}
+ const r=RC(c);let st=steps(r);const s0=st.find(x=>!x.d);if(!s0)return;const sh=G.shaker;
+ if(H&&H.kind==='glass'){const gl=H.glass;if(gl.type==='shaker'||gl.empty()){returnHand()}else{const sl=freeSlot(gl,handPt,9);if(sl){placeGlass(gl,sl);H=null}}}
+ if(H&&H.kind!=='glass')H=null;
+ let w=workGlass(r);const fills=Object.keys(r.ings).filter(k=>r.ings[k]==='fill');const ak=s0.ak||'';
+ const pour=(gl,k,a)=>{const got=useStock(k,a);gl.c.ings[k]=(gl.c.ings[k]||0)+got;gl.wob=1};
+ if(ak==='shaker'){if(sh.loc.kind==='slot')sh.loc.slot.glass=null;const m=freeMat();if(m)placeGlass(sh,m)}
+ else if(ak==='shice'){sh.c.ice=true;sfx.ice()}
+ else if(ak.startsWith('shing:')){const k=ak.slice(6);pour(sh,k,r.ings[k]-(sh.c.ings[k]||0))}
+ else if(ak==='shake'){sh.c.shaken='perfect';if(sh.c.ice)sh.c.water=sh.liquid()*.2;sfx.shake();sfx.good()}
+ else if(ak==='glass'){if(w&&w.type!==r.glass&&w.hasIngs()){dumpGlass(w)}if(G.clean[r.glass]<=0){msg(GL[r.glass].name+'の清潔なグラスがありません。シンクで洗おう');return}const gl=takeRackGlass(r.glass);const firstTap=fills.find(k=>ING[k].type==='tap');let sl=firstTap?SLOTS.find(x=>x.id==='T'+TAPS.indexOf(firstTap)&&!x.glass):null;sl=sl||freeMat();if(!sl){msg('置ける場所がありません');gl.dispose();G.clean[r.glass]++;return}placeGlass(gl,sl)}
+ else if(ak==='strain'){if(!w)return;const tot=sh.liquid();for(const k in sh.c.ings){w.c.ings[k]=(w.c.ings[k]||0)+sh.c.ings[k]}w.c.water+=sh.c.water;w.c.shaken=sh.c.shaken;sh.c=newCont();w.wob=1;sfx.splash()}
+ else if(ak==='ice'){if(w){w.c.ice=true;sfx.ice()}}
+ else if(ak.startsWith('ing:')){const k=ak.slice(4);if(w)pour(w,k,r.ings[k]-(w.c.ings[k]||0))}
+ else if(ak==='fill'&&w){const [lo,hi]=fillBand(r);const tgt=(lo+hi)/2*w.cap();if(r.method==='tap'){const fb=r.foam||FOAM;const fr=(fb[0]+fb[1])/2;const need=Math.max(0,tgt-w.vol());w.c.foam+=need*fr;pour(w,fills[0],need*(1-fr))}else{const need=Math.max(0,tgt-w.vol());if(fills.length>1){const have=fills.map(k=>w.c.ings[k]||0);const total=have.reduce((a,b)=>a+b,0)+need;fills.forEach((k,i)=>{const add=Math.max(0,total/2-have[i]);pour(w,k,add)})}else pour(w,fills[0],need)}sfx.splash()}
+ else if(ak==='stir'){if(w){w.c.stirred='perfect';sfx.stir();sfx.good()}}
+ else if(ak==='garnish'){if(w){w.c.garnish=r.garnish;if(!(citrus(r.garnish)&&!DF().assist))useStock(r.garnish,1);sfx.pop()}}
+ else if(ak==='serve'){if(!autoServe(c)){if(w&&w.hasIngs()){if(w.loc.kind==='slot')w.loc.slot.glass=null;serve(c,w)}}}
+ G.autoUsed=(G.autoUsed||0)+1}
 function nextHint(){
  if(!G||S.phase!=='service')return{t:''};
  if(G.closing)return{t:'閉店時間です。お客さんを見送りましょう'};
@@ -1145,7 +1231,7 @@ function computeHand(){setRay();const o=ray.ray.origin,d=ray.ray.direction;const
  const m=camera.matrixWorld.elements;const fw=V(-m[8],-m[9],-m[10]),rt=V(m[0],m[1],m[2]),up=V(m[4],m[5],m[6]);handPt.copy(camera.position).addScaledVector(fw,.5).addScaledVector(rt,.2).addScaledVector(up,-.2);handFloat=true}
 function stagePos(e){const r=cv.getBoundingClientRect();return[(e.clientX-r.left)/r.width*1280,(e.clientY-r.top)/r.height*720]}
 cv.addEventListener('contextmenu',e=>e.preventDefault());
-cv.addEventListener('wheel',e=>{if(!G||S.phase!=='service')return;e.preventDefault();if(!DX().autoTilt){G.tilt=clamp((G.tilt||0)+(e.deltaY>0?.12:-.12),0,1);floatAt(V(1.04,1.3,-.42),`グラスの傾き ${Math.round(G.tilt*100)}%`,'#bff6f2',13)}},{passive:false});
+
 cv.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'&&touchMode&&!IS_TOUCH){touchMode=false;document.body.classList.remove('touch')}const [x,y]=stagePos(e);P.dx=x-P.x;P.dy=y-P.y;P.x=x;P.y=y;onDrag(Math.hypot(P.dx,P.dy))});
 cv.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'&&!touchMode){touchMode=true;document.body.classList.add('touch')}const [x,y]=stagePos(e);P.x=x;P.y=y;if(!G||S.phase!=='service'||G.paused)return;ac();
  try{cv.setPointerCapture(e.pointerId)}catch(_){}
@@ -1365,10 +1451,10 @@ let camYaw=0,camPitch=-.5;
 const LOOK={x:640,y:520};
 const CV={x:0,y:.6,vy:0,vp:0};
 const sstep=v=>v*v*(3-2*v);
-function updateCamera(dt,t){const src=touchMode?LOOK:P;const kin=1-Math.exp(-dt*6);CV.x+=((src.x/1280*2-1)-CV.x)*kin;CV.y+=((src.y/720)-CV.y)*kin;
- const nx=CV.x,ny=CV.y;const dz=.38;let yt=0;if(Math.abs(nx)>dz)yt=-Math.sign(nx)*sstep(clamp((Math.abs(nx)-dz)/(1-dz),0,1))*.44;
- const pt=-(.16+.56*sstep(clamp((ny-.08)/.84,0,1)));
- const w=7,z=1;CV.vy+=((yt-camYaw)*w*w-2*z*w*CV.vy)*dt;CV.vp+=((pt-camPitch)*w*w-2*z*w*CV.vp)*dt;camYaw+=CV.vy*dt;camPitch+=CV.vp*dt;
+function updateCamera(dt,t){const src=touchMode?LOOK:P;const nx=src.x/1280*2-1,ny=src.y/720;
+ const dz=.42;let yt=0;if(Math.abs(nx)>dz)yt=-Math.sign(nx)*clamp((Math.abs(nx)-dz)/(1-dz),0,1)*.44;
+ const pt=-(.16+.56*clamp((ny-.08)/.84,0,1));
+ const k=1-Math.exp(-dt*(touchMode?4:5.5));camYaw+=(yt-camYaw)*k;camPitch+=(pt-camPitch)*k;
  let sh=0;if(P.act&&P.act.kind==='shake')sh=.004;
  camera.position.set(CAM0.x+Math.sin(t*.7)*.004+rnd(-sh,sh),CAM0.y+Math.sin(t*1.3)*.003+rnd(-sh,sh),CAM0.z);camera.rotation.set(camPitch,camYaw,0)}
 // glow
@@ -1424,6 +1510,7 @@ function renderTicket(){const os=orders();$('#ordCount').textContent=os.length?`
  else if(a.vague&&!a.revealed){h=`<h2><span><span class="sn big" style="background:${SEATCOL[a.seat]}">${a.seat+1}</span>？？？</span><small>${a.seat+1}番席：${custLabel(a)}</small></h2><div style="font-size:15px;font-weight:800">お客さん：「${DESC[a.order]||''}」<br><span style="font-size:12px;color:#8a6a4a">何のお酒か当ててね（📖レシピ帳がヒント）</span> <button class="btn sm sec" id="revealBtn" style="pointer-events:auto">🔍 答えを見る（チップ半分）</button></div>`}
  else{const r=RC(a),st=steps(r);let cur=false;h=`<h2><span><span class="sn big" style="background:${SEATCOL[a.seat]}">${a.seat+1}</span>${r.name}${r.req?` <b style="color:#c0392b">【${r.req}】</b>`:''}</span><small>${a.seat+1}番席：${custLabel(a)}・${yen(r.price)}</small></h2><div class="steps">`+st.map((s,i)=>{let cls=s.d?'done':'';if(!s.d&&!cur){cls='cur';cur=true}return `<div class="step ${cls}"><span class="ck">${s.d?'✓':i+1}</span>${s.t}${s.amt?`<span class="amt">${s.amt}</span>`:''}</div>`}).join('')+'</div>'}
  if(h!==renderTicket.last){$('#tkt').innerHTML=h;renderTicket.last=h;const rb=$('#revealBtn');if(rb)rb.onpointerdown=e=>{e.stopPropagation();a.revealed=true;a.tipCut=.5;sfx.pop();for(const c of G.customers)c.dirty=1;lastTabs=''}}}
+$('#autoBtn').addEventListener('pointerdown',e=>{e.stopPropagation();e.preventDefault();if(G&&S.phase==='service'&&!G.paused){ac();autoStep()}});
 $('#orderTabs').addEventListener('pointerover',e=>{const o=e.target.closest('[data-oid]');G&&(G.hoverOid=o?+o.dataset.oid:null)});$('#orderTabs').addEventListener('pointerleave',()=>{if(G)G.hoverOid=null});
 $('#orderTabs').addEventListener('pointerdown',e=>{const o=e.target.closest('[data-oid]');if(o&&G){G.active=+o.dataset.oid;lastTabs='';for(const c of G.customers)c.dirty=1;sfx.pop()}});
 function renderBubbles(){for(const c of G.customers){const b=c.bub;const p=toScreen(c.m.g.position.clone().add(V(0,1.86,0)));
@@ -1443,16 +1530,18 @@ function renderBubbles(){for(const c of G.customers){const b=c.bub;const p=toScr
 let lastHint='';
 function renderHUD(t){
  renderTop();if(!G||S.phase!=='service'){$('#labels').innerHTML='';$('#arrow').style.display='none';$('#tut').style.display='none';$('#hintBar').style.display='none';$('#ticket').style.display='none';$('#hand').style.display='none';$('#tip').style.display='none';$('#readout').style.display='none';return}
+ const blocked=G.paused||$('#ov').classList.contains('show')||$('#cutPanel').style.display==='block';
+ if(blocked){$('#arrow').style.display='none';$('#hring').style.display='none';$('#tip').style.display='none'}
  $('#hintBar').style.display='flex';$('#ticket').style.display='block';$('#hand').style.display='block';
  renderTicket();renderBubbles();
  let h=nextHint();if(G.tutorial){const ts=TUT[G.tutorial.st];if(ts&&ts.hl)h={t:h.t,hl:ts.hl};if(ts&&ts.btn)h={t:'',hl:null}}
  if(h.t!==lastHint){$('#hintTxt').textContent=h.t;$('#nextTxt').textContent=h.t||'—';lastHint=h.t}
- $('#nextLine').style.display=SET.hint?'flex':'none';
+ $('#nextLine').style.display=SET.hint?'flex':'none';$('#autoBtn').style.display=(DF().auto&&activeCust()&&!G.tutorial)?'block':'none';
  $('#hintBar').style.display=(G.tutorial||!SET.hint)?'none':'flex';
  {const be=$('#beat');if(isPeak()&&S.bgm&&!muted){be.style.display='block';const b=beatPhase();if(b)be.style.transform=`scale(${1+.35*Math.max(0,1-b.ph*4)})`}else be.style.display='none'}
  {const cr=$('#catchRing');if(FLAIR){const q=toScreen(FLAIR.base.clone().add(V(0,.05,0)));const rem=Math.max(0,FLAIR.dur-FLAIR.t);const sz=40+rem*160;cr.style.display='block';cr.style.left=q.x+'px';cr.style.top=q.y+'px';cr.style.width=cr.style.height=sz+'px';cr.classList.toggle('go',FLAIR.t>=FLAIR.dur-FLAIR.win)}else cr.style.display='none'}
- {const hr=$('#hring');if(hover&&hover.point&&!P.act&&!touchMode){const q=toScreen(hover.point);hr.style.display='block';hr.style.left=q.x+'px';hr.style.top=q.y+'px'}else hr.style.display='none'}
- updateGlow(t,h.hl);renderLabels(h.hl);renderArrow(h.hl,h.t);if(G.tutorial)tutRender();
+ {const hr=$('#hring');if(hover&&hover.point&&!P.act&&!touchMode&&!blocked){const q=toScreen(hover.point);hr.style.display='block';hr.style.left=q.x+'px';hr.style.top=q.y+'px'}else hr.style.display='none'}
+ updateGlow(t,h.hl);renderLabels(h.hl);if(!blocked)renderArrow(h.hl,h.t);if(G.tutorial)tutRender();
  // hand
  const hn=!H?'なし':H.kind==='glass'&&H.glass.hasIngs()&&H.glass.type!=='shaker'?GL[H.glass.type].full+'（上へシュッと弾くとスライド提供）':H.kind==='glass'?GL[H.glass.type].full+(H.glass.hasIngs()?'（中身あり）':''):H.kind==='bottle'?ING[H.k].name:H.kind==='spoon'?'バースプーン':H.kind==='scoop'?'氷（スコップ）':ING[H.k].name;
  const hs=`手：<b>${hn}</b>${H?`<br><button class="ret" id="retBtn">✋ 置く・戻す</button>${touchMode?'':'<span style="color:#aaa;font-size:10.5px"> （右クリックでもOK）</span>'}`:''}`;if($('#hand').innerHTML!==hs)$('#hand').innerHTML=hs;
@@ -1562,7 +1651,7 @@ function showHelp(thenStart,fromTitle){const was=G&&G.paused;if(G&&S.phase==='se
  <div class="hcard"><b>✨ 決め技（ランクで解放）</b><span class="mz">ジャストポア</span>一回の長押しで目標量ぴったり ／ <span class="mz">ハイポア</span>注ぎながら上へドラッグして高い位置から ／ <span class="mz">ローリングシェイク</span>円を描いて振る ／ <span class="mz">神速サーブ</span>注文から20秒以内。チップと評判UP！</div>
  <div class="hcard"><b>🍾 フレア</b>ボトルを持って、何もない所で<span class="mz">押したまま円を2周</span>描くと宙に投げる。落ちてくる所で<span class="mz">クリック</span>してキャッチ！ 次の一杯がチップUP。</div>
  <div class="hcard"><b>🥃 スライド提供</b>完成したグラスを持って、お客さんの方へ<span class="mz">上にシュッと弾く</span>とカウンターを滑って届く。強すぎると割れる（かんたんは割れない）。</div>
- <div class="hcard"><b>🍺 グラスを傾ける</b>ビールを注ぐ時、<span class="mz">ホイール</span>か<span class="mz">左右ドラッグ</span>で傾けると泡が減る。最初は傾け、最後に起こすのがコツ（かんたんは自動）。</div>
+ <div class="hcard"><b>🍺 グラスの傾き</b>ビールを注ぐ時、グラスは<span class="mz">自動で傾き</span>、半分を過ぎると起き上がります。泡の量はハンドルの引き具合で調整！</div>
  <div class="hcard"><b>🍋 カット</b>ふつう・むずかしいはレモン等を<span class="mz">上から下へスッと</span>切ってスライスを作る。まっすぐ切ると「きれいなカット」。</div>
  <div class="hcard"><b>✨ 拭く・リズム・失敗</b>シンクで<span class="mz">ぐるぐる</span>＝濡れたグラスを拭く（ピカピカはチップUP）。ピークタイムは右上の丸に合わせて操作するとリズム職人。こぼすと濡れるので<span class="mz">こすって拭く</span>。</div>
  <div class="hcard"><b>🧽 片付け</b>お会計と空きグラスを<span class="mz">クリック</span>で回収。シンクを<span class="mz">押したまま左右にこする</span>と洗えます。</div>
