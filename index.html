@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Bar 憩">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8D%BA%3C/text%3E%3C/svg%3E">
 <title>Bar 憩（いこい）— バーテンダーPOVシミュレーション</title>
-<meta http-equiv="Content-Security-Policy" content="connect-src 'none'; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'; worker-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="connect-src wss://0.peerjs.com; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'; worker-src 'none'">
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js"},"integrity":{"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js":"sha384-8/hf5tabFfIo0BPku31TKUvGIKpWGYaMwNtlSNqNyZzXgZCMd4lnOGWbJElML9dv"}}</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -2051,12 +2051,12 @@ function newPC(){const pc=new RTCPeerConnection({iceServers:[{urls:['stun:stun.l
 function waitIce(pc){return new Promise(res=>{if(pc.iceGatheringState==='complete')return res();const t=setTimeout(res,4500);pc.addEventListener('icegatheringstatechange',()=>{if(pc.iceGatheringState==='complete'){clearTimeout(t);res()}})})}
 function bindDC(){const dc=NET.dc;dc.onopen=()=>netOpen();dc.onclose=()=>netLost();dc.onmessage=e=>{if(typeof e.data!=='string'||e.data.length>80000)return;let m;try{m=JSON.parse(e.data)}catch(_){return}if(m&&typeof m.t==='string')try{netMsg(m)}catch(err){console.warn(err)}}}
 function netSend(o){try{if(NET.dc&&NET.dc.readyState==='open')NET.dc.send(JSON.stringify(o))}catch(e){}}
-function netClose(){NET.on=false;try{NET.dc&&NET.dc.close()}catch(e){}try{NET.pc&&NET.pc.close()}catch(e){}NET.pc=NET.dc=null;NET.role=null;NET.sentL=new Set();$('#partner').style.display='none'}
+function netClose(){NET.on=false;sigClose();try{NET.dc&&NET.dc.close()}catch(e){}try{NET.pc&&NET.pc.close()}catch(e){}NET.pc=NET.dc=null;NET.role=null;NET.sentL=new Set();$('#partner').style.display='none'}
 function netLost(){if(!NET.role)return;const was=NET.role,on=NET.on;netClose();if(!on)return;toast('🤝 相方との接続が切れました');if(was==='guest'){if(G)G.net=null;S=NET.S0||load()||freshSave();NET.S0=null;S.phase='title';newDay();showTitle()}else if(G)G.net=null}
 const LKEYS={skin:'c',hair:'c',shirt:'c',jacket:'c',pants:'c',hat:'c',eye:'c',scarf:'c',tie:'c',bow:'c',phones:'c',hatType:['cap','fedora','flat','beret','witch','santa'],hs:'n',build:'n',h:'n',glasses:'b',beard:['full','mus',true,false],earring:'b',hood:'b',shades:'b',star:'b',blush:'b',glassCol:'n'};
 function cleanL(L){const o={};if(!L||typeof L!=='object')return{skin:'#eec29b',hair:'#222',shirt:'#888',hs:0};for(const k in LKEYS){const v=L[k],t=LKEYS[k];if(v===undefined)continue;if(t==='c'&&typeof v==='string'&&/^#[0-9a-fA-F]{3,8}$/.test(v))o[k]=v;else if(t==='n'&&typeof v==='number'&&isFinite(v))o[k]=clamp(v,0,16777215);else if(t==='b')o[k]=!!v;else if(Array.isArray(t)&&t.includes(v))o[k]=v}o.build=clamp(o.build||1,.7,1.3);o.h=clamp(o.h||1,.85,1.15);o.hs=Math.floor(clamp(o.hs||0,0,7));return o}
 function myStatus(){const a=activeCust();if(H&&H.kind==='glass'&&H.glass.hasIngs())return (a?RC(a).name.replace(/<[^>]*>/g,'')+'を':'')+'作っています';if(P.act&&P.act.kind==='scrub')return '洗い物中';if(P.act&&P.act.kind==='shake')return 'シェイク中';if(a)return RC(a).name.replace(/<[^>]*>/g,'')+'に取りかかり中';return 'ひと息ついています'}
-function netOpen(){NET.on=true;sfx.good();if(NET.role==='host'){netSend({t:'hello',diff:S.diff,day:S.day,seats:S.up.seats,unl:Object.keys(S.unlocked).filter(k=>RECIPES[k]&&!k.startsWith('o_')),name:'ホスト'});startService();G.net='host';toast('🤝 相方が来店！ 2人で営業スタート');$('#partner').style.display='block'}}
+function netOpen(){NET.on=true;setTimeout(sigClose,1500);sfx.good();if(NET.role==='host'){netSend({t:'hello',diff:S.diff,day:S.day,seats:S.up.seats,unl:Object.keys(S.unlocked).filter(k=>RECIPES[k]&&!k.startsWith('o_')),name:'ホスト'});startService();G.net='host';toast('🤝 相方が来店！ 2人で営業スタート');$('#partner').style.display='block'}}
 function netMsg(m){
  if(m.t==='st'){NET.partner=String(m.x||'').slice(0,40);const el=$('#partner');el.textContent='🤝 相方：'+NET.partner;return}
  if(NET.role==='guest'){
@@ -2090,14 +2090,47 @@ function makeMirror(d){const seat=G.seats[d.s|0];if(!seat)return null;const L=cl
 function netTick(dt){if(!NET.on||!G)return;NET.stT-=dt;if(NET.stT<=0){NET.stT=1;netSend({t:'st',x:myStatus()})}
  if(G.net==='host'){NET.snapT-=dt;if(NET.snapT<=0){NET.snapT=.25;const cs=G.customers.filter(c=>c.status!=='leave').map(c=>{const o={i:c.id,s:c.seat,st:c.status,o:c.order,m:c.mood,p:+(c.pat/Math.max(.01,c.patMax)).toFixed(2),ty:c.ty,rg:c.reg||0};if(!NET.sentL.has(c.id)){o.L=c.L;NET.sentL.add(c.id)}return o});
   netSend({t:'snap',tm:+G.time.toFixed(1),dl:G.dayLen,mo:Math.round(S.money),rp:+S.rep.toFixed(2),sv:G.stats.served,cs,se:G.seats.map(x=>Math.round(x.money||0))})}}}
+/* ---- 6-letter room codes via a public WebRTC matchmaking relay (PeerJS cloud). Only connection setup goes through it; game data is direct P2P. ---- */
+const SIG={url:'wss://0.peerjs.com:443/peerjs',key:'peerjs',ws:null,hb:null};
+const CODECH='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+function genCode(n=6){const a=new Uint32Array(n);crypto.getRandomValues(a);let t='';for(const v of a)t+=CODECH[v%CODECH.length];return t}
+function sigOpen(id){return new Promise((res,rej)=>{let done=false;let ws;try{ws=new WebSocket(`${SIG.url}?key=${SIG.key}&id=${encodeURIComponent(id)}&token=${genCode(10).toLowerCase()}&version=1.5.4`)}catch(e){rej(e);return}SIG.ws=ws;
+ const to=setTimeout(()=>{if(!done){done=true;rej(new Error('timeout'))}},10000);
+ ws.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch(_){return}if(!m||typeof m.type!=='string')return;if(!done){if(m.type==='OPEN'){done=true;clearTimeout(to);clearInterval(SIG.hb);SIG.hb=setInterval(()=>sigSend({type:'HEARTBEAT'}),5000);res()}else if(['ID-TAKEN','ERROR','INVALID-KEY'].includes(m.type)){done=true;clearTimeout(to);rej(new Error(m.type))}return}sigMsg(m).catch(()=>{})};
+ ws.onerror=()=>{if(!done){done=true;clearTimeout(to);rej(new Error('ws'))}};ws.onclose=()=>{clearInterval(SIG.hb)}})}
+function sigSend(o){try{if(SIG.ws&&SIG.ws.readyState===1)SIG.ws.send(JSON.stringify(o))}catch(e){}}
+function sigClose(){clearInterval(SIG.hb);try{SIG.ws&&SIG.ws.close()}catch(e){}SIG.ws=null}
+function okSdp(x,t){return x&&typeof x.sdp==='string'&&x.type===t&&x.sdp.length<30000}
+function hookIce(){NET.pendC=[];NET.pc.onicecandidate=e=>{if(e.candidate&&NET.peer)sigSend({type:'CANDIDATE',payload:{candidate:e.candidate.toJSON(),type:'data',connectionId:NET.cid},dst:NET.peer})}}
+async function flushCand(){const l=NET.pendC||[];NET.pendC=[];for(const c of l)try{await NET.pc.addIceCandidate(c)}catch(e){}}
+async function sigMsg(m){const p=m.payload||{};
+ if(m.type==='OFFER'&&NET.role==='host'&&!NET.pc&&typeof m.src==='string'&&okSdp(p.sdp,'offer')){NET.peer=m.src;NET.cid=String(p.connectionId||'dc').slice(0,40);NET.pc=newPC();hookIce();NET.pc.ondatachannel=e=>{NET.dc=e.channel;bindDC()};await NET.pc.setRemoteDescription(p.sdp);const an=await NET.pc.createAnswer();await NET.pc.setLocalDescription(an);sigSend({type:'ANSWER',payload:{sdp:{type:an.type,sdp:an.sdp},type:'data',connectionId:NET.cid,browser:'chrome'},dst:NET.peer});await flushCand();coSt('相方が見つかりました。つないでいます…')}
+ else if(m.type==='ANSWER'&&NET.role==='guest'&&NET.pc&&m.src===NET.peer&&okSdp(p.sdp,'answer')){await NET.pc.setRemoteDescription(p.sdp);await flushCand()}
+ else if(m.type==='CANDIDATE'&&NET.pc&&m.src===NET.peer&&p.candidate&&typeof p.candidate.candidate==='string'){if(NET.pc.remoteDescription){try{await NET.pc.addIceCandidate(p.candidate)}catch(e){}}else NET.pendC.push(p.candidate)}
+ else if(m.type==='EXPIRE'&&NET.role==='guest'&&!NET.on)coSt('お店が見つかりませんでした。コードを確かめてね')}
+function coSt(t){const e=document.getElementById('coSt');if(e)e.textContent=t}
+async function hostShort(){const s0=load();S=s0||freshSave();syncOriginals();applyDiff();NET.role='host';
+ openOv(`<div class="modal" style="width:620px;text-align:center"><h1>🏠 お店を開く</h1><p>この<b>6けたのコード</b>を相方に伝えてね</p><div id="coBig" style="font-size:54px;font-weight:900;letter-spacing:.25em;color:#ffd77a;margin:6px 0;font-family:monospace">……</div><button class="btn sm" id="coCopy">📋 コピー</button><p id="coSt" style="font-size:13px;color:#ffd77a;margin-top:10px">お店の準備中…</p><div style="display:flex;justify-content:space-between;margin-top:10px"><button class="btn sec" id="coLong" style="font-size:12px">つながらない時：長いコードで</button><button class="btn sec" id="coB2">やめる</button></div></div>`);
+ $('#coB2').onclick=()=>{sigClose();netClose();showTitle()};$('#coLong').onclick=()=>{sigClose();netClose();openCoop(true)};
+ let code=null;for(let i=0;i<3&&!code;i++){const c=genCode();try{await sigOpen('ikoi-'+c);code=c}catch(e){if(String(e.message)!=='ID-TAKEN'){coSt('コードを作れませんでした（ネットにつながっているか確認／「長いコードで」も試してね）');return}}}
+ if(!code){coSt('コードを作れませんでした');return}$('#coBig').textContent=code;coSt('相方が参加するのを待っています…（この画面のまま待ってね）');$('#coCopy').onclick=()=>copyText(code,$('#coCopy'))}
+function guestShort(){NET.role='guest';
+ openOv(`<div class="modal" style="width:620px;text-align:center"><h1>🚪 お店に手伝いに行く</h1><p>ホストから聞いた<b>6けたのコード</b>を入れてね</p><input id="coIn" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" style="font-size:40px;font-weight:900;letter-spacing:.25em;width:300px;text-align:center;text-transform:uppercase;font-family:monospace;padding:6px;border-radius:12px;border:2px solid #e8c27a;background:#1a120c;color:#ffd77a"><div style="margin-top:10px"><button class="btn" id="coJoin">参加する</button></div><p id="coSt" style="font-size:13px;color:#ffd77a;margin-top:10px"></p><div style="display:flex;justify-content:space-between;margin-top:10px"><button class="btn sec" id="coLong" style="font-size:12px">つながらない時：長いコードで</button><button class="btn sec" id="coB2">やめる</button></div></div>`);
+ $('#coB2').onclick=()=>{sigClose();netClose();showTitle()};$('#coLong').onclick=()=>{sigClose();netClose();openCoop(true)};
+ $('#coJoin').onclick=async()=>{const code=($('#coIn').value||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(code.length!==6){coSt('6けたで入れてね');return}coSt('お店をさがしています…');
+  try{await sigOpen('ikoi-g-'+genCode(10))}catch(e){coSt('つなげませんでした（ネットにつながっているか確認／「長いコードで」も試してね）');return}
+  NET.peer='ikoi-'+code;NET.cid='dc_'+genCode(8).toLowerCase();NET.pc=newPC();hookIce();NET.dc=NET.pc.createDataChannel('ikoi',{ordered:true});bindDC();const of=await NET.pc.createOffer();await NET.pc.setLocalDescription(of);
+  sigSend({type:'OFFER',payload:{sdp:{type:of.type,sdp:of.sdp},type:'data',connectionId:NET.cid,label:'ikoi',reliable:true,serialization:'json',browser:'chrome'},dst:NET.peer});
+  setTimeout(()=>{if(!NET.on&&NET.role==='guest')coSt('つながりませんでした。コードを確かめるか「長いコードで」を試してね')},20000)}}
 function copyText(t,btn){const done=()=>{if(btn){btn.textContent='✓ コピーしました';setTimeout(()=>btn.textContent='📋 コピー',1600)}};try{navigator.clipboard.writeText(t).then(done,()=>{fallbackCopy(t);done()})}catch(e){fallbackCopy(t);done()}}
 function fallbackCopy(t){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}ta.remove()}
-function openCoop(){ac();if(typeof RTCPeerConnection==='undefined'){openOv(`<div class="modal" style="width:480px;text-align:center"><h1>🤝 2人で遊ぶ</h1><p>このブラウザは2人プレイに対応していません。</p><button class="btn" id="coB">戻る</button></div>`);$('#coB').onclick=showTitle;return}
- openOv(`<div class="modal" style="width:760px"><h1>🤝 2人で遊ぶ（β）</h1><p style="font-size:13px;line-height:1.8">パソコン同士・スマホ同士・パソコンとスマホ、どの組み合わせでもOK。<b>サーバーを使わず</b>、端末どうしを直接つなぎます。<br>つなぎ方：①ホストが「招待コード」を作る → ②相方に送る（LINEなど） → ③相方が「返事コード」を作ってホストに送る → ④ホストが貼り付けて開店！</p>
+function openCoop(longMode){ac();if(typeof RTCPeerConnection==='undefined'){openOv(`<div class="modal" style="width:480px;text-align:center"><h1>🤝 2人で遊ぶ</h1><p>このブラウザは2人プレイに対応していません。</p><button class="btn" id="coB">戻る</button></div>`);$('#coB').onclick=showTitle;return}
+ openOv(`<div class="modal" style="width:760px"><h1>🤝 2人で遊ぶ（β）</h1><p style="font-size:13px;line-height:1.8">パソコン同士・スマホ同士・パソコンとスマホ、どの組み合わせでもOK。${longMode?'<b>サーバーを使わず</b>、端末どうしを直接つなぎます。':'ゲームのやりとりは端末どうしで直接。最初の「待ち合わせ」だけ無料の中継サービス（PeerJS）を使います。'}<br>${longMode?'つなぎ方：①ホストが「招待コード」を作る → ②相方に送る（LINEなど） → ③相方が「返事コード」を作ってホストに送る → ④ホストが貼り付けて開店！':'つなぎ方：ホストに出る<b>6けたのコード</b>を、相方が入力するだけ！'}</p>
  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0"><div class="card" id="coHost" style="cursor:pointer;flex-direction:column;padding:16px"><div style="font-size:38px">🏠</div><b>お店を開く（ホスト）</b><small>自分のセーブデータのお店で営業</small></div><div class="card" id="coGuest" style="cursor:pointer;flex-direction:column;padding:16px"><div style="font-size:38px">🚪</div><b>お店に手伝いに行く（ゲスト）</b><small>相方のお店で一緒に働く</small></div></div>
  <p style="font-size:11px;color:#f5e6c8aa">※ つながりにくい回線（会社・学校のWi-Fiなど）ではつながらないことがあります。同じWi-Fiだとつながりやすいです。お客さん・お金はホストのお店のもの。ゲストの材料は使い放題です。</p>
  <div style="text-align:right"><button class="btn sec" id="coB">戻る</button></div></div>`);
  $('#coB').onclick=()=>{netClose();showTitle()};
+ if(!longMode){$('#coHost').onclick=()=>hostShort();$('#coGuest').onclick=()=>guestShort();return}
  $('#coHost').onclick=async()=>{const s0=load();S=s0||freshSave();syncOriginals();applyDiff();NET.role='host';
   openOv(`<div class="modal" style="width:760px"><h1>🏠 お店を開く</h1><p>① 招待コードを作っています…</p><textarea id="coCode" readonly style="width:100%;height:70px;font-size:11px;word-break:break-all"></textarea><button class="btn sm" id="coCopy">📋 コピー</button>
   <p style="margin-top:10px">③ 相方から届いた「返事コード」を貼り付けて：</p><textarea id="coAns" style="width:100%;height:60px;font-size:11px"></textarea><div style="display:flex;justify-content:space-between;margin-top:8px"><button class="btn sec" id="coB2">やめる</button><button class="btn" id="coGo">④ 開店する</button></div><p id="coSt" style="font-size:12px;color:#ffd77a"></p></div>`);
