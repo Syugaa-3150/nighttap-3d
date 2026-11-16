@@ -2143,7 +2143,8 @@ function showSettings(){const was=G&&G.paused;if(G&&S.phase==='service')G.paused
  <div class="setrow"><span>🎮 見回しボタン（⬆⬇◀▶）</span><button class="tg ${SET.vpad?'on':''}" id="sVp">${SET.vpad?'表示する':'表示しない'}</button></div>
  <div class="setrow"><span>📳 振動（成功したとき）</span><button class="tg ${SET.vib?'on':''}" id="sVib">${SET.vib?'ON':'OFF'}</button></div>
  <div class="setrow"><span>🔋 省電力（30fps）</span><button class="tg ${SET.fps30?'on':''}" id="sF30">${SET.fps30?'ON':'OFF'}</button></div>
- <div class="setrow"><span>🌀 ジャイロの感度</span><input type="range" min="40" max="250" step="5" value="${Math.round((SET.gsens||1)*100)}" id="sGs"><b id="sGsV" style="width:44px;text-align:right">${(SET.gsens||1).toFixed(2)}</b></div>`:''}
+ <div class="setrow"><span>🌀 ジャイロ（スマホを傾けて見回す）</span><button class="tg ${GY.on?'on':''}" data-gy="1">使う</button><button class="tg ${GY.on?'':'on'}" data-gy="0">使わない</button>${GY.on?'<button class="tg" id="sGyR">正面リセット</button>':''}</div>
+ ${GY.on?`<div class="setrow"><span>🌀 ジャイロの感度</span><input type="range" min="40" max="250" step="5" value="${Math.round((SET.gsens||1)*100)}" id="sGs"><b id="sGsV" style="width:44px;text-align:right">${(SET.gsens||1).toFixed(2)}</b></div>`:''}`:''}
  <div class="setrow"><span>🎵 BGMの音量</span><input type="range" min="0" max="100" value="${Math.round(SET.bgmVol*100)}" id="sBgm"><b id="sBgmV" style="width:44px;text-align:right">${Math.round(SET.bgmVol*100)}</b></div>
  <div class="setrow"><span>🗣 お客さんの声の音量</span><input type="range" min="0" max="100" value="${Math.round(SET.voiceVol*100)}" id="sVoice"><b id="sVoiceV" style="width:44px;text-align:right">${Math.round(SET.voiceVol*100)}</b></div>
  <div class="setrow"><span>🍻 店内のざわめき</span><input type="range" min="0" max="100" value="${Math.round(SET.envVol*100)}" id="sEnv"><b id="sEnvV" style="width:44px;text-align:right">${Math.round(SET.envVol*100)}</b></div>
@@ -2155,7 +2156,7 @@ function showSettings(){const was=G&&G.paused;if(G&&S.phase==='service')G.paused
  ${touchMode?'':`<div class="setrow"><span>🎯 視点モード<br><small style="font-size:11px;color:#aaa">PC（マウス）用</small></span>${[['fps','FPS（マウスロック）'],['cursor','カーソル（画面端で首振り）']].map(([k,l])=>`<button class="tg ${SET.viewMode===k?'on':''}" data-vm="${k}">${l}</button>`).join('')}</div>
  <div class="setrow"><span>🖱 視点の感度<br><small style="font-size:11px;color:#aaa">FPS：回転の速さ／カーソル：追従の速さ</small></span><input type="range" min="10" max="300" step="5" value="${Math.round((SET.sens||1)*100)}" id="sSens"><b id="sSensV" style="width:44px;text-align:right">${(SET.sens||1).toFixed(2)}</b></div>
  
- `}<div class="setrow"><span>📱 ジャイロ操作<br><small style="font-size:11px;color:#aaa">傾けて見回す・振ってシェイク</small></span><button class="tg ${GY.on?'on':''}" id="sGyro">${GY.on?'ON':'OFF'}</button><button class="tg" id="sGyroC">正面リセット</button></div>
+ `}${(touchMode||IS_TOUCH)?'':`<div class="setrow"><span>📱 ジャイロ操作<br><small style="font-size:11px;color:#aaa">傾けて見回す・振ってシェイク</small></span><button class="tg ${GY.on?'on':''}" id="sGyro">${GY.on?'ON':'OFF'}</button><button class="tg" id="sGyroC">正面リセット</button></div>`}
  <div class="setrow"><span>⛶ 全画面</span><button class="tg" id="sFull">全画面にする</button></div>
  ${S?`<div class="setrow"><span>🎚 難易度</span>${diffSel()}</div>`:''}
  <div style="display:flex;justify-content:flex-end;margin-top:14px"><button class="btn" id="sClose">閉じる</button></div></div>`);
@@ -2165,7 +2166,8 @@ function showSettings(){const was=G&&G.paused;if(G&&S.phase==='service')G.paused
  $('#sSfx').oninput=e=>{SET.sfxVol=e.target.value/100;$('#sSfxV').textContent=e.target.value;ac();bgmVol();saveSet()};$('#sSfx').onchange=()=>sfx.pop();
  document.querySelectorAll('[data-st]').forEach(b=>b.onclick=()=>{const k=b.dataset.st;SET[k]=SET[k]?0:1;saveSet();showSettings();if(G)G.paused=true});
  const reS=()=>{saveSet();applyBodySet();showSettings();if(G&&S.phase==='service')G.paused=true};
- if($('#sTs')){$('#sTs').oninput=e=>{SET.tsens=e.target.value/100;$('#sTsV').textContent=SET.tsens.toFixed(2);saveSet()};$('#sGs').oninput=e=>{SET.gsens=e.target.value/100;$('#sGsV').textContent=SET.gsens.toFixed(2);saveSet()};
+ document.querySelectorAll('[data-gy]').forEach(b=>b.onclick=async()=>{const on=b.dataset.gy==='1';if(on!==GY.on)await gyroEnable(on);showSettings();if(G&&S.phase==='service')G.paused=true});if($('#sGyR'))$('#sGyR').onclick=()=>{gyroRecenter();toast('いまの向きを正面にしました')};
+ if($('#sTs')){$('#sTs').oninput=e=>{SET.tsens=e.target.value/100;$('#sTsV').textContent=SET.tsens.toFixed(2);saveSet()};if($('#sGs'))$('#sGs').oninput=e=>{SET.gsens=e.target.value/100;$('#sGsV').textContent=SET.gsens.toFixed(2);saveSet()};
   document.querySelectorAll('[data-iy]').forEach(b=>b.onclick=()=>{SET.invY=+b.dataset.iy;reS()});document.querySelectorAll('[data-ui]').forEach(b=>b.onclick=()=>{SET.uiScale=b.dataset.ui;reS()});
   $('#sVp').onclick=()=>{SET.vpad=SET.vpad?0:1;reS()};$('#sVib').onclick=()=>{SET.vib=SET.vib?0:1;if(SET.vib)vib(40);reS()};$('#sF30').onclick=()=>{SET.fps30=SET.fps30?0:1;reS()}}
  document.querySelectorAll('[data-lm]').forEach(b=>b.onclick=()=>{SET.labelMode=b.dataset.lm;saveSet();showSettings();if(G&&S.phase==='service')G.paused=true});
@@ -2173,7 +2175,7 @@ function showSettings(){const was=G&&G.paused;if(G&&S.phase==='service')G.paused
  document.querySelectorAll('[data-vm]').forEach(b=>b.onclick=()=>{SET.viewMode=b.dataset.vm;saveSet();showSettings();if(G&&S.phase==='service')G.paused=true});
  if($('#sSens'))$('#sSens').oninput=e=>{SET.sens=e.target.value/100;$('#sSensV').textContent=SET.sens.toFixed(2);saveSet()};
  document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{SET.quality=b.dataset.q;saveSet();fit();showSettings()});
- $('#sGyro').onclick=async()=>{await gyroEnable(!GY.on);showSettings();if(G&&S.phase==='service')G.paused=true};$('#sGyroC').onclick=()=>{gyroRecenter();toast('いまの向きを正面にしました')};
+ if($('#sGyro'))$('#sGyro').onclick=async()=>{await gyroEnable(!GY.on);showSettings();if(G&&S.phase==='service')G.paused=true};if($('#sGyroC'))$('#sGyroC').onclick=()=>{gyroRecenter();toast('いまの向きを正面にしました')};
  $('#sFull').onclick=()=>{try{const el=document.documentElement;(el.requestFullscreen||el.webkitRequestFullscreen).call(el).catch(()=>toast('この画面では全画面にできません'))}catch(e){toast('この画面では全画面にできません')}};
  if(S)bindDiffSel(()=>{showSettings()});
  $('#sClose').onclick=()=>{if(prev==='shop'){openShop();return}if(prev==='title'){showTitle();return}if(prev==='reportset'||prev==='report'){S.phase='report';openOv(REPORT_HTML);bindReport();return}closeOv();if(G)G.paused=was&&false}}
