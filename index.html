@@ -556,9 +556,13 @@ function freshSave(){return{day:1,money:20000,rep:2.5,unlocked:{pale:1,ipa:1,hig
  up:{seats:4,dish:0,glassPlus:0,jigger:0,juke:0,neon:0,tipjar:0},
  stock:{pale:10000,ipa:10000,stout:0,weizen:0,whisky:1400,gin:1400,vodka:0,rum:0,cassis:0,vermouth:0,soda:3000,tonic:3000,ginger:0,orange:0,limej:0,syrup:0,kahlua:0,milk:0,cola:0,g_lemon:15,g_lime:15,g_orange:0,g_olive:0},
  glasses:{pint:6,highball:6,cocktail:4,mug:4},totals:{served:0,perfect:0,best:0,sales:0,beerPerfect:0},ach:{},phase:'title',diff:'normal',guide:1,tutDone:0,xp:0,regs:{},originals:[],flags:{},bgm:1}}
-const SKEY='nighttap3d_v1';
-function save(){try{localStorage.setItem(SKEY,JSON.stringify(S))}catch(e){}}
-function load(){try{const t=localStorage.getItem(SKEY);if(t){const s=JSON.parse(t),f=freshSave();for(const k in f)if(s[k]===undefined)s[k]=f[k];for(const k in f.stock)if(s.stock[k]===undefined)s.stock[k]=0;for(const k in f.totals)if(s.totals[k]===undefined)s.totals[k]=0;syncOriginals(s);return s}}catch(e){}return null}
+const NSLOT=3;let SLOT=(()=>{try{return +localStorage.getItem('nighttap3d_slot')||1}catch(e){return 1}})();
+function skey(n){return n===1?'nighttap3d_v1':'nighttap3d_v1_s'+n}
+function setSlot(n){SLOT=n;try{localStorage.setItem('nighttap3d_slot',n)}catch(e){}}
+function save(){try{if(S)S.savedAt=Date.now();localStorage.setItem(skey(SLOT),JSON.stringify(S))}catch(e){}}
+function slotInfo(n){try{const t=localStorage.getItem(skey(n));return t?JSON.parse(t):null}catch(e){return null}}
+function delSlot(n){try{localStorage.removeItem(skey(n))}catch(e){}}
+function load(n){try{const t=localStorage.getItem(skey(n||SLOT));if(t){const s=JSON.parse(t),f=freshSave();for(const k in f)if(s[k]===undefined)s[k]=f[k];for(const k in f.stock)if(s.stock[k]===undefined)s.stock[k]=0;for(const k in f.totals)if(s.totals[k]===undefined)s.totals[k]=0;syncOriginals(s);return s}}catch(e){}return null}
 function ingUnlocked(k){for(const r in RECIPES){if(!S.unlocked[r])continue;const R=RECIPES[r];if(k in R.ings||R.garnish===k)return true}return false}
 
 /* ====================== AUDIO ====================== */
@@ -1899,13 +1903,27 @@ function openShop(tab){shopTab=tab||shopTab;S.phase='shop';
  bindDiffSel(()=>openShop());refreshLocks()}
 function openOv(h){fpsUnlock();if(typeof closeTalk==='function'&&TALK)closeTalk();{const tb=document.getElementById('tidyBar');if(tb)tb.style.display='none'}const o=$('#ov');o.innerHTML=h;o.classList.add('show')}
 function closeOv(){$('#ov').classList.remove('show');$('#ov').innerHTML=''}
-function showTitle(){if((IS_TOUCH||touchMode)&&!SET.mobSetup){mobileSetup();return}const sv=load();
+function slotPicker(mode){ac();const fmt=t=>{if(!t)return '';const d=new Date(t);return `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`};
+ const card=n=>{const v=slotInfo(n);const rk=v?(()=>{let i=0;RANKS.forEach((r,j)=>{if((v.xp||0)>=r.xp)i=j});return RANKS[i].n})():'';
+  return `<div class="card ${n===SLOT&&v?'done':''}" style="flex-direction:column;align-items:stretch;padding:12px;gap:6px">
+  <div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:17px">💾 スロット${n}${n===SLOT&&v?' <small style="color:#7cff9a">（前回）</small>':''}</b>${v?`<small style="color:#f5e6c8aa">${fmt(v.savedAt)}</small>`:''}</div>
+  ${v?`<div style="font-size:13px;line-height:1.7">DAY ${v.day} ・ ${DIFF[v.diff||'normal'].icon} ${DIFF[v.diff||'normal'].name}<br>💴 ${yen(v.money||0)} ・ 評判 ${'★'.repeat(Math.round(v.rep||0))}<br>🎖 ${rk} ・ 累計 ${(v.totals&&v.totals.served)||0}杯</div>`:'<div style="font-size:13px;color:#f5e6c888;padding:18px 0">（空き）</div>'}
+  <div style="display:flex;gap:6px;flex-wrap:wrap">${mode==='load'&&v?`<button class="btn sm" data-sl="${n}">▶ このデータで遊ぶ</button>`:''}${mode==='new'?`<button class="btn sm ${v?'sec':''}" data-sn="${n}">${v?'上書きして はじめから':'ここで はじめる'}</button>`:''}${mode==='manage'&&v?`<button class="btn sm" data-sl="${n}">▶ 遊ぶ</button>`:''}${v&&mode!=='new'?`<button class="btn sm sec" data-sd="${n}">🗑 削除</button>`:''}</div></div>`};
+ openOv(`<div class="modal" style="width:900px"><h1>${mode==='new'?'💾 どのスロットで はじめる？':mode==='load'?'💾 つづきから':'💾 セーブデータ'}</h1>
+ <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:8px 0">${[1,2,3].map(card).join('')}</div>
+ <p style="font-size:12px;color:#f5e6c8aa">セーブは自動（1日の終わり・ショップ）。データはこの端末のブラウザに保存されます。</p>
+ <div style="display:flex;justify-content:flex-end"><button class="btn sec" id="slBack">戻る</button></div></div>`);
+ $('#slBack').onclick=showTitle;
+ document.querySelectorAll('[data-sl]').forEach(b=>b.onclick=()=>{const n=+b.dataset.sl;setSlot(n);S=load();syncOriginals();applyDiff();newDay();openShop('stock')});
+ document.querySelectorAll('[data-sn]').forEach(b=>b.onclick=()=>{const n=+b.dataset.sn;if(slotInfo(n)&&!b.dataset.c){b.dataset.c=1;b.textContent='もう一度押すと上書き（元のデータは消えます）';return}setSlot(n);newGameFlow()});
+ document.querySelectorAll('[data-sd]').forEach(b=>b.onclick=()=>{const n=+b.dataset.sd;if(!b.dataset.c){b.dataset.c=1;b.textContent='もう一度押すと削除';return}delSlot(n);slotPicker(mode)})}
+function showTitle(){if((IS_TOUCH||touchMode)&&!SET.mobSetup){mobileSetup();return}const sv=load();const anySv=[1,2,3].some(n=>slotInfo(n));
  openOv(`<div class="modal title"><img src="${LOGO_URL}" alt="Bar 憩" style="width:340px;height:auto;display:block;margin:-6px auto -18px"><div class="neon2" style="color:#e2aa50;text-shadow:none;letter-spacing:.3em">BARTENDER POV SIMULATOR</div>
  <p style="line-height:1.8;font-size:14px">ここは路地裏の小さなバー「憩（いこい）」。あなたはここのバーテンダー。目線はあなた自身の目。<br>タップを引いて泡を作り、シェイカーを振り、グラスを洗い、お会計をして…<br><b style="color:#ffd77a">目指せ、1日50杯！</b></p>
- <div class="tbtns">${sv?`<button class="btn" id="tContinue">つづきから（DAY ${sv.day}・${DIFF[sv.diff||'normal'].name}）</button>`:''}<button class="btn ${sv?'sec':''}" id="tNew">はじめから</button><button class="btn sec" id="tTut">📘 チュートリアル</button><button class="btn sec" id="tHelp">操作方法</button></div>
+ <div class="tbtns">${anySv?`<button class="btn" id="tContinue">つづきから${sv?`（スロット${SLOT}・DAY ${sv.day}）`:''}</button>`:''}<button class="btn ${anySv?'sec':''}" id="tNew">はじめから</button><button class="btn sec" id="tSlots">💾 セーブデータ</button><button class="btn sec" id="tTut">📘 チュートリアル</button><button class="btn sec" id="tHelp">操作方法</button></div>
  <p style="font-size:11px;color:#f5e6c877;margin-top:16px">パソコン（マウス）・スマホ（横向き・タッチ）対応 ・ 音が出ます</p></div>`);
- if(sv)$('#tContinue').onclick=()=>{ac();S=load();applyDiff();newDay();openShop('stock')};
- $('#tNew').onclick=()=>newGameFlow();
+ if(anySv)$('#tContinue').onclick=()=>slotPicker('load');
+ $('#tNew').onclick=()=>slotPicker('new');$('#tSlots').onclick=()=>slotPicker('manage');
  $('#tTut').onclick=()=>{ac();const s0=load();S=s0||freshSave();syncOriginals();if(!s0)S.diff='easy';applyDiff();startTutorial(s0?'shop':'day1')};
  $('#tHelp').onclick=()=>showHelp(false,true)}
 function showHelp(thenStart,fromTitle){const was=G&&G.paused;if(G&&S.phase==='service')G.paused=true;
