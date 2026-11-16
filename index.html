@@ -812,8 +812,8 @@ const TALKS=[
 let TALK=null;
 function openTalk(c){if(!c||c.talked)return;c.talked=1;let T0=pick(TALKS);let story=null;if(c.reg){story=storyTalk(c);if(story&&story.kind==='q')T0={q:story.q.q,a:story.q.a.map(x=>[x[0],2,x[1]])};
   if(story&&story.kind==='end'){const st=S.regs[c.reg];const SD=STORY[c.reg];const txt=SD.end[st.route.q2]||SD.end[st.route.q4]||Object.values(SD.end)[0];st.ended=1;save();fpsUnlock();const el=$('#talkBox');TALK={c,opts:[],end:1,t0:performance.now()};el.innerHTML=`<button class="tx" id="talkX">✕ 閉じる</button><div class="q"><small>📖 ${REGS.find(r=>r.id===c.reg).name}の物語・完結</small>「${txt}」</div><div style="color:#7cff9a;font-size:12px">物語を見届けた！ XP+40・評判UP</div>`;el.style.display='block';addXP(40);S.rep=clamp(S.rep+.15,.5,5);applause();$('#talkX').onclick=e=>{e.stopPropagation();closeTalk()};return}}
- const isStory=!!(story&&story.kind==='q');const opts=isStory?[...T0.a]:[...T0.a].sort(()=>Math.random()-.5);TALK={c,opts,story:isStory?story.q.aff:0};fpsUnlock();
- const el=$('#talkBox');TALK.t0=performance.now();el.innerHTML=`<button class="tx" id="talkX">✕ 閉じる</button><div class="q"><small>${isStory?'📖 '+REGS.find(r=>r.id===c.reg).name+'の物語':'💬 '+(c.seat+1)+'番席のお客さん'}</small>「${T0.q}」</div>${opts.map((o,i)=>`<button data-tk="${i}">${i+1}. ${o[0]}</button>`).join('')}${touchMode?'':'<div style="font-size:11px;color:#aaa;margin-top:4px">数字キー 1〜3 でも選べます</div>'}`;el.style.display='block';
+ const isStory=!!(story&&story.kind==='q');const opts=isStory?[...T0.a]:[...T0.a].sort(()=>Math.random()-.5);TALK={c,opts,story:isStory?story.q.aff:0};
+ const el=$('#talkBox');TALK.t0=performance.now();el.innerHTML=`<button class="tx" id="talkX">✕ 閉じる</button><div class="q"><small>${isStory?'📖 '+REGS.find(r=>r.id===c.reg).name+'の物語':'💬 '+(c.seat+1)+'番席のお客さん'}</small>「${T0.q}」</div>${opts.map((o,i)=>`<button data-tk="${i}">${i+1}. ${o[0]}</button>`).join('')}${touchMode?'':`<div style="font-size:12px;color:${FPS.on?'#ffd77a':'#aaa'};margin-top:4px">${FPS.on?'⌨ キーボードの 1・2・3 で答えてね':'数字キー 1〜3 でも選べます'}</div>`}`;el.style.display='block';
  el.querySelectorAll('[data-tk]').forEach(b=>{b.onclick=e=>{e.stopPropagation();answerTalk(+b.dataset.tk)};b.onpointerdown=e=>e.stopPropagation()});$('#talkX').onclick=e=>{e.stopPropagation();closeTalk()};$('#talkX').onpointerdown=e=>e.stopPropagation();say(c,T0.q.slice(0,16),2.5)}
 function closeTalk(){if(!TALK)return;const c=TALK.c;TALK=null;$('#talkBox').style.display='none';if(c)c.talked=0}
 function answerTalk(i){if(!TALK)return;const {c,opts,story}=TALK;const o=opts[i];TALK=null;if(story&&o&&c.reg&&S.regs[c.reg]){const st=S.regs[c.reg];st.route=st.route||{};st.route['q'+story]=o[2];save();toast('📖 '+REGS.find(r=>r.id===c.reg).name+'の物語が進んだ…')}$('#talkBox').style.display='none';if(!o||!G.customers.includes(c))return;
@@ -1880,13 +1880,15 @@ for(const g2 of GLASSOBJS){if(g2.wob>0){g2.wob=Math.max(0,g2.wob-FDT*1.6);const 
 let last=performance.now(),T=0;
 let FDT=.016;
 let pauseOrphan=0;
-function frame(now){if(SET.fps30&&now-last<30){requestAnimationFrame(frame);return}const dt=Math.min(.05,(now-last)/1000);last=now;
+let frameErr=0;
+function frame(now){requestAnimationFrame(frame);try{frameBody(now)}catch(e){console.error(e);frameErr++;if(G)G.paused=false}}
+function frameBody(now){if(SET.fps30&&now-last<30)return;const dt=Math.min(.05,(now-last)/1000);last=now;
  if(G&&S&&S.phase==='service'&&G.paused&&!PHO.on&&!$('#ov').classList.contains('show')){pauseOrphan+=dt;if(pauseOrphan>.4){G.paused=false;const bp=$('#btnPause');if(bp)bp.textContent='Ⅱ 一時停止'}}else pauseOrphan=0;lightFlicker(now/1000);decorTick(now/1000);T+=dt;FDT=dt;
  if(!(S&&S.phase==='service'&&G&&!G.paused))loopSet('amb',false);
  if(S&&S.phase==='service'&&G&&!G.paused){update(dt);computeHand();hover=P.act?null:pickAt();if(hover)hover.root=actRoot(hover.act)}else hover=null;
  updateCamera(dt,T);if(G){updateHandVisual(T);rackRefresh();sinkRefresh();bottleLevels(dt)}
  if(S)renderHUD(T);
- renderer.render(scene,camera);requestAnimationFrame(frame)}
+ renderer.render(scene,camera)}
 
 /* ====================== FLOW / UI ====================== */
 function checkAch(){for(const a of ACH){if(!S.ach[a.id]&&a.c()){S.ach[a.id]=1;toast('🏆 実績解除：'+a.name);sfx.good()}}}
@@ -1943,7 +1945,8 @@ function openShop(tab){shopTab=tab||shopTab;S.phase='shop';
  $('#openBtn').onclick=()=>{const miss=neededIngs().filter(k=>S.stock[k]<=0);if(miss.length&&!confirmOpen){confirmOpen=true;$('#openBtn').textContent='在庫切れあり。それでも開店 ▶';return}confirmOpen=false;startService()};
  bindDiffSel(()=>openShop());refreshLocks()}
 function openOv(h){fpsUnlock();if(typeof closeTalk==='function'&&TALK)closeTalk();{const tb=document.getElementById('tidyBar');if(tb)tb.style.display='none'}const o=$('#ov');o.innerHTML=h;o.classList.add('show')}
-function closeOv(){$('#ov').classList.remove('show');$('#ov').innerHTML=''}
+function fpsRelock(){if(!fpsWanted()||FPS.on||!G||!S||S.phase!=='service')return;try{const p=cv.requestPointerLock();if(p&&p.catch)p.catch(()=>{})}catch(e){}}
+function closeOv(){$('#ov').classList.remove('show');$('#ov').innerHTML='';fpsRelock()}
 function slotPicker(mode){ac();const fmt=t=>{if(!t)return '';const d=new Date(t);return `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`};
  const card=n=>{const v=slotInfo(n);const rk=v?(()=>{let i=0;RANKS.forEach((r,j)=>{if((v.xp||0)>=r.xp)i=j});return RANKS[i].n})():'';
   return `<div class="card ${n===SLOT&&v?'done':''}" style="flex-direction:column;align-items:stretch;padding:12px;gap:6px">
@@ -2047,7 +2050,7 @@ async function sdpEncode(desc){let bytes=new TextEncoder().encode(JSON.stringify
  if(typeof CompressionStream!=='undefined'){try{const cs=new Blob([bytes]).stream().pipeThrough(new CompressionStream('deflate-raw'));return 'IKOIz'+b64(new Uint8Array(await new Response(cs).arrayBuffer()))}catch(e){}}return 'IKOI0'+b64(bytes)}
 async function sdpDecode(code){code=(code||'').replace(/\s+/g,'');if(code.length<10||code.length>30000)throw new Error('len');const z=code.startsWith('IKOIz');if(!z&&!code.startsWith('IKOI0'))throw new Error('fmt');let bytes=unb64(code.slice(5));
  if(z){const ds=new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'));bytes=new Uint8Array(await new Response(ds).arrayBuffer())}const o=JSON.parse(new TextDecoder().decode(bytes));if(!o||typeof o.s!=='string'||(o.t!=='offer'&&o.t!=='answer'))throw new Error('bad');return{type:o.t,sdp:o.s}}
-function newPC(){const pc=new RTCPeerConnection({iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun.cloudflare.com:3478']}]});pc.onconnectionstatechange=()=>{if(pc.connectionState==='failed'||pc.connectionState==='closed')netLost()};return pc}
+function newPC(){const pc=new RTCPeerConnection({iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun.cloudflare.com:3478']},{urls:['turn:eu-0.turn.peerjs.com:3478','turn:us-0.turn.peerjs.com:3478'],username:'peerjs',credential:'peerjsp'}],iceCandidatePoolSize:2});pc.oniceconnectionstatechange=()=>{const st=pc.iceConnectionState;if(!NET.on){if(st==='checking')coSt('通信の道すじを探しています…');else if(st==='failed')coSt('つながりませんでした。2台を同じWi-Fiにするか、少し待ってからもう一度ためしてね')}};pc.onconnectionstatechange=()=>{if(pc.connectionState==='failed'||pc.connectionState==='closed')netLost()};return pc}
 function waitIce(pc){return new Promise(res=>{if(pc.iceGatheringState==='complete')return res();const t=setTimeout(res,4500);pc.addEventListener('icegatheringstatechange',()=>{if(pc.iceGatheringState==='complete'){clearTimeout(t);res()}})})}
 function bindDC(){const dc=NET.dc;dc.onopen=()=>netOpen();dc.onclose=()=>netLost();dc.onmessage=e=>{if(typeof e.data!=='string'||e.data.length>80000)return;let m;try{m=JSON.parse(e.data)}catch(_){return}if(m&&typeof m.t==='string')try{netMsg(m)}catch(err){console.warn(err)}}}
 function netSend(o){try{if(NET.dc&&NET.dc.readyState==='open')NET.dc.send(JSON.stringify(o))}catch(e){}}
@@ -2121,7 +2124,7 @@ function guestShort(){NET.role='guest';
   try{await sigOpen('ikoi-g-'+genCode(10))}catch(e){coSt('つなげませんでした（ネットにつながっているか確認／「長いコードで」も試してね）');return}
   NET.peer='ikoi-'+code;NET.cid='dc_'+genCode(8).toLowerCase();NET.pc=newPC();hookIce();NET.dc=NET.pc.createDataChannel('ikoi',{ordered:true});bindDC();const of=await NET.pc.createOffer();await NET.pc.setLocalDescription(of);
   sigSend({type:'OFFER',payload:{sdp:{type:of.type,sdp:of.sdp},type:'data',connectionId:NET.cid,label:'ikoi',reliable:true,serialization:'json',browser:'chrome'},dst:NET.peer});
-  setTimeout(()=>{if(!NET.on&&NET.role==='guest')coSt('つながりませんでした。コードを確かめるか「長いコードで」を試してね')},20000)}}
+  setTimeout(()=>{if(!NET.on&&NET.role==='guest')coSt('まだつながりません…。コードが正しいか、ホストがコード画面のまま待っているか確かめてね（同じWi-Fiだとつながりやすい）')},25000)}}
 function copyText(t,btn){const done=()=>{if(btn){btn.textContent='✓ コピーしました';setTimeout(()=>btn.textContent='📋 コピー',1600)}};try{navigator.clipboard.writeText(t).then(done,()=>{fallbackCopy(t);done()})}catch(e){fallbackCopy(t);done()}}
 function fallbackCopy(t){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}ta.remove()}
 function openCoop(longMode){ac();if(typeof RTCPeerConnection==='undefined'){openOv(`<div class="modal" style="width:480px;text-align:center"><h1>🤝 2人で遊ぶ</h1><p>このブラウザは2人プレイに対応していません。</p><button class="btn" id="coB">戻る</button></div>`);$('#coB').onclick=showTitle;return}
