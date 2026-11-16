@@ -251,6 +251,9 @@ body.touch #ticket{width:640px!important}
 #arrow .al{white-space:nowrap}
 .slab.dim{opacity:.18}
 #tiltW{position:absolute;right:14px;top:150px;width:200px;background:rgba(18,12,8,.9);border:1px solid #e8c27a;border-radius:16px;padding:8px 10px 10px;display:none;pointer-events:none;text-align:center;color:#f5e6c8;z-index:3;box-shadow:0 8px 24px #000a}
+#twSlBox{display:none;margin-top:8px}body.touch #twSlBox{display:block}
+.twsl-l{display:flex;justify-content:space-between;font-size:11px;color:#f5e6c8aa}
+#twSl{width:100%;height:34px;accent-color:#ffd77a;touch-action:none}
 #tiltW .tw-h{font-size:13px;font-weight:800;color:#ffd77a}
 #tiltW .tw-t{font-size:17px;font-weight:900;margin:2px 0}
 #tiltW .tw-m{font-size:12px;line-height:1.5;background:#ffffff12;border-radius:10px;padding:5px 6px;margin-top:4px}
@@ -345,6 +348,16 @@ body.touch #evalPop{bottom:190px}
 #autoBtn:hover{filter:brightness(1.1)}
 #nextLine{pointer-events:auto}
 #loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#ffd77a;background:#0e0806}
+body.touch #tut{transform:scale(1.32)!important;transform-origin:top left;width:340px!important;max-height:252px;overflow:auto}
+body.touch #ticket{left:45%!important;transform:translateX(-50%) scale(1.28)!important;transform-origin:bottom center;width:600px!important}
+body.touch #hand{transform:scale(1.35);transform-origin:bottom left;bottom:212px}
+body.touch #tiltW{transform:scale(1.3);transform-origin:top right;top:76px;pointer-events:auto}
+body.touch #talkBox{transform:translateX(-50%) scale(1.35);transform-origin:bottom center;bottom:230px}
+body.touch #tidyBar{transform:translateX(-50%) scale(1.25);transform-origin:top center}
+body.touch #viewPad{transform:scale(1.25);transform-origin:bottom right}
+body.touch #evalPop{transform:scale(1.3)!important;transform-origin:bottom right;bottom:250px!important}
+body.touch .slab{font-size:15px}
+body.touch #ticket button,body.touch #autoBtn{min-height:34px}
 </style>
 </head>
 <body>
@@ -751,7 +764,7 @@ const TALKS=[
 ];
 let TALK=null;
 function openTalk(c){if(!c||c.talked)return;c.talked=1;const T0=pick(TALKS);const opts=[...T0.a].sort(()=>Math.random()-.5);TALK={c,opts};fpsUnlock();
- const el=$('#talkBox');el.innerHTML=`<div class="q"><small>💬 ${c.seat+1}番席のお客さん</small>「${T0.q}」</div>${opts.map((o,i)=>`<button data-tk="${i}">${i+1}. ${o[0]}</button>`).join('')}<div style="font-size:11px;color:#aaa;margin-top:4px">数字キー 1〜3 でも選べます</div>`;el.style.display='block';
+ const el=$('#talkBox');el.innerHTML=`<div class="q"><small>💬 ${c.seat+1}番席のお客さん</small>「${T0.q}」</div>${opts.map((o,i)=>`<button data-tk="${i}">${i+1}. ${o[0]}</button>`).join('')}${touchMode?'':'<div style="font-size:11px;color:#aaa;margin-top:4px">数字キー 1〜3 でも選べます</div>'}`;el.style.display='block';
  el.querySelectorAll('[data-tk]').forEach(b=>b.onclick=e=>{e.stopPropagation();answerTalk(+b.dataset.tk)});say(c,T0.q.slice(0,16),2.5)}
 function answerTalk(i){if(!TALK)return;const {c,opts}=TALK;const o=opts[i];TALK=null;$('#talkBox').style.display='none';if(!o||!G.customers.includes(c))return;
  if(o[1]===2){c.talkBonus=1.2;c.mood='happy';c.dirty=1;say(c,pick(['ははっ、ありがとう！','いいね、気に入った！','君と話すと元気が出るよ']),2);sfx.good();addXP(2);S.rep=Math.min(5,S.rep+.02);if(c.reg&&S.regs[c.reg])S.regs[c.reg].aff=(S.regs[c.reg].aff||0)+1;floatAt(c.m.g.position.clone().add(V(0,1.9,0)),'💬 会話がはずんだ！ チップUP','#ffd77a',16);if(G.idleN!==undefined)G.idleN++;G.tutTalk=1}
@@ -1317,7 +1330,7 @@ function nextHint(){
  if(wetCount()>=2)return{t:'水切りカゴの濡れたグラスを拭こう：⑪🧺布をクリック → シンク奥のカゴの上で押したまま ぐるぐる',hl:H&&H.kind==='towel'?'sink':'towel'};
  if(G.customers.some(c=>c.status==='relax'))return{t:'お客さんはひと休み中。次の注文までに片付けや洗い物をしておこう'};
  if(G.seats.some(s=>s.glasses.length))return{t:'飲み終わったグラスをクリックして下げよう',hl:'tables'};
- const ideas=[(G.roundIce||0)<3&&{t:'暇な時間に：⑫丸氷を ぐるぐる削っておこう（ウイスキー系の注文でチップUP）',hl:'roundice'},DX().cutStart<99&&GARN.filter(citrus).reduce((a,k)=>a+(G.cut[k]||0),0)<8&&{t:'暇な時間に：レモン・ライムを切って仕込み（8枚以上でピーク中チップ+15%）',hl:'garnish:g_lemon'},(G.shineStock||0)<6&&{t:'暇な時間に：⑪布を持ってシンク奥のカゴでぐるぐる＝グラスを磨き上げ（次の提供でチップUP）',hl:'towel'},G.customers.some(c=>(c.status==='drinking'||c.status==='relax')&&!c.talked)&&{t:'飲んでいるお客さんをクリックして雑談しよう（うまく答えるとチップUP）',hl:''},{t:'ボトルを持って、何もない所で円を2周＝フレア練習（5回成功でフレアLvUP）',hl:''},{t:'好きにお酒を注いだグラスを持って T キー／👅味見 ＝ 新作カクテルの試作',hl:''},{t:'右上の🎵ボタン（雰囲気）で音楽と照明を変えると、来るお客さんが変わる',hl:''}].filter(Boolean);
+ const ideas=[(G.roundIce||0)<3&&{t:'暇な時間に：⑫丸氷を ぐるぐる削っておこう（ウイスキー系の注文でチップUP）',hl:'roundice'},DX().cutStart<99&&GARN.filter(citrus).reduce((a,k)=>a+(G.cut[k]||0),0)<8&&{t:'暇な時間に：レモン・ライムを切って仕込み（8枚以上でピーク中チップ+15%）',hl:'garnish:g_lemon'},(G.shineStock||0)<6&&{t:'暇な時間に：⑪布を持ってシンク奥のカゴでぐるぐる＝グラスを磨き上げ（次の提供でチップUP）',hl:'towel'},G.customers.some(c=>(c.status==='drinking'||c.status==='relax')&&!c.talked)&&{t:'飲んでいるお客さんをクリックして雑談しよう（うまく答えるとチップUP）',hl:''},{t:'ボトルを持って、何もない所で'+(touchMode?'指で':'')+'円を2周＝フレア練習（5回成功でフレアLvUP）',hl:''},{t:'好きにお酒を注いだグラスを持って👅味見'+(touchMode?'ボタン':'（Tキー）')+' ＝ 新作カクテルの試作',hl:''},{t:'右上の🎵ボタン（雰囲気）で音楽と照明を変えると、来るお客さんが変わる',hl:''}].filter(Boolean);
  const id=ideas[Math.floor(performance.now()/7000)%ideas.length];return{t:id.t,hl:id.hl||null}}
 
 /* ====================== INPUT ====================== */
@@ -1373,8 +1386,8 @@ cv.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'&&!touchMode){to
  const [x,y]=FPS.on?[P.x,P.y]:stagePos(e);P.x=x;P.y=y;if(!G||S.phase!=='service'||G.paused)return;ac();
  try{cv.setPointerCapture(e.pointerId)}catch(_){}
  if(e.button===2)return;if(e.button!==0)return;
- P.down=true;P.sx=x;P.sy=y;P.moved=0;onDown()});
-addEventListener('pointerup',()=>{if(!P.down)return;P.down=false;onUp();if(FPS.on){P.x=640;P.y=360}});
+ P.down=true;P.pid=e.pointerId;P.sx=x;P.sy=y;P.moved=0;onDown()});
+addEventListener('pointerup',e=>{if(!P.down||(P.pid!==undefined&&e.pointerId!==P.pid))return;P.down=false;onUp();if(FPS.on){P.x=640;P.y=360}});
 const RB={down:0,moved:0,x:0};
 function tiltOK(){return G&&S.phase==='service'&&!G.paused&&(P.act&&P.act.kind==='tap'||SLOTS.some(s=>s.kind==='tap'&&s.glass))}
 function rbTilt(dx){if(!tiltOK())return false;RB.moved+=Math.abs(dx);G.tilt=clamp((G.tilt||0)+dx/120,0,1);if(P.act&&P.act.kind==='tap')P.act.manual=1;return true}
@@ -1549,15 +1562,20 @@ function doCut(A){const B=G.board,k=B&&B.k;if(!k)return;const dy=P.y-A.y0,dx=A.m
  G.board={k:null,cuts:0,nice:0};setTimeout(()=>{if(!G.board||!G.board.k)clearBoardVis()},900);H={kind:'garnish',k}}
 function makeKnife(){const g=new THREE.Group();const bl=new THREE.Mesh(new THREE.BoxGeometry(.003,.03,.12),M.chrome);bl.position.set(0,.0,-.02);g.add(bl);const hd=new THREE.Mesh(new THREE.BoxGeometry(.014,.018,.06),std({color:0x2a1a10,roughness:.6}));hd.position.set(0,.004,.065);g.add(hd);return g}
 function makeTowelHand(){const g=new THREE.Group();const cl=std({color:0xf2efe6,roughness:1});const a=new THREE.Mesh(new THREE.BoxGeometry(.09,.02,.07),cl);g.add(a);const b=new THREE.Mesh(new THREE.BoxGeometry(.09,.004,.01),std({color:0x3a6ea8,roughness:1}));b.position.set(0,.012,.02);g.add(b);const d=new THREE.Mesh(new THREE.BoxGeometry(.05,.06,.02),cl);d.position.set(.02,-.03,.03);d.rotation.z=.4;g.add(d);return g}
-function tiltWidget(blocked){const el=$('#tiltW');const sl=SLOTS.find(s=>s.kind==='tap'&&s.glass);if(blocked||!sl||!G||S.phase!=='service'){if(el.style.display!=='none')el.style.display='none';return}
- const gl=sl.glass;const tl=G.tilt||0;const want=gl.fill()<.55;const ok=want?tl>.55:tl<.3;const auto=DX().autoTilt&&!(P.act&&P.act.manual);
+let TWS=null;
+function tiltInit(){const el=$('#tiltW');el.innerHTML='<div id="twBody"></div><div id="twSlBox"><div class="twsl-l"><span>↑まっすぐ</span><span>傾ける↗</span></div><input type="range" id="twSl" min="0" max="100" value="0"></div>';const sl=$('#twSl');TWS={sl,drag:false};
+ const on=()=>{TWS.drag=true};const off=()=>{TWS.drag=false};sl.addEventListener('pointerdown',e=>{e.stopPropagation();on()});sl.addEventListener('pointerup',off);sl.addEventListener('pointercancel',off);sl.addEventListener('blur',off);
+ sl.addEventListener('input',()=>{if(!G)return;G.tilt=sl.value/100;G.manualTilt=1;if(P.act&&P.act.kind==='tap')P.act.manual=1})}
+function tiltWidget(blocked){const el=$('#tiltW');if(!TWS)tiltInit();const sl=SLOTS.find(s=>s.kind==='tap'&&s.glass);if(blocked||!sl||!G||S.phase!=='service'){if(el.style.display!=='none')el.style.display='none';return}
+ const gl=sl.glass;const tl=G.tilt||0;const want=gl.fill()<.55;const ok=want?tl>.55:tl<.3;const auto=DX().autoTilt&&!(P.act&&P.act.manual)&&!G.manualTilt;
  const A2=(a)=>`${(60+52*Math.sin(a)).toFixed(1)} ${(62-52*Math.cos(a)).toFixed(1)}`;const zone=want?[.58,1.05]:[0,.32];
+ const how=touchMode?'👆 下のスライダーで角度を変える<br><b>右</b>＝傾ける　<b>左</b>＝まっすぐ':'🖱 <b>右ボタン</b>を押したまま<br><b>右へ</b>＝傾ける　<b>左へ</b>＝戻す';
  const h=`<div class="tw-h">🍺 グラスの角度　${gl.fill()<.02?'（今のうちに傾けておこう）':Math.round(gl.fill()*100)+'%'}</div>
- <svg viewBox="0 0 120 70" width="150" height="88"><path d="M60 62 L${A2(0)} A52 52 0 0 1 ${A2(1.05)} Z" fill="#ffffff14"/><path d="M60 62 L${A2(zone[0])} A52 52 0 0 1 ${A2(zone[1])} Z" fill="#7cff9a55"/>
+ <svg viewBox="0 0 120 70" width="${touchMode?120:150}" height="${touchMode?70:88}"><path d="M60 62 L${A2(0)} A52 52 0 0 1 ${A2(1.05)} Z" fill="#ffffff14"/><path d="M60 62 L${A2(zone[0])} A52 52 0 0 1 ${A2(zone[1])} Z" fill="#7cff9a55"/>
  <g transform="rotate(${(tl*60).toFixed(1)} 60 62)"><path d="M51 20 L69 20 L67 61 L53 61 Z" fill="#e8a838bb" stroke="#fff" stroke-width="2"/><rect x="51.5" y="20" width="17" height="7" fill="#fff8"/></g></svg>
  <div class="tw-t" style="color:${ok?'#7cff9a':'#ffd77a'}">${ok?'👍 いい角度！':want?'もっと傾けて ➡':'⬅ まっすぐに戻して'}</div>
- <div class="tw-m">${want?'前半：<b>傾けて</b>泡をおさえる':'後半：<b>まっすぐ</b>で泡を作る'}<br>${auto?'（かんたん：自動で調整中）<br>':''}🖱 <b>右ボタン</b>を押したまま<br><b>右へ</b>＝傾ける　<b>左へ</b>＝戻す</div>`;
- el.style.display='block';if(el.innerHTML!==h)el.innerHTML=h}
+ <div class="tw-m">${want?'前半：<b>傾けて</b>泡をおさえる':'後半：<b>まっすぐ</b>で泡を作る'}<br>${auto?'（かんたん：自動で調整中）<br>':''}${how}</div>`;
+ el.style.display='block';const bd=$('#twBody');if(bd.innerHTML!==h)bd.innerHTML=h;if(!TWS.drag)TWS.sl.value=Math.round(tl*100)}
 function tiltTxt(gl){const tl=G.tilt||0;const deg=Math.round(tl*.55*57.3);const want=gl.fill()<.55;const ok=want?tl>.55:tl<.3;const auto=DX().autoTilt&&!(P.act&&P.act.manual);
  return `🍺 傾き <b style="color:${ok?'#7cff9a':'#ffd77a'}">${deg}°</b> ${ok?'👍':want?'→ もっと傾けて':'← まっすぐに'}${auto?'（自動）':''}`}
 // --- wet / shiny glasses
@@ -1580,7 +1598,7 @@ function update(dt){
  ST.taps.forEach((tp,i)=>{let target=0;if(A&&A.kind==='tap'&&A.i===i)target=clamp((P.y-A.y0)/110,0,1);tp.pull+=(target-tp.pull)*Math.min(1,dt*14);tp.piv.rotation.x=tp.pull*.85;
   const flow=tp.pull>.06?tp.pull:0;const slot=SLOTS.find(s=>s.id==='T'+i);const gl=slot.glass;
   if(flow>0){pouring=true;const k=tp.k;let amt=150*flow*dt;if(S.stock[k]<=0){if(!tp.warned){msgNoStock(k);tp.warned=1}amt=0}else{tp.warned=0;amt=Math.min(amt,S.stock[k])}
-   if(amt>0){if(gl){gl.wob=Math.min(1.2,(gl.wob||0)+dt*4*flow);if(Math.random()<flow*dt*50)emit(surf(gl),Math.random()<.5?'#fff6e4':ING[k].color,1,.15);if(DX().autoTilt&&!(P.act&&P.act.manual))G.tilt+=((gl.fill()<.55?.85:0)-G.tilt)*Math.min(1,dt*3);const ff=(.06+.55*Math.pow(flow,3))*DX().foamMul*(1-.65*(G.tilt||0));const foam=amt*ff;const liq=amt-foam;addLiquid(gl,k,liq);const free=gl.cap()-gl.vol();if(free>0)gl.c.foam+=Math.min(foam*1.6,free);else{gl.c.overflow=true}}else{S.stock[k]-=amt;G.stats.waste+=amt}}
+   if(amt>0){if(gl){gl.wob=Math.min(1.2,(gl.wob||0)+dt*4*flow);if(Math.random()<flow*dt*50)emit(surf(gl),Math.random()<.5?'#fff6e4':ING[k].color,1,.15);if(DX().autoTilt&&!(P.act&&P.act.manual)&&!G.manualTilt)G.tilt+=((gl.fill()<.55?.85:0)-G.tilt)*Math.min(1,dt*3);const ff=(.06+.55*Math.pow(flow,3))*DX().foamMul*(1-.65*(G.tilt||0));const foam=amt*ff;const liq=amt-foam;addLiquid(gl,k,liq);const free=gl.cap()-gl.vol();if(free>0)gl.c.foam+=Math.min(foam*1.6,free);else{gl.c.overflow=true}}else{S.stock[k]-=amt;G.stats.waste+=amt}}
    if(gl&&DF().assist&&A&&A.kind==='tap'&&A.i===i){const ac=activeCust();const r=ac&&RC(ac);const fills=r?Object.keys(r.ings).filter(x=>r.ings[x]==='fill'):[];const goal=fills.length>1?.47:.94;if(gl.fill()>=goal){P.act=null;loopSet('pour',false);floatAt(gl.g.position.clone().add(V(0,.25,0)),'ちょうどいい！','#7cff9a',20);sfx.ok()}}
    const top=gl?gl.g.position.y+gl.def.inner.b+gl.levelH(Math.min(1,gl.fill())):.91;const y0=1.13;tp.stream.visible=true;tp.stream.scale.set(1+flow,y0-top,1+flow);tp.stream.position.set(tp.x,(y0+top)/2,-.42)}
   else tp.stream.visible=false});
@@ -1752,7 +1770,7 @@ function renderHUD(t){
  updateGlow(t,h.hl);renderLabels(h.hl);if(!blocked)renderArrow(h.hl,h.t);if(G.tutorial)tutRender();
  // hand
  const hn=!H?'なし':H.kind==='glass'&&H.glass.hasIngs()&&H.glass.type!=='shaker'?GL[H.glass.type].full+'（上へシュッと弾くとスライド提供）':H.kind==='glass'?GL[H.glass.type].full+(H.glass.hasIngs()?'（中身あり）':''):H.kind==='bottle'?ING[H.k].name:H.kind==='spoon'?'バースプーン':H.kind==='scoop'?'氷（スコップ）':H.kind==='knife'?'🔪 包丁（まな板で上から下へ）':H.kind==='towel'?'🧺 布（カゴの上でぐるぐる）':ING[H.k].name;
- const hs=`手：<b>${hn}</b>${H?`<br><button class="ret" id="retBtn">✋ 置く・戻す</button>${H.kind==='glass'&&H.glass.type!=='shaker'&&H.glass.hasIngs()?'<button class="ret" id="tasteBtn" style="margin-left:4px;background:#5a3a6a;color:#fff">👅 味見(T)</button>':''}${touchMode?'':'<span style="color:#aaa;font-size:10.5px"> （右クリックでもOK）</span>'}`:''}`;if($('#hand').innerHTML!==hs)$('#hand').innerHTML=hs;
+ const hs=`手：<b>${hn}</b>${H?`<br><button class="ret" id="retBtn">✋ 置く・戻す</button>${H.kind==='glass'&&H.glass.type!=='shaker'&&H.glass.hasIngs()?`<button class="ret" id="tasteBtn" style="margin-left:4px;background:#5a3a6a;color:#fff">👅 味見${touchMode?'':'(T)'}</button>`:''}${touchMode?'':'<span style="color:#aaa;font-size:10.5px"> （右クリックでもOK）</span>'}`:''}`;if($('#hand').innerHTML!==hs)$('#hand').innerHTML=hs;
  // tooltip
  const tip=$('#tip');const tt=P.act?'':tipText(hover&&hover.act);if(tt){tip.style.display='block';if(tip.innerHTML!==tt)tip.innerHTML=tt;tip.style.left=Math.min(P.x,1080)+'px';tip.style.top=Math.min(P.y,660)+'px'}else tip.style.display='none';
  // readout
@@ -2187,29 +2205,29 @@ function renderArrow(hl,txt){const ar=$('#arrow');document.querySelectorAll('.sl
 const TUT=[
  {c:'はじめに',t:'ようこそ<b>「Bar 憩」</b>へ！ 今夜からあなたがこの店のバーテンダーです。<br>このチュートリアルは <b>12のチャプター</b>。各チャプターの <b>やること ✓</b> を全部こなすと次に進みます。<br>時間制限なし・失敗してもOK🍸',btn:'はじめる'},
  {c:'見回す',t:()=>fpsWanted()?'<b>画面をクリック</b>するとマウスで見回せます（FPSゲームと同じ）。中央の <b>＋照準</b> を物に合わせてクリック。<br><b>Esc</b>でカーソルに戻る ／ 感度は ⚙設定':touchMode?'右下の <b>⬆⬇◀▶</b> で見回せます':'マウスを<b>上</b>に動かすと客席、<b>下</b>で手元、<b>左右の端</b>で首を振ります',enter(){G.lookAcc=0},goals:[['客席と手元を見回す',()=>(G.lookAcc||0)>1.6]],skip:'次へ'},
- {c:'持つ・戻す',t:'物は<b>クリックで持つ</b>、<b>右クリック</b>（Qキー）で戻す。これが全部の基本です。',enter(){G.tutHeld=0},goals:[['①グラス棚からグラスを持つ',()=>G.tutHeld],['右クリックで戻す',()=>G.tutHeld&&!H]],hl:'rack:pint'},
+ {c:'持つ・戻す',t:()=>touchMode?'物は<b>タップで持つ</b>、左下の<b>✋置く・戻す</b>ボタンで戻す。これが全部の基本です。':'物は<b>クリックで持つ</b>、<b>右クリック</b>（Qキー）で戻す。これが全部の基本です。',enter(){G.tutHeld=0},goals:[['①グラス棚からグラスを持つ',()=>G.tutHeld],[()=>touchMode?'✋置く・戻すボタンで戻す':'右クリックで戻す',()=>G.tutHeld&&!H]],hl:'rack:pint'},
  {c:'接客',t:'お客さんが来た！ 頭の上の <b>「🙋注文！」</b> をクリックして注文を聞こう。注文は画面下の<b>伝票</b>に手順つきで並びます。',enter(){tutSpawn('pale')},goals:[['お客さんをクリックして注文を聞く',()=>G.customers.some(c=>c.status==='ordered')]],hl:'callers',dyn:1},
- {c:'ビール',t:()=>'注文は<b>'+RECIPES.pale.name+'</b>🍺 タップで注ぎます。<br>注ぐ前に右上の<b>「グラスの角度」</b>パネルを見てね。<b>マウスの右ボタンを押したまま右へ</b>でグラスが傾きます。',goals:[['パイントグラスを⑧タップの受け皿に置く',()=>SLOTS.some(s=>s.kind==='tap'&&s.glass)||G.stats.served>=1],['右ボタン＋右へ動かして グラスを傾ける',()=>(G.tilt||0)>.4||G.stats.served>=1],['ハンドルを押したまま下へ引いて注ぐ',()=>SLOTS.some(s=>s.kind==='tap'&&s.glass&&s.glass.fill()>.5)||G.stats.served>=1],['半分を過ぎたら左へ動かして まっすぐに戻す',()=>SLOTS.some(s=>s.kind==='tap'&&s.glass&&s.glass.fill()>.6&&(G.tilt||0)<.3)||G.stats.served>=1],['お客さんをクリックして提供',()=>G.stats.served>=1]],dyn:1},
+ {c:'ビール',t:()=>'注文は<b>'+RECIPES.pale.name+'</b>🍺 タップで注ぎます。<br>注ぐ前に右上の<b>「グラスの角度」</b>パネルを見てね。'+(touchMode?'パネルの<b>スライダーを右へ</b>動かすとグラスが傾きます。':'<b>マウスの右ボタンを押したまま右へ</b>でグラスが傾きます。'),goals:[['パイントグラスを⑧タップの受け皿に置く',()=>SLOTS.some(s=>s.kind==='tap'&&s.glass)||G.stats.served>=1],[()=>touchMode?'角度スライダーを右へ動かして グラスを傾ける':'右ボタン＋右へ動かして グラスを傾ける',()=>(G.tilt||0)>.4||G.stats.served>=1],[()=>touchMode?'ハンドルを指で押さえて下へなぞって注ぐ':'ハンドルを押したまま下へ引いて注ぐ',()=>SLOTS.some(s=>s.kind==='tap'&&s.glass&&s.glass.fill()>.5)||G.stats.served>=1],[()=>touchMode?'半分を過ぎたら スライダーを左へ（まっすぐ）':'半分を過ぎたら左へ動かして まっすぐに戻す',()=>SLOTS.some(s=>s.kind==='tap'&&s.glass&&s.glass.fill()>.6&&(G.tilt||0)<.3)||G.stats.served>=1],[()=>touchMode?'お客さんをタップして提供':'お客さんをクリックして提供',()=>G.stats.served>=1]],dyn:1},
  {c:'お会計',t:'飲み終わると<b>💴お会計と空きグラス</b>がカウンターに残ります。回収しないと次のお客さんが座れません。',goals:[['飲み終わるのを待つ',()=>G.seats.some(s=>s.money>0)||G.stats.sales>0&&!G.customers.some(c=>c.status==='drinking')],['💴お会計をクリックして回収',()=>!G.seats.some(s=>s.money>0||s.glasses.length)&&G.stats.served>=1&&!G.customers.some(c=>c.status==='drinking')]],hl:'tables',dyn:1},
  {c:'フルーツを切る',t:'次のお客さんは<b>'+'ハイボール系</b>。飾りのレモンは<b>自分で切ります</b>🍋<br>レモンをクリックすると⑩まな板に乗って包丁を持つので、<b>まな板の上で押して上から下へスッ</b>を2回。',enter(){G.tutCut=1;G.cut.g_lemon=0;tutSpawn('highball')},goals:[['お客さんの注文を聞く',()=>G.customers.some(c=>c.status==='ordered')||G.stats.served>=2],['⑦のレモンをクリック（まな板へ）',()=>(G.board&&G.board.k)||(G.cut.g_lemon||0)>0],['包丁で2回切る',()=>(G.cut.g_lemon||0)>0]],hl:()=>G.board&&G.board.k?'board':G.customers.some(c=>c.status==='waiting')?'callers':'garnish:g_lemon'},
  {c:'カクテルを作る',t:'伝票の手順どおりに作ろう。ボトルは<b>グラスの上で長押し</b>、ステアは<b>スプーンでぐるぐる</b>。',goals:()=>{const c=activeCust();if(c&&G.stats.served<2)return steps(RC(c)).map(s=>[s.t,s.d]);return[['お客さんに提供',G.stats.served>=2]]},done:()=>G.stats.served>=2,dyn:1},
  {c:'洗う・拭く',t:'下げたグラスは⑨シンクへ。洗うと<b>濡れたまま</b>水切りカゴに並ぶので、⑪<b>布</b>で拭き上げます。',enter(){if(!G.dirty.length&&!wetCount())G.dirty.push('pint')},goals:[['シンクを押したまま左右にこすって洗う',()=>G.dirty.length===0],['⑪布をクリックして持つ',()=>(H&&H.kind==='towel')||(G.dirty.length===0&&wetCount()===0)],['シンク奥のカゴの上で押したまま ぐるぐる拭く',()=>G.dirty.length===0&&wetCount()===0]],hl:()=>G.dirty.length?'sink':H&&H.kind==='towel'?'sink':'towel'},
  {c:'ひまな時間①',t:'注文がない時間は<b>準備のチャンス</b>！<br>⑫<b>丸氷</b>を押したまま、<b>ぐるぐる円を描いて</b>削ろう。丸氷はウイスキー系の注文で自動で使われてチップUP。',goals:[['⑫丸氷を1個つくる',()=>(G.roundIce||0)>0]],hl:'roundice'},
  {c:'ひまな時間②',t:'お客さんとの<b>雑談</b>や、お店の<b>雰囲気</b>づくりもバーテンダーの仕事。<br>画面右上の <b>🎵</b> ボタン（雰囲気）で、音楽と照明を変えてみよう（来るお客さんのタイプが変わる）。',enter(){fpsUnlock()},goals:[['右上の🎵ボタンを押して 音楽か照明を選ぶ',()=>G.tutMood]]},
- {c:'もっと遊ぶ',t:'ほかにも、ひまな時間にできること：<br>💬 <b>雑談</b>：飲んでいるお客さんをクリック → 返事を選ぶ<br>🔪 <b>仕込み</b>：スライスを8枚以上ためるとピーク中チップ+15%<br>✨ <b>磨き上げ</b>：濡れたグラスがない時も布でカゴを磨く<br>🧼 <b>清潔度</b>：布で空いた客席カウンターをこする（左上のメーター）<br>🍾 <b>フレア練習</b>：ボトルを持って円を2周→キャッチ。5回でLvUP<br>👅 <b>試作</b>：自由に注いだグラスを持って T キーで味見',btn:'わかった'},
+ {c:'もっと遊ぶ',t:'ほかにも、ひまな時間にできること：<br>💬 <b>雑談</b>：飲んでいるお客さんをクリック → 返事を選ぶ<br>🔪 <b>仕込み</b>：スライスを8枚以上ためるとピーク中チップ+15%<br>✨ <b>磨き上げ</b>：濡れたグラスがない時も布でカゴを磨く<br>🧼 <b>清潔度</b>：布で空いた客席カウンターをこする（左上のメーター）<br>🍾 <b>フレア練習</b>：ボトルを持って円を2周→キャッチ。5回でLvUP<br>👅 <b>試作</b>：自由に注いだグラスを持って👅味見ボタン（PCはTキー）',btn:'わかった'},
  {c:'完了',t:'🎉 <b>チュートリアル完了！</b><br>迷ったら<b>光っている物</b>と画面下の<b>「次は▶」</b>。注文がない時は「次は▶」が暇つぶしを提案してくれます。<br>商品名の表示・名札・感度は ⚙設定 で変えられます。',btn:'営業スタート！',end:1},
 ];
 function tutSpawn(order){G.forceOrder=order;G.forceType='office';const seat=G.seats.find(s=>s.i===1&&seatFree(s))||G.seats.find(seatFree);if(!seat)return;const save=G.seats.map(s=>s.i);spawnCustomer(true);const c=G.customers[G.customers.length-1];if(c&&c.seat!==seat.i){G.seats[c.seat].cust=null;c.seat=seat.i;seat.cust=c;c.target=V(SEATX[seat.i],0,-1.36)}}
 function startTutorial(after){S.phase='service';newDay();G.tutorial={st:-1,after};closeOv();tutGo(0)}
-function tutGo(i){G.tutorial.st=i;const s=TUT[i];if(s&&s.enter)s.enter();if(s&&s.btn)fpsUnlock();tutRender.last=null;tutRender()}
-function tutGoals(s){const st=G.tutorial.st;G.tutDone=G.tutDone||{};const mem=G.tutDone[st]=G.tutDone[st]||{};if(!s.goals)return[];const gs=typeof s.goals==='function'?s.goals():s.goals;return gs.map((g,i)=>{const v=typeof g[1]==='function'?!!g[1]():!!g[1];if(typeof s.goals!=='function'&&v)mem[i]=1;return[g[0],typeof s.goals==='function'?v:!!mem[i]]})}
+function tutGo(i){G.tutorial.st=i;G.tutMin=false;const s=TUT[i];if(s&&s.enter)s.enter();if(s&&s.btn)fpsUnlock();tutRender.last=null;tutRender()}
+function tutGoals(s){const st=G.tutorial.st;G.tutDone=G.tutDone||{};const mem=G.tutDone[st]=G.tutDone[st]||{};if(!s.goals)return[];const gs=typeof s.goals==='function'?s.goals():s.goals;return gs.map((g,i)=>{const lb=typeof g[0]==='function'?g[0]():g[0];const v=typeof g[1]==='function'?!!g[1]():!!g[1];if(typeof s.goals!=='function'&&v)mem[i]=1;return[lb,typeof s.goals==='function'?v:!!mem[i]]})}
 function tutUpdate(){if(H&&H.kind==='glass')G.tutHeld=1;const s=TUT[G.tutorial.st];if(!s)return;if(s.done?s.done():(s.goals&&tutGoals(s).every(g=>g[1]))){sfx.ok&&sfx.ok();tutGo(G.tutorial.st+1)}}
 function tutRender(){const s=TUT[G.tutorial.st];const el=$('#tut');if(!s){el.style.display='none';return}
  const nh=s.dyn?nextHint().t:'';const tx=typeof s.t==='function'?s.t():s.t;const ti=G.tutorial.st,tn=TUT.length;const gl=tutGoals(s);const gh=gl.length?`<div class="tgoals">${gl.map(g=>`<div class="${g[1]?'ok':''}">${g[1]?'✅':'⬜'} ${g[0]}</div>`).join('')}</div>`:'';
- const html=`<div class="th"><span>📘 チュートリアル <b style="color:#ffd77a">${s.c||''}</b> <small style="color:#aaa">${ti+1}/${tn}</small></span><span style="color:#aaa;cursor:pointer" id="tutSkip">スキップ ✕</span></div><div class="tprog"><i style="width:${Math.round(ti/(tn-1)*100)}%"></i></div><div class="tt">${tx}</div>${gh}${nh&&!s.btn?`<div class="nx"><b>次は▶</b> ${nh}</div>`:''}${s.btn||s.skip?`<div class="row"><button class="btn sm" id="tutBtn">${s.btn||s.skip}</button>${s.btn&&FPS.on?'<small style="color:#aaa;margin-left:8px">Enterでも進む</small>':''}</div>`:''}`;
+ const html=`<div class="th"><span>📘 チュートリアル <b style="color:#ffd77a">${s.c||''}</b> <small style="color:#aaa">${ti+1}/${tn}</small></span><span><span style="color:#ffd77a;cursor:pointer;margin-right:12px" id="tutMin">${G.tutMin?"▼説明を開く":"▲たたむ"}</span><span style="color:#aaa;cursor:pointer" id="tutSkip">スキップ ✕</span></span></div><div class="tprog"><i style="width:${Math.round(ti/(tn-1)*100)}%"></i></div>${G.tutMin?'':`<div class="tt">${tx}</div>`}${gh}${nh&&!s.btn?`<div class="nx"><b>次は▶</b> ${nh}</div>`:''}${s.btn||s.skip?`<div class="row"><button class="btn sm" id="tutBtn">${s.btn||s.skip}</button>${s.btn&&FPS.on?'<small style="color:#aaa;margin-left:8px">Enterでも進む</small>':''}</div>`:''}`;
  el.style.display='block';if(html===tutRender.last)return;tutRender.last=html;el.innerHTML=html;
  const b=$('#tutBtn');if(b)b.onclick=()=>{sfx.pop();if(s.end){tutFinish();return}tutGo(G.tutorial.st+1)};
- $('#tutSkip').onclick=()=>tutFinish()}
+ $('#tutSkip').onclick=()=>tutFinish();$('#tutMin').onclick=()=>{G.tutMin=!G.tutMin;tutRender.last=null;tutRender()}}
 function tutFinish(){const after=G.tutorial&&G.tutorial.after;S.tutDone=1;$('#tut').style.display='none';G.tutorial=null;
  const s0=load();if(after==='shop'&&s0){S=s0;S.tutDone=1;applyDiff();newDay();openShop('stock');return}
  S.day=Math.max(1,S.day);startService()}
