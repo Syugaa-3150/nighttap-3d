@@ -95,7 +95,7 @@ button{font-family:inherit}
 .neon2{font-size:18px;color:#3fd0c9;text-shadow:0 0 8px #3fd0c9;font-weight:800;margin-bottom:18px;letter-spacing:.2em}
 .tbtns{display:flex;flex-direction:column;gap:12px;align-items:center;margin-top:16px}
 .tbtns .btn{width:280px}
-.help{width:960px}
+.help{width:1000px}
 .hgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .hcard{background:#0004;border:1px solid #5a3a1e;border-radius:12px;padding:9px 12px;font-size:12.5px;line-height:1.6}
 .hcard b{color:#ffd77a;font-size:14.5px;display:block;margin-bottom:2px}
@@ -1560,6 +1560,11 @@ function showHelp(thenStart,fromTitle){const was=G&&G.paused;if(G&&S.phase==='se
  <div class="hcard"><b>🧊 氷・飾り</b>氷入れ・フルーツを<span class="mz">クリック</span>で持ち、グラスの上で<span class="mz">クリック</span>。</div>
  <div class="hcard"><b>🙋 接客</b>「注文！」のお客さんを<span class="mz">クリック</span>。完成したらお客さんを<span class="mz">クリック</span>するだけで提供（グラスを持っていてもOK）。</div>
  <div class="hcard"><b>✨ 決め技（ランクで解放）</b><span class="mz">ジャストポア</span>一回の長押しで目標量ぴったり ／ <span class="mz">ハイポア</span>注ぎながら上へドラッグして高い位置から ／ <span class="mz">ローリングシェイク</span>円を描いて振る ／ <span class="mz">神速サーブ</span>注文から20秒以内。チップと評判UP！</div>
+ <div class="hcard"><b>🍾 フレア</b>ボトルを持って、何もない所で<span class="mz">押したまま円を2周</span>描くと宙に投げる。落ちてくる所で<span class="mz">クリック</span>してキャッチ！ 次の一杯がチップUP。</div>
+ <div class="hcard"><b>🥃 スライド提供</b>完成したグラスを持って、お客さんの方へ<span class="mz">上にシュッと弾く</span>とカウンターを滑って届く。強すぎると割れる（かんたんは割れない）。</div>
+ <div class="hcard"><b>🍺 グラスを傾ける</b>ビールを注ぐ時、<span class="mz">ホイール</span>か<span class="mz">左右ドラッグ</span>で傾けると泡が減る。最初は傾け、最後に起こすのがコツ（かんたんは自動）。</div>
+ <div class="hcard"><b>🍋 カット</b>ふつう・むずかしいはレモン等を<span class="mz">上から下へスッと</span>切ってスライスを作る。まっすぐ切ると「きれいなカット」。</div>
+ <div class="hcard"><b>✨ 拭く・リズム・失敗</b>シンクで<span class="mz">ぐるぐる</span>＝濡れたグラスを拭く（ピカピカはチップUP）。ピークタイムは右上の丸に合わせて操作するとリズム職人。こぼすと濡れるので<span class="mz">こすって拭く</span>。</div>
  <div class="hcard"><b>🧽 片付け</b>お会計と空きグラスを<span class="mz">クリック</span>で回収。シンクを<span class="mz">押したまま左右にこする</span>と洗えます。</div>
  </div><p style="margin-top:10px;font-size:13px;line-height:1.7">💡 迷ったら画面下の <b style="color:#3fd0c9">「次は▶」</b>。次に触る物が<span style="color:#3fd0c9">水色に光ります</span>。右上の伝票に手順と量が出ます。</p>
  <div style="display:flex;justify-content:flex-end;margin-top:10px">${thenStart?'<button class="btn" id="hGo">DAY 1 開店する ▶</button>':'<button class="btn" id="hClose">閉じる</button>'}</div></div>`);
