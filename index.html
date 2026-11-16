@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="description" content="クラフトビール＆バーのバーテンダーになって、ビールを注ぎ、カクテルを振る3D一人称シミュレーション。目指せ1日50杯！">
+<meta name="theme-color" content="#140c08">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="ナイトタップ">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8D%BA%3C/text%3E%3C/svg%3E">
+<title>ナイトタップ 3D — バーテンダーPOVシミュレーション</title>
+<meta http-equiv="Content-Security-Policy" content="connect-src 'none'; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'; worker-src 'none'">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js"},"integrity":{"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js":"sha384-8/hf5tabFfIo0BPku31TKUvGIKpWGYaMwNtlSNqNyZzXgZCMd4lnOGWbJElML9dv"}}</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#070403;font-family:'Hiragino Maru Gothic ProN','Hiragino Sans','Yu Gothic UI','Meiryo','Noto Sans JP',system-ui,sans-serif;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;overscroll-behavior:none;color:#f5e6c8;user-select:none;-webkit-user-select:none}
+#wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+#stage{position:relative;width:1280px;height:720px;flex:none;transform-origin:center center;overflow:hidden;background:#0e0806}
+#cv{position:absolute;left:0;top:0;width:1280px;height:720px;display:block;touch-action:none}
+#hud{position:absolute;inset:0;pointer-events:none}
+button{font-family:inherit}
+#top{position:absolute;left:0;top:0;width:1280px;height:44px;background:linear-gradient(rgba(30,18,10,.92),rgba(20,12,7,.75));border-bottom:1px solid #5a3a1e;display:flex;align-items:center;gap:8px;padding:0 10px;pointer-events:auto}
+.tb{background:#0006;border:1px solid #5a3a1e;border-radius:10px;padding:3px 8px;font-size:12.5px;font-weight:700;white-space:nowrap;display:flex;align-items:center;gap:7px}
+.tb b{font-size:17px;color:#ffd77a}
+.tbar{width:80px;height:6px;background:#0008;border-radius:3px;overflow:hidden}
+.tbar i{display:block;height:100%;background:linear-gradient(90deg,#3fd0c9,#ff5a7a);width:0}
+#stars{position:relative;display:inline-block;font-size:16px;color:#5a4030}
+#stars i{position:absolute;left:0;top:0;overflow:hidden;white-space:nowrap;color:#ffc840;font-style:normal}
+.gbar{width:64px;height:6px;background:#0008;border-radius:3px;overflow:hidden}
+.gbar i{display:block;height:100%;background:#7cd67c;width:0}
+.sp{flex:1}
+.ic{white-space:nowrap;background:#3a2416;border:1px solid #6a4426;color:#f5e6c8;border-radius:10px;height:30px;padding:0 11px;font-size:13px;font-weight:700;cursor:pointer}
+.ic:hover{background:#4e321e}
+/* ticket */
+#ticket{position:absolute;right:10px;top:52px;width:268px;background:rgba(20,12,7,.72);border:1px solid rgba(212,162,76,.45);border-radius:12px;padding:6px 8px;backdrop-filter:blur(3px)}
+#ticket h3{font-size:11px;color:#d4a24c;letter-spacing:.12em;font-weight:800;display:flex;justify-content:space-between}
+#orderTabs{display:flex;gap:4px;flex-wrap:wrap;margin:4px 0 6px;pointer-events:auto}
+.otab{background:#3a2416;border:1px solid #6a4426;border-radius:8px;padding:2px 6px;font-size:10.5px;font-weight:800;cursor:pointer;min-width:58px}
+.otab.on{background:#f5ead0;color:#3a2414;border-color:#fff}
+.otab .pb{height:3px;background:#0005;border-radius:2px;margin-top:2px;overflow:hidden}
+.otab .pb i{display:block;height:100%;background:#7cd67c}
+#tkt{background:#f8f0dc;color:#3a2414;border-radius:6px;padding:7px 9px;box-shadow:0 3px 0 #0006;background-image:repeating-linear-gradient(#f8f0dc 0 20px,#eadfc4 20px 21px)}
+#tkt h2{font-size:16px;font-weight:900;display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px dashed #c9b48a;padding-bottom:2px;margin-bottom:3px}
+#tkt h2 small{font-size:10.5px;color:#8a6a4a}
+.step{font-size:11.5px;font-weight:700;display:flex;gap:6px;align-items:center;line-height:1.72}
+.step .ck{width:15px;height:15px;border-radius:50%;border:2px solid #b89a6a;flex:none;display:flex;align-items:center;justify-content:center;font-size:9px}
+.step.done{color:#3d8a3d}.step.done .ck{background:#4caf50;border-color:#4caf50;color:#fff}
+.step.cur{color:#c0392b}.step.cur .ck{border-color:#c0392b;background:#ffe0d8}
+.step .amt{margin-left:auto;font-size:10.5px;color:#8a6a4a}
+.tktEmpty{color:#8a6a4a;font-size:12px;text-align:center;font-weight:700;padding:14px 0;line-height:1.6}
+/* hint */
+#hintBar{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);max-width:820px;background:rgba(10,40,38,.88);border:1px solid #3fd0c9;border-radius:14px;padding:7px 16px;font-size:14px;font-weight:800;color:#c8faf6;display:flex;gap:10px;align-items:center;white-space:nowrap}
+#hintBar b{color:#3fd0c9;font-size:12px}
+#hand{position:absolute;left:10px;bottom:12px;background:rgba(20,12,7,.8);border:1px solid #6a4426;border-radius:12px;padding:6px 12px;font-size:12px;font-weight:700;line-height:1.5}
+#hand b{color:#ffd77a}
+#tip{position:absolute;background:rgba(10,6,4,.9);border:1px solid #d4a24c;border-radius:9px;padding:4px 9px;font-size:12px;font-weight:700;white-space:nowrap;display:none;line-height:1.45;transform:translate(14px,14px)}
+#tip small{color:#3fd0c9;display:block;font-size:11px}
+#readout{position:absolute;transform:translate(-50%,-100%);background:rgba(0,0,0,.72);border-radius:10px;padding:4px 10px;font-weight:900;font-size:15px;white-space:nowrap;display:none;text-align:center;border:1px solid #fff3}
+#readout small{display:block;font-size:11px;color:#ccc;font-weight:700}
+#gaugeBox{position:absolute;left:50%;bottom:64px;width:420px;margin-left:-210px;display:none}
+#gaugeBox .glab{text-align:center;font-weight:900;font-size:16px;text-shadow:0 2px 0 #000;margin-bottom:4px}
+#gaugeBox .gt{position:relative;height:22px;border-radius:11px;border:2px solid #fff;background:linear-gradient(90deg,#c0392b 0 50%,#e0b030 50% 70%,#2ecc71 70% 95%,#e0b030 95% 110%,#c0392b 110%);background-size:100% 100%;overflow:visible}
+#gaugeBox .nd{position:absolute;top:-6px;width:5px;height:30px;background:#fff;border-radius:2px;box-shadow:0 0 8px #fff;left:0}
+.bub{position:absolute;transform:translate(-50%,-100%);background:#fff8ec;color:#3a2414;border-radius:12px;padding:3px 8px;font-weight:800;font-size:12px;white-space:nowrap;box-shadow:0 3px 0 #0005;text-align:center}
+.bub.call{background:#ffcf4a;font-size:13px;padding:5px 9px;animation:bob .8s ease-in-out infinite}
+.bub.say{background:#2a1a10;color:#ffd77a;border:1px solid #6a4426}
+.bub.act{box-shadow:0 0 0 3px #3fd0c9,0 3px 0 #0005}
+.bub .pb{height:4px;background:#0003;border-radius:2px;margin-top:3px;overflow:hidden}
+.bub .pb i{display:block;height:100%}
+@keyframes bob{50%{margin-top:-5px}}
+.mlab{position:absolute;transform:translate(-50%,-100%);background:#ffd34a;color:#5a3a00;font-weight:900;font-size:11px;border-radius:7px;padding:1px 6px;box-shadow:0 2px 0 #a07000}
+#fx{position:absolute;inset:0}
+.ft{position:absolute;font-weight:900;font-size:18px;white-space:nowrap;text-shadow:0 2px 0 #000,0 0 6px #000;animation:ft 1.4s ease-out forwards}
+@keyframes ft{0%{transform:translate(-50%,0) scale(.6);opacity:0}15%{transform:translate(-50%,-10px) scale(1.12);opacity:1}100%{transform:translate(-50%,-64px);opacity:0}}
+#toast{position:absolute;top:56px;left:50%;transform:translateX(-50%);background:#ffd77a;color:#3a2414;font-weight:900;padding:8px 18px;border-radius:20px;box-shadow:0 4px 0 #a07000;display:none;font-size:14px}
+#msg{position:absolute;left:0;right:0;bottom:56px;text-align:center}
+#msg div{display:inline-block;background:#c0392bee;color:#fff;font-size:13px;font-weight:800;padding:6px 12px;border-radius:10px;animation:msg 2.4s forwards}
+@keyframes msg{0%{opacity:0;transform:translateY(6px)}10%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0}}
+#evalPop{position:absolute;left:50%;top:60px;transform:translateX(-50%);background:#1a0f09ee;border:2px solid #ffd77a;border-radius:14px;padding:8px 20px;display:none;text-align:center;min-width:260px}
+#evalPop .sc{font-size:28px;font-weight:900}
+#evalPop .nt{font-size:12px;color:#ffb0a0;margin-top:2px;line-height:1.4}
+#xh{position:absolute;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;border:2px solid #fff9;display:none}
+/* overlay */
+#ov{position:absolute;inset:0;background:rgba(8,4,2,.8);display:none;align-items:center;justify-content:center;pointer-events:auto}
+#ov.show{display:flex}
+.modal{background:linear-gradient(#2c1b10,#1e120a);border:2px solid #d4a24c;border-radius:18px;padding:20px 26px;max-height:680px;overflow:auto;box-shadow:0 10px 40px #000}
+.modal h1{font-size:26px;font-weight:900;color:#ffd77a;margin-bottom:8px}
+.btn{background:linear-gradient(#f6c862,#c88a2a);color:#2a1408;border:none;border-radius:12px;padding:10px 22px;font-weight:900;font-size:16px;cursor:pointer;box-shadow:0 4px 0 #7a4a10}
+.btn:hover{filter:brightness(1.08)}.btn:active{transform:translateY(2px);box-shadow:0 2px 0 #7a4a10}
+.btn.sec{background:#4a3020;color:#f5e6c8;box-shadow:0 4px 0 #24150c}
+.btn.sm{padding:5px 12px;font-size:13px;border-radius:9px}
+.btn:disabled{opacity:.35;cursor:not-allowed;filter:none}
+.title{width:780px;text-align:center;background:radial-gradient(ellipse at 50% 0,#4a2a18,#1e120a 70%)}
+.neon{font-size:64px;font-weight:900;color:#fff;text-shadow:0 0 6px #ff5a7a,0 0 18px #ff5a7a,0 0 36px #ff2a5a;letter-spacing:.08em;margin:10px 0 0}
+.neon2{font-size:18px;color:#3fd0c9;text-shadow:0 0 8px #3fd0c9;font-weight:800;margin-bottom:18px;letter-spacing:.2em}
+.tbtns{display:flex;flex-direction:column;gap:12px;align-items:center;margin-top:16px}
+.tbtns .btn{width:280px}
+.help{width:960px}
+.hgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.hcard{background:#0004;border:1px solid #5a3a1e;border-radius:12px;padding:9px 12px;font-size:12.5px;line-height:1.6}
+.hcard b{color:#ffd77a;font-size:14.5px;display:block;margin-bottom:2px}
+.hcard .mz{display:inline-block;background:#3fd0c9;color:#062a28;border-radius:6px;padding:0 6px;font-weight:900;font-size:11px;margin-right:3px}
+.rep{width:720px}
+.rtab{width:100%;border-collapse:collapse;font-size:14px}
+.rtab td{padding:3px 4px;border-bottom:1px dashed #5a3a1e}
+.rtab td:last-child{text-align:right;font-weight:800}
+.rtab tr.tot td{font-size:19px;color:#ffd77a;border-bottom:none}
+.shop{width:1000px;height:640px;display:flex;flex-direction:column}
+.tabs{display:flex;gap:6px;margin-bottom:10px}
+.tabs button{flex:1;background:#3a2416;border:1px solid #6a4426;color:#f5e6c8;border-radius:10px;padding:8px;font-weight:800;font-size:15px;cursor:pointer}
+.tabs button.on{background:#d4a24c;color:#2a1408}
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;overflow:auto;flex:1;padding-right:4px;align-content:start}
+.card{background:#0004;border:1px solid #5a3a1e;border-radius:12px;padding:10px;display:flex;gap:10px;align-items:center;font-size:13px}
+.card .info{flex:1;line-height:1.5}.card .info b{font-size:15px;color:#ffd77a}
+.card .sub{font-size:11px;color:#f5e6c8aa}
+.card.low{border-color:#c0392b}.card.done{opacity:.6}
+.sfoot{display:flex;align-items:center;gap:12px;margin-top:10px}
+.bookgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;width:860px}
+.recipe{background:#0004;border:1px solid #5a3a1e;border-radius:12px;padding:10px;display:flex;gap:10px;font-size:12.5px;line-height:1.6}
+.recipe.lock{opacity:.45}.recipe b{color:#ffd77a;font-size:15px}
+#labels{position:absolute;inset:0}
+.slab{position:absolute;transform:translate(-50%,-100%);background:rgba(10,30,30,.78);border:1px solid #3fd0c988;color:#c8faf6;border-radius:8px;padding:2px 8px;font-size:11.5px;font-weight:800;white-space:nowrap;text-align:center;line-height:1.25}
+.slab small{display:block;font-size:9.5px;color:#9fd8d4;font-weight:700}
+.slab:after{content:"";position:absolute;left:50%;bottom:-6px;margin-left:-5px;border:5px solid transparent;border-top-color:#3fd0c988;border-bottom:0}
+.slab.on{background:#3fd0c9;color:#062a28;transform:translate(-50%,-100%) scale(1.15);z-index:2}.slab.on small{color:#0a4a46}
+#arrow{position:absolute;display:none;transform:translate(-50%,-100%);text-align:center;pointer-events:none;z-index:3}
+#arrow .ar{font-size:40px;line-height:1;color:#ffe14a;text-shadow:0 0 10px #000,0 3px 0 #a07000;animation:arb .7s ease-in-out infinite}
+#arrow .al{background:#ffe14a;color:#3a2414;font-weight:900;font-size:13px;border-radius:10px;padding:3px 10px;box-shadow:0 3px 0 #a07000;white-space:nowrap}
+#arrow.side .ar{animation:ars .7s ease-in-out infinite}
+@keyframes arb{50%{transform:translateY(-10px)}}
+@keyframes ars{50%{transform:translateX(-10px)}}
+#tut{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);width:680px;background:rgba(20,12,7,.94);border:2px solid #ffe14a;border-radius:16px;padding:12px 18px;display:none;pointer-events:auto;box-shadow:0 8px 30px #000a}
+#tut .th{font-size:12px;color:#ffe14a;font-weight:900;letter-spacing:.1em;display:flex;justify-content:space-between}
+#tut .tt{font-size:15.5px;font-weight:700;line-height:1.65;margin:4px 0}
+#tut .tt b{color:#ffe14a}
+#tut .nx{margin-top:6px;background:#103a38;border:1px solid #3fd0c9;border-radius:10px;padding:6px 10px;font-size:14px;font-weight:800;color:#c8faf6}
+#tut .nx b{color:#3fd0c9}
+#tut .row{display:flex;justify-content:flex-end;gap:8px;margin-top:6px}
+.dgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:10px}
+.dcard{background:#0004;border:2px solid #5a3a1e;border-radius:14px;padding:14px;cursor:pointer;text-align:center;line-height:1.6;font-size:13px}
+.dcard:hover{border-color:#ffd77a;background:#ffd77a14}
+.dcard b{font-size:20px;color:#ffd77a;display:block}
+.dcard.on{border-color:#3fd0c9;background:#3fd0c91a}
+.dsel{display:flex;gap:4px;align-items:center;font-size:12px}
+.dsel button{background:#3a2416;border:1px solid #6a4426;color:#f5e6c8;border-radius:8px;padding:4px 9px;font-weight:800;cursor:pointer;font-size:12px}
+.dsel button.on{background:#3fd0c9;color:#062a28}
+#rankTb{cursor:default}
+#rankTb .tbar i{background:linear-gradient(90deg,#ffd77a,#ff9a3a)}
+#combo{position:absolute;right:290px;top:56px;font-weight:900;font-size:26px;color:#ffe14a;text-shadow:0 0 12px #ff9a3a,0 3px 0 #000;display:none;text-align:right;line-height:1}
+#combo small{display:block;font-size:12px;color:#fff}
+#talk{position:absolute;left:12px;top:120px;width:330px;background:rgba(30,18,10,.95);border:2px solid #ff9ab0;border-radius:16px;padding:10px 12px;display:none;pointer-events:auto;cursor:pointer;box-shadow:0 8px 24px #000a;animation:tin .35s ease-out}
+@keyframes tin{from{transform:translateX(-30px);opacity:0}}
+#talk .tn{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+#talk .av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:17px;color:#fff;border:2px solid #fff6}
+#talk .nm{font-weight:900;color:#ffb0c4;font-size:15px}
+#talk .jb{font-size:11px;color:#f5e6c8aa}
+#talk .hs{margin-left:auto;color:#ff6a8a;font-size:14px;letter-spacing:1px}
+#talk .tx{font-size:13.5px;line-height:1.65;font-weight:700}
+#talk .rw{margin-top:6px;font-size:12px;color:#7cff9a;font-weight:800}
+#rankUp{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);text-align:center;display:none;pointer-events:none;animation:rk 3.2s ease-out forwards}
+#rankUp .r1{font-size:20px;font-weight:900;color:#fff;text-shadow:0 2px 0 #000}
+#rankUp .r2{font-size:54px;font-weight:900;color:#ffd77a;text-shadow:0 0 20px #ff9a3a,0 4px 0 #7a4a10}
+#rankUp .r3{font-size:15px;font-weight:800;color:#bff6f2;background:#0009;border-radius:10px;padding:4px 12px;display:inline-block;margin-top:4px}
+@keyframes rk{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}10%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}20%{transform:translate(-50%,-50%) scale(1)}85%{opacity:1}100%{opacity:0}}
+.meter{position:relative;width:160px;height:8px;background:#0008;border-radius:4px;margin:4px auto 0;overflow:hidden}
+.meter i{position:absolute;left:0;top:0;bottom:0;background:#fff}
+.meter em{position:absolute;top:0;bottom:0;background:#2ecc7188}
+.hlgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:6px}
+.hlc{background:#0004;border:1px solid #5a3a1e;border-radius:10px;padding:8px 10px;font-size:12.5px;line-height:1.5}
+.hlc b{color:#ffd77a;font-size:11px;display:block;letter-spacing:.05em}
+.hlc .big{font-size:16px;font-weight:900}
+.ob{display:grid;grid-template-columns:1fr 300px;gap:14px;flex:1;overflow:auto}
+.orow{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:8px;font-size:13px}
+.orow>span:first-child{width:70px;color:#d4a24c;font-weight:800;font-size:12px}
+.chip{background:#3a2416;border:1px solid #6a4426;color:#f5e6c8;border-radius:8px;padding:4px 9px;font-weight:800;cursor:pointer;font-size:12px}
+.chip.on{background:#ffd77a;color:#2a1408;border-color:#fff}
+.chip:disabled{opacity:.3;cursor:not-allowed}
+.orow select,.orow input{background:#1a0f09;color:#f5e6c8;border:1px solid #6a4426;border-radius:8px;padding:4px 6px;font-family:inherit;font-weight:700;font-size:13px}
+.oprev{background:#0004;border:1px solid #5a3a1e;border-radius:12px;padding:12px;text-align:center}
+.oprev .st{font-size:26px;color:#ffc840;letter-spacing:2px}
+.oprev ul{text-align:left;font-size:12px;line-height:1.6;margin:6px 0 0 16px}
+#hand{pointer-events:auto}
+#hand .ret{display:inline-block;margin-top:4px;background:#d4a24c;color:#2a1408;border:none;border-radius:9px;padding:5px 12px;font-weight:900;font-size:13px;cursor:pointer;font-family:inherit}
+#viewPad{position:absolute;right:12px;bottom:12px;display:none;grid-template-columns:repeat(3,64px);grid-template-rows:repeat(3,52px);gap:6px;pointer-events:auto}
+#viewPad button{background:rgba(30,18,10,.85);border:1px solid #6a4426;color:#f5e6c8;border-radius:12px;font-size:20px;font-weight:900;font-family:inherit;line-height:1}
+#viewPad button small{display:block;font-size:10px}
+#viewPad button:active{background:#6a4426}
+#viewPad [data-look=up]{grid-column:2;grid-row:1}#viewPad [data-look=left]{grid-column:1;grid-row:2}#viewPad [data-look=center]{grid-column:2;grid-row:2}#viewPad [data-look=right]{grid-column:3;grid-row:2}#viewPad [data-look=down]{grid-column:2;grid-row:3}
+body.touch #viewPad{display:grid}
+body.touch #hintBar{bottom:12px;max-width:640px;font-size:13px;white-space:normal}
+body.touch #tip{display:none!important}
+#portrait{position:fixed;inset:0;background:#0e0806;color:#ffd77a;font-size:26px;font-weight:900;display:none;align-items:center;justify-content:center;text-align:center;line-height:1.8;z-index:99}
+@media (orientation:portrait){body.touch #portrait{display:flex}}
+.setrow{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px dashed #5a3a1e;font-size:15px;font-weight:700}
+.setrow>span:first-child{width:170px}
+.setrow input[type=range]{flex:1;accent-color:#d4a24c;height:28px}
+.tg{background:#3a2416;border:1px solid #6a4426;color:#f5e6c8;border-radius:10px;padding:6px 16px;font-weight:900;cursor:pointer;font-family:inherit;font-size:14px}
+.tg.on{background:#3fd0c9;color:#062a28}
+#loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#ffd77a;background:#0e0806}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<linearGradient id="metal" x1="0" x2="1"><stop offset="0" stop-color="#7d8890"/><stop offset=".35" stop-color="#e8eef2"/><stop offset=".6" stop-color="#a8b4bc"/><stop offset="1" stop-color="#6a747c"/></linearGradient>
+<linearGradient id="copper" x1="0" x2="1"><stop offset="0" stop-color="#8a4420"/><stop offset=".35" stop-color="#e89a62"/><stop offset=".6" stop-color="#c06a38"/><stop offset="1" stop-color="#7a3a1a"/></linearGradient>
+<linearGradient id="glassG" x1="0" x2="1"><stop offset="0" stop-color="rgba(255,255,255,.18)"/><stop offset=".25" stop-color="rgba(255,255,255,.04)"/><stop offset="1" stop-color="rgba(255,255,255,.1)"/></linearGradient>
+</defs></svg>
+<div id="portrait"><div><div style="font-size:64px">📱↻</div>スマホを<b>横向き</b>にしてね<br><span style="font-size:15px;color:#f5e6c8aa">（画面の回転ロックをオフに）</span></div></div>
+<div id="wrap"><div id="stage">
+ <canvas id="cv" width="1280" height="720"></canvas>
+ <div id="hud">
+  <div id="labels"></div><div id="bubbles"></div>
+  <div id="mlabs"></div>
+  <div id="top">
+   <div class="tb">DAY <b id="dayN">1</b></div>
+   <div class="tb">🕖 <b id="clock">18:00</b><div class="tbar"><i id="timebar"></i></div></div>
+   <div class="tb">💴 <b id="money">0</b></div>
+   <div class="tb">評判 <span id="stars">★★★★★<i id="starsOn">★★★★★</i></span></div>
+   <div class="tb">本日 <b id="servedN">0</b>/50杯<div class="gbar"><i id="goalbar"></i></div></div>
+   <div class="tb" id="rankTb">🎖 <b id="rankN" style="font-size:14px">見習い</b><div class="tbar"><i id="xpbar"></i></div></div>
+   <div class="sp"></div>
+   <button class="ic" id="btnBook" title="レシピ帳">📖</button>
+   <button class="ic" id="btnHelp" title="操作方法">❓</button>
+   <button class="ic" id="btnSet" title="設定（音量・ガイド表示）">⚙ 設定</button><button class="ic" id="btnMute" title="音">🔊</button>
+   <button class="ic" id="btnPause" title="一時停止">Ⅱ</button>
+  </div>
+  <div id="ticket"><h3>伝票 <span id="ordCount"></span></h3><div id="orderTabs"></div><div id="tkt"></div></div>
+  <div id="evalPop"></div>
+  <div id="readout"></div>
+  <div id="gaugeBox"><div class="glab" id="glab"></div><div class="gt"><div class="nd" id="needle"></div></div></div>
+  <div id="hand"></div><div id="viewPad"><button data-look="up">⬆<small>客席</small></button><button data-look="left">◀</button><button data-look="center">●</button><button data-look="right">▶</button><button data-look="down">⬇<small>手元</small></button></div>
+  <div id="hintBar"><b>次は▶</b><span id="hintTxt"></span></div>
+  <div id="arrow"><div class="ar">⬇</div><div class="al"></div></div><div id="tut"></div><div id="combo"></div><div id="talk"></div><div id="rankUp"></div><div id="tip"></div>
+  <div id="msg"></div>
+  <div id="fx"></div>
+  <div id="toast"></div>
+  <div id="ov"></div>
+ </div>
+ <div id="loading">お店を準備中…</div>
+</div></div>
+
+<script type="module">
+import * as THREE from 'three';
+// RoomEnvironment (three.js examples, MIT) — inlined so no extra files are loaded
+class RoomEnvironment extends THREE.Scene{constructor(){super();const geo=new THREE.BoxGeometry();geo.deleteAttribute('uv');const roomM=new THREE.MeshStandardMaterial({side:THREE.BackSide}),boxM=new THREE.MeshStandardMaterial();
+ const L=new THREE.PointLight(0xffffff,5,28,2);L.position.set(.418,16.199,.3);this.add(L);
+ const add=(m,p,r,sc)=>{const o=new THREE.Mesh(geo,m);o.position.set(...p);if(r)o.rotation.set(0,r,0);o.scale.set(...sc);this.add(o)};
+ add(roomM,[-.757,13.219,.717],0,[31.713,28.305,28.591]);
+ add(boxM,[-10.906,2.009,1.846],-.195,[2.328,7.905,4.651]);add(boxM,[-5.607,-.754,-.758],.994,[1.97,1.534,3.955]);add(boxM,[6.167,.857,7.803],.561,[3.927,6.285,3.687]);
+ add(boxM,[-2.017,.018,6.124],.333,[2.002,4.566,2.064]);add(boxM,[2.291,-.756,-2.621],-.286,[1.546,1.552,1.496]);add(boxM,[-2.193,-.369,-5.547],.516,[3.875,3.487,2.986]);
+ const al=i=>{const m=new THREE.MeshBasicMaterial();m.color.setScalar(i);return m};
+ add(al(50),[-16.116,14.37,8.208],0,[.1,2.428,2.739]);add(al(50),[-16.109,18.021,-8.207],0,[.1,2.425,2.751]);add(al(17),[14.904,12.198,-1.832],0,[.15,4.265,6.331]);
+ add(al(43),[-.462,8.89,14.52],0,[4.38,5.441,.088]);add(al(20),[3.235,11.486,-12.541],0,[2.5,2,.1]);add(al(100),[0,20,0],0,[1,.1,1])}}
+
+const $=s=>document.querySelector(s);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const rnd=(a,b)=>a+Math.random()*(b-a);
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const yen=n=>'¥'+Math.round(n).toLocaleString();
+const V=(x,y,z)=>new THREE.Vector3(x,y,z);
+
+/* ====================== DATA ====================== */
+const ING={
+ pale:{name:'ペールエール',short:'ペール',type:'tap',color:'#e8a838',unit:10000,price:7000,pack:'10L樽',handle:'#d4a24c'},
+ ipa:{name:'IPA',short:'IPA',type:'tap',color:'#d9841c',unit:10000,price:8500,pack:'10L樽',handle:'#3f8f4f'},
+ stout:{name:'スタウト',short:'スタウト',type:'tap',color:'#2a1408',unit:10000,price:8000,pack:'10L樽',handle:'#1a1a1a'},
+ weizen:{name:'ヴァイツェン',short:'ヴァイツェン',type:'tap',color:'#f2c86a',unit:10000,price:7500,pack:'10L樽',handle:'#e8e0c0'},
+ whisky:{name:'ウイスキー',short:'ウイスキー',type:'spirit',color:'#b5651d',unit:700,price:2400,pack:'700ml',rate:40,bottle:'#7a3e12'},
+ gin:{name:'ジン',short:'ジン',type:'spirit',color:'#eaf6fa',unit:700,price:2200,pack:'700ml',rate:40,bottle:'#4aa0b8'},
+ vodka:{name:'ウォッカ',short:'ウォッカ',type:'spirit',color:'#f2f6f8',unit:700,price:2000,pack:'700ml',rate:40,bottle:'#c8d4dc'},
+ rum:{name:'ホワイトラム',short:'ラム',type:'spirit',color:'#f6f2e6',unit:700,price:2000,pack:'700ml',rate:40,bottle:'#e0d0a0'},
+ cassis:{name:'カシス',short:'カシス',type:'spirit',color:'#6a1236',unit:700,price:1800,pack:'700ml',rate:40,bottle:'#4a0a24'},
+ vermouth:{name:'ドライベルモット',short:'ベルモット',type:'spirit',color:'#efe6c0',unit:700,price:1600,pack:'700ml',rate:40,bottle:'#7a9a5a'},
+ soda:{name:'ソーダ',short:'ソーダ',type:'mixer',color:'#e4f4ff',unit:1000,price:200,pack:'1L',rate:95,bottle:'#9fd4f0'},
+ tonic:{name:'トニック',short:'トニック',type:'mixer',color:'#eef8ff',unit:1000,price:300,pack:'1L',rate:95,bottle:'#f0e070'},
+ ginger:{name:'ジンジャーエール',short:'ジンジャー',type:'mixer',color:'#e8c27a',unit:1000,price:300,pack:'1L',rate:95,bottle:'#3a8a3a'},
+ orange:{name:'オレンジジュース',short:'オレンジ',type:'mixer',color:'#ffa42b',unit:1000,price:400,pack:'1L',rate:95,bottle:'#ff8a1a'},
+ limej:{name:'ライムジュース',short:'ライム果汁',type:'mixer',color:'#d6f0a0',unit:500,price:500,pack:'500ml',rate:25,bottle:'#7cc242'},
+ syrup:{name:'シロップ',short:'シロップ',type:'mixer',color:'#fffbe8',unit:500,price:300,pack:'500ml',rate:25,bottle:'#f4f0e0'},
+ g_lemon:{name:'レモン',short:'レモン',type:'garnish',color:'#f5d63d',unit:10,price:400,pack:'10個'},
+ g_lime:{name:'ライム',short:'ライム',type:'garnish',color:'#7cc242',unit:10,price:400,pack:'10個'},
+ g_orange:{name:'オレンジ',short:'オレンジ',type:'garnish',color:'#ff9b1a',unit:10,price:400,pack:'10個'},
+ g_olive:{name:'オリーブ',short:'オリーブ',type:'garnish',color:'#6b8e23',unit:20,price:500,pack:'20個'},
+};
+const TAPS=['pale','ipa','stout','weizen'];
+const SPIRITS=['whisky','gin','vodka','rum','cassis','vermouth'];
+const MIXERS=['soda','tonic','ginger','orange','limej','syrup'];
+const GARN=['g_lemon','g_lime','g_orange','g_olive'];
+const GL={
+ pint:{name:'パイント',full:'パイントグラス',cap:450,prof:[[0,0],[.03,0],[.031,.004],[.041,.15],[.0385,.15],[.0285,.009],[0,.009]],inner:{b:.009,t:.148,rb:.0285,rt:.0385}},
+ highball:{name:'タンブラー',full:'タンブラー',cap:300,prof:[[0,0],[.033,0],[.033,.14],[.0305,.14],[.0305,.012],[0,.012]],inner:{b:.012,t:.138,rb:.0305,rt:.0305}},
+ cocktail:{name:'カクテル',full:'カクテルグラス',cap:120,prof:[[0,0],[.035,0],[.035,.004],[.005,.009],[.004,.075],[.058,.165],[.0555,.165],[.002,.081],[0,.081]],inner:{b:.081,t:.163,rb:.001,rt:.0555,cone:1}},
+ mug:{name:'銅マグ',full:'銅マグ',cap:350,prof:[[0,0],[.04,0],[.043,.1],[.04,.1],[.037,.006],[0,.006]],inner:{b:.006,t:.098,rb:.037,rt:.04},copper:1},
+ shaker:{name:'シェイカー',full:'シェイカー',cap:400,prof:[[0,0],[.032,0],[.044,.17],[.0415,.17],[.029,.005],[0,.005]],inner:{b:.005,t:.165,rb:.029,rt:.0415},metal:1},
+};
+const RECIPES={
+ pale:{name:'ペールエール',price:800,glass:'pint',ice:false,method:'tap',ings:{pale:'fill'},garnish:null,cost:0,cat:'beer'},
+ ipa:{name:'IPA',price:900,glass:'pint',ice:false,method:'tap',ings:{ipa:'fill'},garnish:null,cost:0,cat:'beer'},
+ highball:{name:'ハイボール',price:600,glass:'highball',ice:true,method:'stir',ings:{whisky:30,soda:'fill'},garnish:'g_lemon',cost:0,cat:'mix'},
+ gintonic:{name:'ジントニック',price:700,glass:'highball',ice:true,method:'build',ings:{gin:30,tonic:'fill'},garnish:'g_lime',cost:0,cat:'mix'},
+ cassis:{name:'カシスオレンジ',price:650,glass:'highball',ice:true,method:'build',ings:{cassis:30,orange:'fill'},garnish:null,cost:4000,cat:'mix'},
+ stout:{name:'スタウト',price:900,glass:'pint',ice:false,method:'tap',ings:{stout:'fill'},garnish:null,cost:6000,cat:'beer'},
+ shandy:{name:'シャンディガフ',price:750,glass:'pint',ice:false,method:'build',ings:{pale:'fill',ginger:'fill'},garnish:null,cost:5000,cat:'beer'},
+ mule:{name:'モスコミュール',price:800,glass:'mug',ice:true,method:'build',ings:{vodka:45,ginger:'fill'},garnish:'g_lime',cost:7000,cat:'mix'},
+ weizen:{name:'ヴァイツェン',price:850,glass:'pint',ice:false,method:'tap',ings:{weizen:'fill'},garnish:'g_orange',cost:8000,cat:'beer'},
+ daiquiri:{name:'ダイキリ',price:1000,glass:'cocktail',ice:false,method:'shake',ings:{rum:45,limej:15,syrup:10},garnish:null,cost:10000,cat:'cocktail'},
+ martini:{name:'マティーニ',price:1200,glass:'cocktail',ice:false,method:'stir',ings:{gin:50,vermouth:10},garnish:'g_olive',cost:12000,cat:'cocktail'},
+};
+const UPG=[
+ {id:'seat5',name:'5番席を増設',desc:'同時に座れるお客さん+1',price:12000,ok:()=>S.up.seats===4,done:()=>S.up.seats>=5,buy:()=>S.up.seats=5,icon:'🪑'},
+ {id:'seat6',name:'6番席を増設',desc:'同時に座れるお客さん+1（5番席が必要）',price:20000,ok:()=>S.up.seats===5,done:()=>S.up.seats>=6,buy:()=>S.up.seats=6,icon:'🪑'},
+ {id:'seat7',name:'7番席を増設',desc:'同時に座れるお客さん+1（6番席が必要）',price:30000,ok:()=>S.up.seats===6,done:()=>S.up.seats>=7,buy:()=>S.up.seats=7,icon:'🪑'},
+ {id:'dish',name:'食洗機',desc:'汚れたグラスを自動で洗う（3秒に1個）',price:15000,ok:()=>!S.up.dish,done:()=>S.up.dish,buy:()=>S.up.dish=1,icon:'🫧'},
+ {id:'glass',name:'グラス追加セット',desc:'全種類のグラス+2個（最大3回）',price:6000,ok:()=>S.up.glassPlus<3,done:()=>S.up.glassPlus>=3,buy:()=>{S.up.glassPlus++;for(const k in S.glasses)S.glasses[k]+=2},icon:'🥛'},
+ {id:'jigger',name:'精密ジガー',desc:'ボトルの注ぐ速度が遅くなり、計量の許容範囲も広がる',price:8000,ok:()=>!S.up.jigger,done:()=>S.up.jigger,buy:()=>S.up.jigger=1,icon:'⚖️'},
+ {id:'juke',name:'ジュークボックス',desc:'お客さんの待てる時間 +30%',price:10000,ok:()=>!S.up.juke,done:()=>S.up.juke,buy:()=>S.up.juke=1,icon:'🎵'},
+ {id:'neon',name:'ネオン看板',desc:'来店ペース +30%',price:14000,ok:()=>!S.up.neon,done:()=>S.up.neon,buy:()=>S.up.neon=1,icon:'💡'},
+ {id:'tipjar',name:'チップジャー',desc:'もらえるチップ +40%',price:9000,ok:()=>!S.up.tipjar,done:()=>S.up.tipjar,buy:()=>S.up.tipjar=1,icon:'🫙'},
+];
+const ACH=[
+ {id:'first',name:'はじめの一杯',c:()=>S.totals.served>=1},
+ {id:'p10',name:'パーフェクト10杯',c:()=>S.totals.perfect>=10},
+ {id:'foam',name:'泡の職人（ビール満点5杯）',c:()=>S.totals.beerPerfect>=5},
+ {id:'d20',name:'1日20杯',c:()=>G&&G.stats.served>=20},
+ {id:'d30',name:'1日30杯',c:()=>G&&G.stats.served>=30},
+ {id:'d50',name:'1日50杯（動画のバーテンダー級！）',c:()=>G&&G.stats.served>=50},
+ {id:'rep4',name:'評判★4',c:()=>S.rep>=4},
+ {id:'rep5',name:'評判★5',c:()=>S.rep>=4.95},
+ {id:'rich',name:'所持金10万円',c:()=>S.money>=100000},
+ {id:'menu',name:'全メニュー解禁',c:()=>Object.keys(RECIPES).every(k=>S.unlocked[k])},
+];
+
+const DIFF={
+ easy:{name:'かんたん',icon:'🌱',desc:'お客さんはゆっくり来店（同時に2組まで）<br>待ち時間たっぷり<br>ボトル・タップが<b>ちょうどの量で自動ストップ</b>',spawn:2.0,cap:2,patWait:2.2,patOrder:2.4,tol:.32,foam:[.08,.45],fillLo:.72,gauge:{p:[.45,1.12],o:[.25,1.25]},assist:1,brk:14},
+ normal:{name:'ふつう',icon:'🍺',desc:'ほどよい忙しさ（同時に3組まで）<br>待ち時間ゆったり<br>計量は少し甘め',spawn:1.4,cap:3,patWait:1.5,patOrder:1.6,tol:.22,foam:[.14,.38],fillLo:.78,gauge:{p:[.6,1.0],o:[.4,1.15]},assist:0,brk:9},
+ hard:{name:'むずかしい',icon:'🔥',desc:'動画のバーテンダー級のラッシュ<br>待ち時間短め<br>計量も泡も厳しい',spawn:1,cap:6,patWait:1,patOrder:1,tol:.15,foam:[.18,.35],fillLo:.85,gauge:{p:[.7,.95],o:[.5,1.1]},assist:0,brk:5}};
+function DF(){return DIFF[(S&&S.diff)||'normal']}
+function applyDiff(){FOAM[0]=DF().foam[0];FOAM[1]=DF().foam[1]}
+const SETKEY='nighttap3d_settings';
+const SET=(()=>{const d={bgmVol:.55,sfxVol:.8,arrow:1,labels:1,hint:1,quality:'auto',gyro:0};try{const t=JSON.parse(localStorage.getItem(SETKEY)||'{}');return{...d,...t}}catch(e){return d}})();
+function saveSet(){try{localStorage.setItem(SETKEY,JSON.stringify(SET))}catch(e){}}
+const IS_TOUCH=(()=>{try{return matchMedia('(pointer:coarse)').matches||('ontouchstart' in window&&navigator.maxTouchPoints>0)}catch(e){return false}})();
+let touchMode=IS_TOUCH;
+/* ====================== SAVE ====================== */
+let S=null,G=null;
+function freshSave(){return{day:1,money:20000,rep:2.5,unlocked:{pale:1,ipa:1,highball:1,gintonic:1},
+ up:{seats:4,dish:0,glassPlus:0,jigger:0,juke:0,neon:0,tipjar:0},
+ stock:{pale:10000,ipa:10000,stout:0,weizen:0,whisky:1400,gin:1400,vodka:0,rum:0,cassis:0,vermouth:0,soda:3000,tonic:3000,ginger:0,orange:0,limej:0,syrup:0,g_lemon:15,g_lime:15,g_orange:0,g_olive:0},
+ glasses:{pint:6,highball:6,cocktail:4,mug:4},totals:{served:0,perfect:0,best:0,sales:0,beerPerfect:0},ach:{},phase:'title',diff:'normal',guide:1,tutDone:0,xp:0,regs:{},originals:[],flags:{},bgm:1}}
+const SKEY='nighttap3d_v1';
+function save(){try{localStorage.setItem(SKEY,JSON.stringify(S))}catch(e){}}
+function load(){try{const t=localStorage.getItem(SKEY);if(t){const s=JSON.parse(t),f=freshSave();for(const k in f)if(s[k]===undefined)s[k]=f[k];for(const k in f.stock)if(s.stock[k]===undefined)s.stock[k]=0;for(const k in f.totals)if(s.totals[k]===undefined)s.totals[k]=0;syncOriginals(s);return s}}catch(e){}return null}
+function ingUnlocked(k){for(const r in RECIPES){if(!S.unlocked[r])continue;const R=RECIPES[r];if(k in R.ings||R.garnish===k)return true}return false}
+
+/* ====================== AUDIO ====================== */
+let AC=null,muted=false,noiseB=null;const loops={};
+function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){return null}setTimeout(()=>{try{bgmStart()}catch(e){}},0)}if(AC.state==='suspended')AC.resume();return AC}
+function nbuf(){if(!noiseB){const a=ac();if(!a)return null;noiseB=a.createBuffer(1,a.sampleRate*2,a.sampleRate);const d=noiseB.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}return noiseB}
+let SFXG=null;function out(){const a=AC;if(!SFXG){SFXG=a.createGain();SFXG.gain.value=SET.sfxVol;SFXG.connect(a.destination)}return SFXG}
+function tone(f,d,type='sine',v=.12,delay=0){if(muted)return;const a=ac();if(!a)return;const o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.value=f;const t=a.currentTime+delay;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.01);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g).connect(out());o.start(t);o.stop(t+d+.05)}
+function noise(d,freq,v=.15,q=1){if(muted)return;const a=ac();if(!a)return;const s=a.createBufferSource();s.buffer=nbuf();const f=a.createBiquadFilter();f.type='bandpass';f.frequency.value=freq;f.Q.value=q;const g=a.createGain();const t=a.currentTime;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);s.connect(f).connect(g).connect(out());s.start(t,Math.random());s.stop(t+d+.05)}
+const sfx={clink(){tone(2600,.18,'sine',.08);tone(3900,.12,'sine',.04,.02)},coin(){tone(1320,.08,'square',.05);tone(1980,.18,'square',.05,.07)},bell(){tone(1046,.5,'triangle',.08);tone(1568,.6,'triangle',.06,.12)},
+ good(){[523,659,784,1046].forEach((f,i)=>tone(f,.25,'triangle',.08,i*.07))},ok(){tone(660,.15,'triangle',.08);tone(880,.2,'triangle',.08,.08)},bad(){tone(180,.25,'sawtooth',.05);tone(150,.3,'sawtooth',.05,.1)},
+ ice(){for(let i=0;i<5;i++)tone(rnd(2200,3600),.06,'sine',.05,i*.045)},shake(){noise(.06,rnd(3000,5200),.13,2)},splash(){noise(.35,900,.12,.7)},pop(){tone(520,.08,'sine',.08);tone(780,.1,'sine',.06,.05)},scrub(){noise(.08,2400,.05,1.5)},stir(){tone(rnd(3200,4200),.05,'sine',.025)}};
+function loopSet(name,on,freq=900,vol=.08){if(muted)on=false;const a=on?ac():AC;if(!a)return;let L=loops[name];
+ if(on&&!L){const s=a.createBufferSource();s.buffer=nbuf();s.loop=true;const f=a.createBiquadFilter();f.type='bandpass';f.frequency.value=freq;f.Q.value=.8;const g=a.createGain();g.gain.value=0;s.connect(f).connect(g).connect(out());s.start();L=loops[name]={s,g,f}}
+ if(L){L.g.gain.setTargetAtTime(on?vol:0,a.currentTime,.03);if(on)L.f.frequency.setTargetAtTime(freq,a.currentTime,.05)}}
+
+/* ====================== THREE SETUP ====================== */
+const cv=$('#cv');
+let renderer;
+try{renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true,powerPreference:'high-performance'})}catch(e){$('#loading').textContent='このブラウザでは3D表示（WebGL）が使えません';throw e}
+renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;
+renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x0d0705);scene.fog=new THREE.Fog(0x0d0705,5,11);
+const camera=new THREE.PerspectiveCamera(68,1280/720,.03,30);camera.rotation.order='YXZ';
+const CAM0=V(.1,1.68,.74);camera.position.copy(CAM0);
+const pmrem=new THREE.PMREMGenerator(renderer);scene.environment=pmrem.fromScene(new RoomEnvironment(),.04).texture;
+function lowQ(){return SET.quality==='low'||(SET.quality==='auto'&&IS_TOUCH)}
+function fit(){const s=Math.min(innerWidth/1280,innerHeight/720);$('#stage').style.transform=`scale(${s})`;renderer.setPixelRatio(Math.min(lowQ()?1:2,s*(devicePixelRatio||1)));renderer.setSize(1280,720,false);renderer.shadowMap.enabled=!lowQ()}
+addEventListener('resize',fit);fit();
+
+function canvasTex(w,h,draw){const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');draw(x,w,h);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;t.userData={c,x};return t}
+const std=(o)=>new THREE.MeshStandardMaterial({envMapIntensity:.45,...o});
+const TEX={
+ wood:canvasTex(512,128,(x,w,h)=>{x.fillStyle='#6a3c1e';x.fillRect(0,0,w,h);for(let i=0;i<70;i++){x.strokeStyle=`rgba(${rnd(20,60)|0},${rnd(8,25)|0},0,${rnd(.15,.45)})`;x.lineWidth=rnd(1,3);x.beginPath();const y=rnd(0,h);x.moveTo(0,y);for(let X=0;X<=w;X+=32)x.lineTo(X,y+Math.sin(X*.02+i)*rnd(1,4));x.stroke()}}),
+ floor:canvasTex(512,512,(x,w,h)=>{for(let i=0;i<8;i++){x.fillStyle=`hsl(25,${35+rnd(-5,5)}%,${14+rnd(-3,3)}%)`;x.fillRect(0,i*64,w,64);x.fillStyle='#0006';x.fillRect(0,i*64,w,2);x.fillRect(rnd(0,w),i*64,2,64)}}),
+ brick:canvasTex(512,256,(x,w,h)=>{x.fillStyle='#2a1610';x.fillRect(0,0,w,h);for(let r=0;r<8;r++)for(let c=-1;c<9;c++){x.fillStyle=`hsl(${12+rnd(-4,4)},${40+rnd(-8,8)}%,${22+rnd(-5,5)}%)`;x.fillRect(c*64+(r%2)*32+2,r*32+2,60,28)}}),
+};
+TEX.wood.wrapS=TEX.wood.wrapT=THREE.RepeatWrapping;TEX.floor.wrapS=TEX.floor.wrapT=THREE.RepeatWrapping;TEX.floor.repeat.set(4,4);TEX.brick.wrapS=TEX.brick.wrapT=THREE.RepeatWrapping;TEX.brick.repeat.set(5,2);
+const M={
+ wood:std({map:TEX.wood,roughness:.45,metalness:0}),
+ darkWood:std({color:0x2a160c,roughness:.7}),
+ steel:std({color:0x8a9298,metalness:.85,roughness:.38,envMapIntensity:.55}),
+ chrome:std({color:0xe6ecf0,metalness:1,roughness:.12,envMapIntensity:1.1}),
+ rubber:std({color:0x111111,roughness:.95}),
+ grate:std({color:0x222428,metalness:.6,roughness:.5}),
+ glass:new THREE.MeshStandardMaterial({color:0xffffff,transparent:true,opacity:.22,roughness:.05,metalness:.1,envMapIntensity:1.6,depthWrite:false,side:THREE.DoubleSide}),
+ copper:std({color:0xd07a48,metalness:.9,roughness:.25,envMapIntensity:1}),
+ ice:new THREE.MeshStandardMaterial({color:0xeaf6ff,transparent:true,opacity:.55,roughness:.1,metalness:0,envMapIntensity:1.2}),
+ white:std({color:0xf0ece4,roughness:.4}),
+ water:std({color:0x506870,roughness:.1,metalness:.3,transparent:true,opacity:.85}),
+};
+
+/* ====================== ROOM ====================== */
+const PICK=[];
+function addPick(o,act){o.userData.act=act;PICK.push(o);return o}
+function box(w,h,d,mat,x,y,z,parent=scene){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;parent.add(m);return m}
+function cyl(rt,rb,h,mat,x,y,z,seg=24,parent=scene){const m=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,seg),mat);m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;parent.add(m);return m}
+function buildRoom(){
+ const fl=new THREE.Mesh(new THREE.PlaneGeometry(10,10),std({map:TEX.floor,roughness:.7}));fl.rotation.x=-Math.PI/2;fl.receiveShadow=true;scene.add(fl);
+ const ceil=new THREE.Mesh(new THREE.PlaneGeometry(10,10),std({color:0x140b07,roughness:1}));ceil.rotation.x=Math.PI/2;ceil.position.y=3;scene.add(ceil);
+ const bw=new THREE.Mesh(new THREE.PlaneGeometry(9,3),std({map:TEX.brick,roughness:.9}));bw.position.set(0,1.5,-4.2);scene.add(bw);
+ for(const s of [-1,1]){const w=new THREE.Mesh(new THREE.PlaneGeometry(6,3),std({color:0x24140c,roughness:.9}));w.position.set(s*4.3,1.5,-1.2);w.rotation.y=-s*Math.PI/2;scene.add(w)}
+ // neon sign
+ const neon=canvasTex(1024,256,(x,w,h)=>{x.clearRect(0,0,w,h);x.font='900 150px "Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic UI","Meiryo","Noto Sans JP",sans-serif';x.textAlign='center';x.textBaseline='middle';x.shadowColor='#ff3a6a';x.shadowBlur=30;x.fillStyle='#ffd0dc';x.fillText('NIGHT TAP',w/2,h/2+6);x.shadowBlur=60;x.fillText('NIGHT TAP',w/2,h/2+6)});
+ const ns=new THREE.Mesh(new THREE.PlaneGeometry(2.4,.6),new THREE.MeshBasicMaterial({map:neon,transparent:true,toneMapped:false}));ns.position.set(0,2.25,-4.15);scene.add(ns);
+ const nl=new THREE.PointLight(0xff3a6a,6,5,2);nl.position.set(0,2.2,-3.7);scene.add(nl);
+ const sub=canvasTex(512,128,(x,w,h)=>{x.font='800 54px "Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic UI","Meiryo","Noto Sans JP",sans-serif';x.textAlign='center';x.textBaseline='middle';x.shadowColor='#3fd0c9';x.shadowBlur=24;x.fillStyle='#d8fffc';x.fillText('CRAFT BEER & BAR',w/2,h/2)});
+ const ss=new THREE.Mesh(new THREE.PlaneGeometry(1.4,.35),new THREE.MeshBasicMaterial({map:sub,transparent:true,toneMapped:false}));ss.position.set(0,1.78,-4.15);scene.add(ss);
+ const tl=new THREE.PointLight(0x3fd0c9,3,4,2);tl.position.set(0,1.8,-3.8);scene.add(tl);
+ // windows
+ for(const x of [-2.8,2.8]){const wm=new THREE.Mesh(new THREE.PlaneGeometry(1.1,1.2),new THREE.MeshBasicMaterial({color:0x1a2a4a}));wm.position.set(x,1.7,-4.17);scene.add(wm);box(1.2,.06,.06,M.darkWood,x,1.1,-4.12);box(1.2,.06,.06,M.darkWood,x,2.3,-4.12);box(.06,1.2,.06,M.darkWood,x,1.7,-4.12)}
+ // door (left wall)
+ box(.06,2.1,1,M.darkWood,-4.25,1.05,-2.6);const dw=new THREE.Mesh(new THREE.PlaneGeometry(.6,.6),new THREE.MeshBasicMaterial({color:0xffcf8a}));dw.position.set(-4.2,1.5,-2.6);dw.rotation.y=Math.PI/2;scene.add(dw);
+ // tables
+ for(const [x,z] of [[-2.6,-3.1],[2.5,-3.0],[-1.0,-3.4],[1.1,-3.5]]){cyl(.4,.4,.04,M.wood,x,.75,z);cyl(.04,.04,.75,M.chrome,x,.37,z);for(const a of [0,2.1,4.2]){cyl(.17,.17,.05,M.darkWood,x+Math.cos(a)*.6,.45,z+Math.sin(a)*.6)}
+  const cd=cyl(.025,.03,.08,std({color:0xffe0a0,emissive:0xffa040,emissiveIntensity:1.2}),x,.81,z);}
+ for(const [x,z] of [[-2.6,-3.1],[2.5,-3.0]]){const pl=new THREE.PointLight(0xffa850,1.2,2.5,2);pl.position.set(x,1.1,z);scene.add(pl)}
+ // lights
+ scene.add(new THREE.AmbientLight(0xffe0c0,.22));
+ scene.add(new THREE.HemisphereLight(0xffd9b0,0x1a0c06,.35));
+ for(const x of [-1.2,0,1.2]){
+  const g=new THREE.Group();g.position.set(x,2.25,-.95);scene.add(g);
+  const sh=new THREE.Mesh(new THREE.ConeGeometry(.16,.18,24,1,true),std({color:0x1c1c1c,metalness:.6,roughness:.4,side:THREE.DoubleSide}));sh.position.y=.09;g.add(sh);
+  const bulb=new THREE.Mesh(new THREE.SphereGeometry(.05,16,12),new THREE.MeshBasicMaterial({color:0xffe2a8,toneMapped:false}));g.add(bulb);
+  const cord=cyl(.004,.004,1,M.rubber,0,.68,0,6,g);
+  const pl=new THREE.PointLight(0xffc888,5,4.5,2);pl.position.set(x,1.9,-.85);scene.add(pl);
+ }
+ const spot=new THREE.SpotLight(0xffe6c8,11,4,.8,.7,2);spot.position.set(.1,2.6,.35);spot.target.position.set(.1,.9,-.3);spot.castShadow=true;spot.shadow.mapSize.set(1024,1024);spot.shadow.bias=-.0004;scene.add(spot,spot.target);
+ // bar (customer side)
+ const top=box(5,.05,.44,M.wood,.1,1.1,-.81);top.userData.block=1;PICK.push(top);
+ box(5,1.08,.05,M.darkWood,.1,.54,-1.01);
+ box(5,.04,.06,M.chrome,.1,.2,-1.06);
+ box(5,.18,.04,M.darkWood,.1,.99,-.6);
+ // work area
+ const ws=box(3.5,.04,.6,M.steel,.08,.88,-.31);addPick(ws,{kind:'surface'});
+ box(3.5,.86,.04,M.darkWood,.08,.43,-.02);
+ // stools
+ for(let i=0;i<7;i++){const x=SEATX[i];cyl(.18,.18,.06,std({color:0x5a1a1a,roughness:.6}),x,.78,-1.38);cyl(.025,.025,.75,M.chrome,x,.38,-1.38)}
+}
+const SEATX=[-.45,0,.45,.9,-.9,1.35,-1.35];
+
+/* ====================== WORKSTATION ====================== */
+const SLOTS=[];
+const TAPX=[.8,.96,1.12,1.28];
+const ST={bottles:{},taps:[],garn:{},rack:{},ice:null,spoon:null,sink:null,shakerHome:null};
+function labelTex(text,bg,fg='#2a1408',w=256,h=96,size=40){return canvasTex(w,h,(x)=>{x.fillStyle=bg;x.fillRect(0,0,w,h);x.fillStyle='#fff8';x.fillRect(0,6,w,4);x.fillRect(0,h-10,w,4);x.fillStyle=fg;x.font=`900 ${size}px "Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic UI","Meiryo","Noto Sans JP",sans-serif`;x.textAlign='center';x.textBaseline='middle';const fit=Math.min(1,(w/2-12)/x.measureText(text).width);x.save();x.translate(w*.25,h/2);x.scale(fit,1);x.fillText(text,0,0);x.restore();x.save();x.translate(w*.75,h/2);x.scale(fit,1);x.fillText(text,0,0);x.restore()})}
+function lathe(points,mat,seg=32){return new THREE.Mesh(new THREE.LatheGeometry(points.map(p=>new THREE.Vector2(p[0],p[1])),seg),mat)}
+function makeBottle(k){
+ const I=ING[k],g=new THREE.Group();const sp=I.type==='spirit';
+ const prof=sp?[[0,0],[.034,0],[.036,.004],[.036,.165],[.03,.195],[.013,.21],[.012,.255],[0,.255]]:[[0,0],[.03,0],[.031,.004],[.031,.14],[.022,.18],[.011,.195],[.011,.225],[0,.225]];
+ const body=lathe(prof,std({color:I.bottle,transparent:true,opacity:.88,roughness:.12,metalness:.1,envMapIntensity:1.2}));body.castShadow=true;g.add(body);
+ const r=sp?.0365:.0315;const lab=new THREE.Mesh(new THREE.CylinderGeometry(r,r,.065,32,1,true),std({map:labelTex(I.short,sp?'#f5ead0':I.color,sp?'#2a1408':'#1a0a04'),roughness:.6}));lab.position.y=sp?.09:.08;lab.rotation.y=-Math.PI/2;g.add(lab);
+ const cap=cyl(.0135,.0135,.022,sp?std({color:0x222222,roughness:.5}):M.chrome,0,(sp?.255:.225)+.006,0,16,g);
+ const spout=cyl(.004,.006,.035,M.chrome,0,(sp?.255:.225)+.03,0,8,g);
+ g.userData.neck=sp?.29:.26;
+ return g;
+}
+function buildStation(){
+ // bottle step
+ box(1.0,.06,.12,M.grate,.02,.91,-.51);
+ SPIRITS.forEach((k,i)=>{const b=makeBottle(k);b.position.set(-.38+i*.16,.94,-.51);b.userData.home=b.position.clone();scene.add(b);addPick(b,{kind:'bottle',k});ST.bottles[k]=b});
+ MIXERS.forEach((k,i)=>{const b=makeBottle(k);b.position.set(-.38+i*.16,.9,-.4);b.userData.home=b.position.clone();scene.add(b);addPick(b,{kind:'bottle',k});ST.bottles[k]=b});
+ // mats
+ for(const [id,x] of [['A',-.16],['B',.18]]){const m=box(.2,.008,.2,M.rubber,x,.904,-.2);for(let i=0;i<6;i++)box(.19,.004,.008,std({color:0x2a2a2a}),x,.909,-.28+i*.032);addPick(m,{kind:'slotmesh'});const s={id,kind:'mat',pos:V(x,.908,-.2),glass:null,mesh:m};m.userData.act={kind:'slot',slot:s};SLOTS.push(s)}
+ // tap tower
+ const tw=box(.64,.36,.08,std({color:0x6a5040,metalness:.5,roughness:.35}),1.04,1.07,-.54);box(.66,.02,.1,M.chrome,1.04,1.255,-.54);tw.userData.block=1;PICK.push(tw);
+ const dt=box(.64,.015,.17,M.grate,1.04,.905,-.42);
+ TAPS.forEach((k,i)=>{const x=TAPX[i];
+  const fau=cyl(.009,.009,.08,M.chrome,x,1.17,-.47,12);fau.rotation.x=Math.PI/2;
+  const noz=cyl(.008,.006,.04,M.chrome,x,1.15,-.43,12);
+  const piv=new THREE.Group();piv.position.set(x,1.25,-.49);scene.add(piv);
+  const I=ING[k];const lab=labelTex(I.short,'#f5ead0','#2a1408',128,256,30);
+  const side=std({color:I.handle,roughness:.4,metalness:.2});const hm=new THREE.Mesh(new THREE.BoxGeometry(.04,.17,.035),[side,side,side,side,std({map:canvasTex(128,256,(x2)=>{x2.fillStyle=I.handle;x2.fillRect(0,0,128,256);x2.fillStyle='#f5ead0';x2.fillRect(10,40,108,150);x2.fillStyle=I.color;x2.fillRect(10,40,108,26);x2.fillStyle='#2a1408';x2.font='900 30px "Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic UI","Meiryo","Noto Sans JP",sans-serif';x2.textAlign='center';x2.save();x2.translate(64,130);const tw2=x2.measureText(I.short).width;x2.scale(Math.min(1,100/tw2),1);x2.fillText(I.short,0,0);x2.restore()}),roughness:.5}),side]);
+  hm.position.y=.1;hm.castShadow=true;piv.add(hm);cyl(.008,.008,.03,M.chrome,0,.01,0,8,piv);
+  const tapAct={kind:'tap',i,k};addPick(piv,tapAct);fau.userData.act=tapAct;PICK.push(fau);
+  const s={id:'T'+i,kind:'tap',tap:i,pos:V(x,.913,-.42),glass:null};SLOTS.push(s);
+  const stream=new THREE.Mesh(new THREE.CylinderGeometry(.004,.004,1,8),std({color:I.color,transparent:true,opacity:.85}));stream.visible=false;stream.raycast=()=>{};scene.add(stream);
+  ST.taps.push({k,piv,stream,pull:0,x,lock:null});
+ });
+ const dtAct={kind:'drip'};dt.userData.act=dtAct;PICK.push(dt);
+ // garnish tray
+ GARN.forEach((k,i)=>{const g=new THREE.Group();g.position.set(.5+(i%2)*.095,.9,-.3+Math.floor(i/2)*.095);scene.add(g);
+  const bowl=lathe([[0,0],[.03,0],[.042,.035],[.039,.035],[.027,.004],[0,.004]],M.white,24);g.add(bowl);
+  const c=new THREE.Color(ING[k].color);
+  for(let j=0;j<4;j++){let m;if(k==='g_olive'){m=new THREE.Mesh(new THREE.SphereGeometry(.011,12,8),std({color:c,roughness:.4}));m.position.set(rnd(-.015,.015),.022,rnd(-.015,.015))}
+   else{m=new THREE.Mesh(new THREE.CylinderGeometry(.019,.019,.004,20),[std({color:c}),std({color:0xfff6c8,emissive:c,emissiveIntensity:.15}),std({color:0xfff6c8})]);m.position.set(rnd(-.012,.012),.02+j*.004,rnd(-.012,.012));m.rotation.set(rnd(-.4,.4),0,rnd(-.4,.4))}
+   g.add(m)}
+  addPick(g,{kind:'garnish',k});ST.garn[k]=g});
+ // ice bin
+ const ib=new THREE.Group();ib.position.set(-.52,.9,-.22);scene.add(ib);
+ box(.24,.005,.28,M.steel,0,.002,0,ib);box(.005,.1,.28,M.steel,-.12,.05,0,ib);box(.005,.1,.28,M.steel,.12,.05,0,ib);box(.24,.1,.005,M.steel,0,.05,-.14,ib);box(.24,.1,.005,M.steel,0,.05,.14,ib);
+ const im=new THREE.InstancedMesh(new THREE.BoxGeometry(.022,.022,.022),M.ice,70);const d=new THREE.Object3D();
+ for(let i=0;i<70;i++){d.position.set(rnd(-.1,.1),rnd(.04,.085),rnd(-.12,.12));d.rotation.set(rnd(0,3),rnd(0,3),rnd(0,3));d.updateMatrix();im.setMatrixAt(i,d.matrix)}ib.add(im);
+ const scoop=makeScoop(true);scoop.position.set(.06,.11,.06);scoop.rotation.set(.6,.4,0);ib.add(scoop);
+ addPick(ib,{kind:'ice'});ST.ice=ib;
+ // spoon holder + spoon
+ const sh=new THREE.Group();sh.position.set(-.76,.9,-.42);scene.add(sh);
+ const cup=lathe([[0,0],[.022,0],[.024,.08],[.021,.08],[.019,.004],[0,.004]],M.chrome,20);sh.add(cup);
+ const sp=makeSpoon();sp.position.set(0,.02,0);sp.rotation.z=.12;sh.add(sp);const sph=new THREE.Mesh(new THREE.BoxGeometry(.07,.34,.07),new THREE.MeshBasicMaterial());sph.visible=false;sph.position.y=.17;sh.add(sph);addPick(sh,{kind:'spoon'});ST.spoon=sh;ST.spoonMesh=sp;
+ // shaker home
+ const ring=cyl(.05,.05,.005,M.rubber,-.76,.9,-.2,24);const hs={id:'H',kind:'home',pos:V(-.76,.905,-.2),glass:null,mesh:ring};ring.userData.act={kind:'slot',slot:hs};PICK.push(ring);SLOTS.push(hs);
+ // glass rack
+ box(.72,.012,.22,M.rubber,-1.18,.905,-.2);
+ ['mug','cocktail','highball','pint'].forEach((t,i)=>{const g=new THREE.Group();g.position.set(-1.44+i*.175,.911,0);scene.add(g);
+  const tex=canvasTex(256,96,()=>{});const plate=new THREE.Mesh(new THREE.PlaneGeometry(.11,.04),new THREE.MeshBasicMaterial({map:tex,transparent:true}));plate.position.set(0,.002,-.07);plate.rotation.x=-1.1;g.add(plate);
+  const hit=new THREE.Mesh(new THREE.BoxGeometry(.1,.025,.32),new THREE.MeshBasicMaterial());hit.visible=false;hit.position.set(0,.012,-.24);g.add(hit);
+  addPick(g,{kind:'rack',t});ST.rack[t]={g,tex,plate,metas:[],shown:-1}});
+ // sink
+ const sk=new THREE.Group();sk.position.set(1.52,.9,-.27);scene.add(sk);
+ box(.34,.006,.04,M.steel,0,.0,-.16,sk);box(.34,.006,.04,M.steel,0,.0,.16,sk);box(.04,.006,.3,M.steel,-.17,0,0,sk);box(.04,.006,.3,M.steel,.17,0,0,sk);
+ const basin=box(.3,.004,.28,std({color:0x2a3034,metalness:.7,roughness:.4}),0,-.08,0,sk);
+ const water=new THREE.Mesh(new THREE.PlaneGeometry(.3,.28),M.water);water.rotation.x=-Math.PI/2;water.position.y=-.035;sk.add(water);
+ const fa=new THREE.Mesh(new THREE.TorusGeometry(.07,.008,8,20,Math.PI),M.chrome);fa.position.set(0,.07,-.15);sk.add(fa);cyl(.008,.008,.07,M.chrome,-.07,.035,-.15,8,sk);
+ const sponge=box(.06,.025,.04,std({color:0xf0d040,roughness:1}),.12,.015,.12,sk);
+ const hitS=new THREE.Mesh(new THREE.BoxGeometry(.34,.12,.34),new THREE.MeshBasicMaterial());hitS.visible=false;hitS.position.y=-.02;sk.add(hitS);
+ addPick(sk,{kind:'sink'});ST.sink={g:sk,dirtyMeshes:[],sponge};
+ // seat zones + money
+ for(let i=0;i<7;i++){const z=new THREE.Mesh(new THREE.BoxGeometry(.42,.06,.38),new THREE.MeshBasicMaterial());z.visible=false;z.position.set(SEATX[i],1.15,-.81);scene.add(z);addPick(z,{kind:'seat',i});
+  const mg=new THREE.Group();mg.position.set(SEATX[i]+.13,1.125,-.72);const bill=box(.075,.004,.04,std({color:0xd8dcc0,roughness:.8}),0,0,0,mg);bill.rotation.y=.3;for(let j=0;j<3;j++)cyl(.011,.011,.003,std({color:0xe0b040,metalness:.9,roughness:.3}),.03+j*.006,.004+j*.003,.025,16,mg);mg.visible=false;scene.add(mg);
+  const rs=new THREE.Mesh(new THREE.PlaneGeometry(.22,.06),new THREE.MeshBasicMaterial({map:canvasTex(256,64,(x)=>{x.fillStyle='#1a0f09';x.fillRect(0,0,256,64);x.strokeStyle='#d4a24c';x.lineWidth=4;x.strokeRect(2,2,252,60);x.fillStyle='#d4a24c';x.font='900 30px "Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic UI","Meiryo","Noto Sans JP",sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText('RESERVED',128,34)})}));rs.position.set(SEATX[i],1.16,-.85);rs.rotation.x=-.5;scene.add(rs);
+  SEATOBJ[i]={zone:z,money:mg,resv:rs}}
+}
+const SEATOBJ=[];
+function makeScoop(full){const g=new THREE.Group();const c=new THREE.Mesh(new THREE.CylinderGeometry(.035,.035,.08,16,1,true,0,Math.PI),std({color:0xc4ccd2,metalness:.85,roughness:.3,side:THREE.DoubleSide}));c.rotation.z=Math.PI/2;g.add(c);const h=cyl(.008,.008,.07,M.darkWood,.075,0,0,8,g);h.rotation.z=Math.PI/2;
+ if(full){for(let i=0;i<4;i++){const ic=new THREE.Mesh(new THREE.BoxGeometry(.02,.02,.02),M.ice);ic.position.set(rnd(-.03,.03),-.012,rnd(-.015,.015));g.add(ic)}}return g}
+function makeSpoon(){const g=new THREE.Group();const s=cyl(.003,.003,.3,M.chrome,0,.15,0,8,g);const b=new THREE.Mesh(new THREE.SphereGeometry(.009,12,8),M.chrome);b.scale.set(1,.4,1.6);g.add(b);const t=new THREE.Mesh(new THREE.TorusGeometry(.007,.002,6,12),M.chrome);t.position.y=.3;g.add(t);return g}
+function makeGarnishMesh(k){const c=new THREE.Color(ING[k].color);
+ if(k==='g_olive'){const g=new THREE.Group();const p=cyl(.0015,.0015,.11,std({color:0xd8c08a}),0,.0,0,6,g);p.rotation.z=.5;const o=new THREE.Mesh(new THREE.SphereGeometry(.011,12,8),std({color:c,roughness:.4}));o.position.set(.02,-.04,0);g.add(o);return g}
+ const m=new THREE.Mesh(new THREE.CylinderGeometry(.022,.022,.005,24),[std({color:c}),std({color:0xfff6c8,emissive:c,emissiveIntensity:.12}),std({color:0xfff6c8})]);m.rotation.x=Math.PI/2;const g=new THREE.Group();g.add(m);return g}
+
+/* ====================== GLASS OBJECTS ====================== */
+const GLASSOBJS=[];
+function newCont(){return{ings:{},ice:false,water:0,foam:0,shaken:null,stirred:null,garnish:null,overflow:false}}
+class Glass{
+ constructor(type){
+  this.type=type;this.def=GL[type];this.c=newCont();this.g=new THREE.Group();this.loc=null;this.sig='';this.dirtyGlass=false;
+  let mat=M.glass;if(this.def.copper)mat=M.copper;if(this.def.metal)mat=M.steel;
+  this.body=lathe(this.def.prof,mat);this.body.renderOrder=3;this.body.castShadow=true;this.g.add(this.body);
+  if(this.def.copper){const h=new THREE.Mesh(new THREE.TorusGeometry(.028,.007,8,16,Math.PI),M.copper);h.position.set(.045,.055,0);h.rotation.z=-Math.PI/2;this.g.add(h)}
+  this.liqMat=std({color:0xe8a838,transparent:true,opacity:.86,roughness:.15});this.liq=new THREE.Mesh(new THREE.CylinderGeometry(1,1,1,28),this.liqMat);this.liq.renderOrder=1;this.liq.visible=false;this.liq.raycast=()=>{};this.g.add(this.liq);
+  this.foamM=new THREE.Mesh(new THREE.CylinderGeometry(1,1,1,28),std({color:0xfff6e4,roughness:.9}));this.foamM.visible=false;this.foamM.renderOrder=2;this.foamM.raycast=()=>{};this.g.add(this.foamM);
+  this.ices=[];for(let i=0;i<4;i++){const ic=new THREE.Mesh(new THREE.BoxGeometry(.021,.021,.021),M.ice);ic.visible=false;ic.renderOrder=2;ic.raycast=()=>{};this.ices.push(ic);this.g.add(ic)}
+  this.rings=[];for(let i=0;i<2;i++){const r=new THREE.Mesh(new THREE.TorusGeometry(1,.0016,6,40),new THREE.MeshBasicMaterial({color:0x3fd0c9,toneMapped:false}));r.rotation.x=Math.PI/2;r.visible=false;r.raycast=()=>{};this.rings.push(r);this.g.add(r)}
+  this.garnM=null;
+  this.g.userData.act={kind:'glass',glass:this};PICK.push(this.g);GLASSOBJS.push(this);scene.add(this.g);
+ }
+ cap(){return this.def.cap}
+ liquid(){let t=this.c.water;for(const k in this.c.ings)t+=this.c.ings[k];return t}
+ vol(){return this.liquid()+this.c.foam+(this.c.ice?this.cap()*.35:0)}
+ fill(){return this.vol()/this.cap()}
+ empty(){return !Object.keys(this.c.ings).length&&!this.c.ice&&!this.c.garnish&&this.c.water<1}
+ hasIngs(){return Object.keys(this.c.ings).some(k=>this.c.ings[k]>.5)}
+ levelH(f){const n=this.def.inner,sp=n.t-n.b;return (n.cone?Math.cbrt(clamp(f,0,1)):clamp(f,0,1))*sp}
+ radAt(h){const n=this.def.inner,sp=n.t-n.b;return n.rb+(n.rt-n.rb)*clamp(h/sp,0,1)}
+ refresh(lines){
+  const c=this.c,sig=[this.vol().toFixed(1),c.foam.toFixed(1),c.ice,c.garnish,Object.keys(c.ings).join(),this.dirtyGlass,lines?lines.join():'',this.shownFill].join('|');
+  if(sig===this.sig)return;this.sig=sig;
+  const n=this.def.inner;const total=this.shownFill!=null?this.shownFill:this.fill();
+  const liqF=this.shownFill!=null?this.shownFill:(this.liquid()+(c.ice?this.cap()*.35:0))/this.cap();
+  const hL=this.levelH(Math.min(liqF,1)),hT=this.levelH(Math.min(total,1));
+  if(hL>.002){this.liq.visible=true;this.liq.geometry.dispose();this.liq.geometry=new THREE.CylinderGeometry(this.radAt(hL)*.97,this.radAt(0)*.97,hL,28);this.liq.position.y=n.b+hL/2;
+   this.liqMat.color.set(this.dirtyGlass?'#b89a60':mixColor(c.ings));this.liqMat.opacity=this.dirtyGlass?.35:(c.ings.stout?.97:.86)}else this.liq.visible=false;
+  if(hT-hL>.002&&!this.dirtyGlass){this.foamM.visible=true;this.foamM.geometry.dispose();this.foamM.geometry=new THREE.CylinderGeometry(this.radAt(hT)*.97,this.radAt(hL)*.97,hT-hL,28);this.foamM.position.y=n.b+hL+(hT-hL)/2}else this.foamM.visible=false;
+  this.ices.forEach((ic,i)=>{ic.visible=c.ice&&!this.dirtyGlass;if(!ic.visible)return;const a=i*1.7,rr=this.radAt(.02)*.45;const top=n.b+Math.max(.015,Math.min(hL-.012,(n.t-n.b)*.75));ic.position.set(Math.cos(a)*rr,Math.min(top-i*.018,n.b+.012+(3-i)*.02)+(i%2)*.005,Math.sin(a)*rr);ic.rotation.set(a,a*.7,a*.3)});
+  if(this.garnM){this.g.remove(this.garnM);this.garnM=null}
+  if(c.garnish&&!this.dirtyGlass){const m=makeGarnishMesh(c.garnish);if(c.garnish==='g_olive'){m.position.set(0,n.b+.04,0)}else{m.position.set(n.rt*.85,n.t-.005,0);m.rotation.y=0}this.g.add(m);this.garnM=m}
+  this.rings.forEach((r,i)=>{if(lines&&!this.dirtyGlass){const h=this.levelH(lines[i]);const rr=this.radAt(h)+.002;r.visible=true;r.scale.set(rr,rr,rr);r.position.y=n.b+h}else r.visible=false});
+ }
+ dispose(){scene.remove(this.g);const i=PICK.indexOf(this.g);if(i>=0)PICK.splice(i,1);const j=GLASSOBJS.indexOf(this);if(j>=0)GLASSOBJS.splice(j,1)}
+}
+function hex(h){h=h.replace('#','');return[parseInt(h.substr(0,2),16),parseInt(h.substr(2,2),16),parseInt(h.substr(4,2),16)]}
+function mixColor(ings){let r=0,g=0,b=0,t=0;for(const k in ings){const v=ings[k];if(v<=0)continue;const c=hex(ING[k].color);r+=c[0]*v;g+=c[1]*v;b+=c[2]*v;t+=v}if(!t)return'#dfe8ee';return`rgb(${r/t|0},${g/t|0},${b/t|0})`}
+function rackRefresh(){for(const t in ST.rack){const R=ST.rack[t],n=G?G.clean[t]:S.glasses[t];if(R.shown===n)continue;R.shown=n;
+  R.metas.forEach(m=>R.g.remove(m));R.metas=[];const def=GL[t];
+  for(let j=0;j<Math.min(n,1);j++){const m=lathe(def.prof,def.copper?M.copper:M.glass,20);m.renderOrder=3;m.position.set(0,0,-.2);R.g.add(m);R.metas.push(m);if(def.copper){const h=new THREE.Mesh(new THREE.TorusGeometry(.028,.007,8,16,Math.PI),M.copper);h.position.set(.045,.055,0);h.rotation.z=-Math.PI/2;m.add(h)}}
+  const {c,x}=R.tex.userData;x.clearRect(0,0,256,96);x.fillStyle=n>0?'rgba(20,12,7,.85)':'rgba(120,20,20,.9)';x.beginPath();x.roundRect(4,4,248,88,18);x.fill();x.fillStyle=n>0?'#ffd77a':'#fff';x.font='900 36px "Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic UI","Meiryo","Noto Sans JP",sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText(`${def.name} ×${n}`,128,50);R.tex.needsUpdate=true}}
+function sinkRefresh(){const sk=ST.sink;const n=G?Math.min(G.dirty.length,8):0;if(sk.dirtyMeshes.length===n)return;sk.dirtyMeshes.forEach(m=>sk.g.remove(m));sk.dirtyMeshes=[];
+ for(let i=0;i<n;i++){const t=G.dirty[i];const m=lathe(GL[t].prof,GL[t].copper?M.copper:M.glass,16);m.renderOrder=3;m.rotation.set(Math.PI/2,0,i*.7);m.position.set(-.09+(i%4)*.06,-.05+Math.floor(i/4)*.03,-.06+Math.floor(i/4)*.09);sk.g.add(m);sk.dirtyMeshes.push(m)}}
+
+/* ====================== CUSTOMERS 3D ====================== */
+const SKINS=['#f7d7b8','#eec29b','#dba87c','#b97f55','#8d5a3b'],HAIRS=['#1d1410','#3b2416','#6b4423','#c49a5a','#9a9a9a','#7a2a2a','#2a2a4a'],SHIRTS=['#3a6ea5','#a53a3a','#3a8a5a','#6a4a8a','#d48a2a','#2a2a2a','#e8e0d0','#4a7a8a','#8a3a6a'];
+function drawFace(tex,mood,L){const {x}=tex.userData;x.clearRect(0,0,128,128);x.lineCap='round';x.strokeStyle='#2a1a10';x.fillStyle='#2a1a10';x.lineWidth=5;
+ if(mood==='happy'){x.beginPath();x.arc(42,62,8,Math.PI*1.1,Math.PI*1.9);x.stroke();x.beginPath();x.arc(86,62,8,Math.PI*1.1,Math.PI*1.9);x.stroke();x.fillStyle='rgba(255,120,120,.45)';x.beginPath();x.ellipse(32,78,9,5,0,0,7);x.ellipse(96,78,9,5,0,0,7);x.fill();x.fillStyle='#7a2a1a';x.beginPath();x.moveTo(50,86);x.quadraticCurveTo(64,106,78,86);x.closePath();x.fill()}
+ else{x.beginPath();x.arc(42,62,5.5,0,7);x.arc(86,62,5.5,0,7);x.fill();
+  if(mood==='angry'){x.beginPath();x.moveTo(30,48);x.lineTo(52,54);x.moveTo(98,48);x.lineTo(76,54);x.stroke();x.beginPath();x.moveTo(50,98);x.quadraticCurveTo(64,86,78,98);x.stroke()}
+  else if(mood==='sad'){x.beginPath();x.moveTo(52,96);x.quadraticCurveTo(64,88,76,96);x.stroke()}
+  else{x.beginPath();x.moveTo(54,92);x.quadraticCurveTo(64,96,74,92);x.stroke()}}
+ if(L.blush){x.fillStyle='rgba(255,70,70,.45)';x.beginPath();x.ellipse(30,80,13,8,0,0,7);x.ellipse(98,80,13,8,0,0,7);x.fill()}
+ if(L.glasses){x.strokeStyle='#111';x.lineWidth=4;x.beginPath();x.arc(42,62,14,0,7);x.stroke();x.beginPath();x.arc(86,62,14,0,7);x.stroke();x.beginPath();x.moveTo(56,62);x.lineTo(72,62);x.stroke()}
+ tex.needsUpdate=true}
+function makeCustomer3D(L){
+ const g=new THREE.Group();const shirt=std({color:L.shirt,roughness:.85}),skin=std({color:L.skin,roughness:.6}),hair=std({color:L.hair,roughness:.75});
+ const torso=new THREE.Mesh(new THREE.CapsuleGeometry(.17,.3,6,16),shirt);torso.scale.set(1,1,.72);torso.position.y=1.24;torso.castShadow=true;g.add(torso);
+ const neck=cyl(.045,.05,.08,skin,0,1.5,0,12,g);
+ const head=new THREE.Mesh(new THREE.SphereGeometry(.105,24,18),skin);head.position.y=1.62;head.castShadow=true;g.add(head);
+ for(const s of [-1,1]){const e=new THREE.Mesh(new THREE.SphereGeometry(.022,10,8),skin);e.position.set(s*.103,1.615,0);g.add(e)}
+ const ftex=canvasTex(128,128,()=>{});drawFace(ftex,'neutral',L);
+ const face=new THREE.Mesh(new THREE.SphereGeometry(.1065,24,18,-Math.PI*.32+Math.PI/2,Math.PI*.64,Math.PI*.3,Math.PI*.42),new THREE.MeshStandardMaterial({map:ftex,transparent:true,roughness:.6}));face.position.y=1.62;g.add(face);
+ const hs=L.hs;
+ if(hs===3){const cap=new THREE.Mesh(new THREE.SphereGeometry(.112,24,12,0,Math.PI*2,0,Math.PI*.5),std({color:L.hat,roughness:.7}));cap.position.y=1.64;g.add(cap);const br=cyl(.11,.11,.01,std({color:L.hat}),0,1.645,.07,20,g);br.scale.set(.8,1,.9)}
+ else{const hm=new THREE.Mesh(new THREE.SphereGeometry(.113,24,12,0,Math.PI*2,0,Math.PI*(hs===4?.38:.5)),hair);hm.position.y=1.635;hm.rotation.x=-.28;g.add(hm);
+  if(hs===1){const back=new THREE.Mesh(new THREE.CapsuleGeometry(.1,.14,4,12),hair);back.position.set(0,1.52,-.05);back.scale.set(1.05,1,.6);g.add(back)}
+  if(hs===2){const bun=new THREE.Mesh(new THREE.SphereGeometry(.05,12,10),hair);bun.position.set(0,1.75,-.05);g.add(bun)}}
+ if(L.beard){const bd=new THREE.Mesh(new THREE.SphereGeometry(.1,20,12,0,Math.PI*2,Math.PI*.55,Math.PI*.4),hair);bd.position.set(0,1.625,.01);g.add(bd)}
+ if(L.tie){const t=box(.03,.14,.01,std({color:L.tie}),0,1.38,.125,g)}
+ if(L.shades){const sm=std({color:0x0a0a0a,roughness:.15,metalness:.6});box(.075,.035,.012,sm,-.04,1.635,.1,g);box(.075,.035,.012,sm,.04,1.635,.1,g);box(.02,.006,.01,sm,0,1.645,.104,g)}
+ if(L.beret){const be=new THREE.Mesh(new THREE.SphereGeometry(.12,20,10),std({color:L.beret,roughness:.9}));be.scale.set(1.05,.35,1.05);be.position.set(.02,1.71,-.01);be.rotation.z=-.15;g.add(be)}
+ if(L.phones){const pm=std({color:L.phones,roughness:.4});const band=new THREE.Mesh(new THREE.TorusGeometry(.115,.012,8,20,Math.PI),pm);band.position.y=1.63;g.add(band);for(const sd of [-1,1]){const cup=cyl(.035,.035,.03,pm,sd*.112,1.615,0,14,g);cup.rotation.z=Math.PI/2}}
+ if(L.bow){box(.06,.025,.015,std({color:L.bow}),0,1.49,.11,g)}
+ for(const s of [-1,1]){const a=new THREE.Vector3(s*.19,1.38,0),b=new THREE.Vector3(s*.13,1.17,.36);const arm=new THREE.Mesh(new THREE.CapsuleGeometry(.045,a.distanceTo(b),4,10),shirt);arm.position.copy(a).add(b).multiplyScalar(.5);arm.quaternion.setFromUnitVectors(V(0,1,0),b.clone().sub(a).normalize());arm.castShadow=true;g.add(arm);const hd=new THREE.Mesh(new THREE.SphereGeometry(.042,12,10),skin);hd.position.copy(b).add(V(0,-.01,.03));g.add(hd)}
+ return {g,ftex};
+}
+
+/* ====================== GAME STATE ====================== */
+let H=null; // item in hand
+const P={x:640,y:400,down:false,act:null,dx:0,dy:0};
+const D={ticket:1};
+function newDay(){
+ for(const gl of [...GLASSOBJS])gl.dispose();for(const s of SLOTS)s.glass=null;
+ if(G)for(const c of G.customers){scene.remove(c.m.g);c.bub&&c.bub.remove()}
+ G={time:0,dayLen:({easy:300,normal:270,hard:240})[S.diff||'normal']||270,customers:[],seats:[],active:null,clean:{...S.glasses},dirty:[],spawnT:4,phaseShown:0,nid:1,closing:false,paused:false,ended:false,evalT:0,repStart:S.rep,moneyStart:S.money,dishT:0,scrubAcc:0,
+  stats:{served:0,perfect:0,sales:0,tips:0,angry:0,cost:0,waste:0,scoreSum:0},combo:0,regSeen:{},hl:{best:null,fast:null,tricks:{},maxCombo:0,talks:[],xp:0,ranks:[]}};
+ for(let i=0;i<7;i++)G.seats.push({i,cust:null,glasses:[],money:0});
+ if(H)H=null;resetHandVisual();
+ const sh=new Glass('shaker');placeGlass(sh,SLOTS.find(s=>s.id==='H'));G.shaker=sh;
+ $('#bubbles').innerHTML='';$('#mlabs').innerHTML='';
+ for(const k in ST.rack)ST.rack[k].shown=-1;
+ refreshLocks();D.ticket=1;
+}
+function refreshLocks(){
+ for(const k in ST.bottles){const b=ST.bottles[k],u=ingUnlocked(k);b.visible=u||true;b.traverse(o=>{if(o.isMesh&&o.material&&!Array.isArray(o.material)){o.material.transparent=true;if(o.userData.op0===undefined)o.userData.op0=o.material.opacity;o.material.opacity=u?o.userData.op0:.1}})}
+ ST.taps.forEach(t=>{t.piv.visible=ingUnlocked(t.k)});
+ for(const k in ST.garn){ST.garn[k].visible=ingUnlocked(k)}
+ for(let i=0;i<7;i++)SEATOBJ[i].resv.visible=i>=S.up.seats;
+}
+function patMul(c){return (S.up.juke?1.3:1)*(c&&c.ty&&CT[c.ty]?CT[c.ty].pat:1)}
+function phaseMul(){const f=G.time/G.dayLen;return f<.15?1.5:f<.3?1.05:f<.7?.72:f<.85?1.1:1.7}
+function spawnInterval(){let b=14*DF().spawn/(0.6+S.rep*0.2)*phaseMul();if(S.up.neon)b*=0.77;if(S.day===1)b*=1.4;b*=1-Math.min(.3,(S.day-1)*.03);return Math.max(6,b*rnd(.75,1.3))}
+function seatFree(s){return s.i<S.up.seats&&!s.cust&&!s.glasses.length&&!s.money}
+const DOOR=V(-3.9,0,-2.6);
+function pickType(){const opts=Object.keys(CT).filter(k=>!CT[k].reg&&(CT[k].minDay||1)<=S.day);const w=opts.map(k=>CT[k].w*(k==='tourist'&&S.flags.tourist?2.5:1));let t=w.reduce((a,b)=>a+b,0)*Math.random();for(let i=0;i<opts.length;i++){t-=w[i];if(t<=0)return opts[i]}return opts[0]}
+function spawnCustomer(force){
+ const free=G.seats.filter(seatFree);if(!free.length){G.spawnT=2;return}
+ if(!force&&G.customers.filter(c=>c.status==='enter'||c.status==='waiting'||c.status==='ordered').length>=DF().cap){G.spawnT=2.5;return}
+ const seat=pick(free);
+ let ty=G.forceType||pickType(),reg=null;G.forceType=null;
+ if(!force&&!G.tutorial&&S.day>=2&&Math.random()<(rankIdx()>=3?.45:.3)){const cand=REGS.filter(r=>!G.regSeen[r.id]&&!G.customers.some(c=>c.reg===r.id));if(cand.length){reg=pick(cand);G.regSeen[reg.id]=1;ty='regular'}}
+ let L={skin:pick(SKINS),hair:pick(HAIRS),shirt:pick(SHIRTS),hs:Math.floor(Math.random()*5),glasses:Math.random()<.22,beard:Math.random()<.15,tie:Math.random()<.3?pick(['#c0392b','#2a4a8a','#d4a24c']):null,hat:pick(['#2a2a2a','#6a4a2a','#3a5a7a'])};
+ if(reg)L={...L,glasses:false,beard:false,tie:null,...reg.L};else Object.assign(L,CT[ty].look||{});
+ if(CT[ty].look&&CT[ty].look.suit)L.shirt=pick(['#2a3040','#3a3a3a','#2a2a40']);
+ const c={id:G.nid++,seat:seat.i,L,ty,reg:reg&&reg.id,orderT:0,pref:reg?'any':pick(CT[ty].pref),status:'enter',t:0,pat:1,patMax:1,order:null,drinks:0,drinkT:0,bill:0,mood:'neutral',served:null,say:null,sayT:0,dirty:1,ph:Math.random()*6};
+ c.m=makeCustomer3D(L);c.m.g.position.copy(DOOR);c.m.g.userData.act={kind:'cust',c};PICK.push(c.m.g);scene.add(c.m.g);
+ c.target=V(SEATX[seat.i],0,-1.36);
+ const b=document.createElement('div');b.className='bub';$('#bubbles').appendChild(b);c.bub=b;
+ seat.cust=c;G.customers.push(c);sfx.bell();
+}
+function canMake(rid){const r=RECIPES[rid];const fills=Object.keys(r.ings).filter(k=>r.ings[k]==='fill');
+ for(const k in r.ings){const need=r.ings[k]==='fill'?GL[r.glass].cap*(r.ice?.6:.95)/fills.length:r.ings[k];if(S.stock[k]<need)return false}
+ if(r.garnish&&S.stock[r.garnish]<1)return false;return true}
+function chooseOrder(c){const opts=Object.keys(RECIPES).filter(k=>S.unlocked[k]&&canMake(k));if(!opts.length)return null;
+ if(c.reg){const R0=REGS.find(r=>r.id===c.reg);for(const f of [R0.fav,R0.fb])if(opts.includes(f)&&Math.random()<.8)return f}
+ if(c.ty==='vip'||c.ty==='critic'){const ex=opts.filter(k=>RECIPES[k].price>=900);if(ex.length&&Math.random()<.7)return pick(ex)}
+ const w=opts.map(k=>{const r=RECIPES[k];let v=r.cat==='beer'?1.3:1;if(r.cat==='original')v=origWeight(r);if(c.pref===r.cat)v*=2.4;if(c.pref==='mix'&&r.cat==='cocktail')v*=1.3;if(c.order===k)v*=1.8;return v});
+ let t=w.reduce((a,b)=>a+b,0)*Math.random();for(let i=0;i<opts.length;i++){t-=w[i];if(t<=0)return opts[i]}return opts[0]}
+function say(c,t,d=2.2){c.say=t;c.sayT=d;c.dirty=1}
+function takeOrder(c){const o=G.forceOrder||chooseOrder(c);G.forceOrder=null;c.orderT=0;
+ if(c.reg&&o){const st=S.regs[c.reg]||(S.regs[c.reg]={aff:0,met:0});if(!st.met){st.met=1;talk(c.reg,0)}else if(Math.random()<.5)say(c,pick(['いつものを','やあ、また来たよ','こんばんは']),1.6)}
+ if(!o){say(c,'品切れか…帰るよ');leave(c,'sad');S.rep=clamp(S.rep-.05,.5,5);return}
+ const r=RECIPES[o];c.order=o;c.status='ordered';c.pat=c.patMax=(40+(r.method==='shake'||r.method==='stir'?14:0)+(Object.keys(r.ings).length>1?8:0))*DF().patOrder*patMul(c);
+ if(!activeCust())G.active=c.id;sfx.pop();floatAt(c.m.g.position.clone().add(V(0,1.95,0)),r.name+' お願い！','#fff',16);c.dirty=1;D.ticket=1;
+}
+function activeCust(){return G&&G.customers.find(c=>c.id===G.active&&c.status==='ordered')}
+function orders(){return G.customers.filter(c=>c.status==='ordered').sort((a,b)=>a.id-b.id)}
+function pickNextActive(){const o=orders();G.active=o.length?o[0].id:null;D.ticket=1;for(const x of G.customers)x.dirty=1}
+function leave(c,mood){const seat=G.seats[c.seat];
+ if(c.served){c.served.dirtyGlass=true;c.served.shownFill=.05;seat.glasses.push(c.served);c.served=null;layoutSeat(seat)}
+ seat.money+=c.bill;c.bill=0;if(seat.cust===c)seat.cust=null;const wa=G.active===c.id;c.status='leave';c.t=0;c.mood=mood;c.dirty=1;
+ c.from=c.m.g.position.clone();if(wa)pickNextActive();D.ticket=1;
+}
+function layoutSeat(seat){const x=SEATX[seat.i];seat.glasses.forEach((gl,j)=>{gl.g.position.set(x-.1-j*.075,1.125,-.82+(j%2)*.05);gl.g.rotation.set(0,0,0);gl.loc={kind:'bar',seat:seat.i}});SEATOBJ[seat.i].money.visible=seat.money>0}
+function updateCust(c,dt){if(G.tutorial&&c.status==='drinking'&&c.drinkT>5)c.drinkT=5;
+ c.t+=dt;if(c.sayT>0){c.sayT-=dt;if(c.sayT<=0){c.say=null;c.dirty=1}}
+ const g=c.m.g;
+ if(c.status==='enter'){const k=clamp(c.t/2.2,0,1);const e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;g.position.lerpVectors(DOOR,c.target,e);g.position.y=Math.abs(Math.sin(c.t*9))*.03*(1-k);g.rotation.y=k<.9?Math.atan2(c.target.x-DOOR.x,c.target.z-DOOR.z)*(1-k)*1.1:0;
+  if(c.t>2.2){c.status='waiting';c.pat=c.patMax=34*DF().patWait*patMul(c);c.t=0;c.dirty=1;g.rotation.y=0}}
+ else if(c.status==='relax'){c.relaxT-=dt;g.position.y=Math.sin(c.t*2+c.ph)*.004;if(c.relaxT<=0){c.status='waiting';c.pat=c.patMax=34*DF().patWait*patMul(c);c.mood='neutral';c.dirty=1}}
+ else if(c.status==='waiting'||c.status==='ordered'){if(!G.tutorial)c.pat-=dt;if(c.status==='ordered'){c.orderT+=dt;if(c.ty==='drunk'&&!c.changed&&c.orderT>9&&Math.random()<dt*.12){const o2=chooseOrder(c);if(o2&&o2!==c.order){c.changed=1;c.order=o2;c.pat=Math.min(c.patMax,c.pat+20);say(c,`やっぱ${RECIPES[o2].name}にして〜`,3);sfx.pop();floatAt(c.m.g.position.clone().add(V(0,1.95,0)),'注文変更！','#ffb070',18);D.ticket=1}}}g.position.y=Math.sin(c.t*2+c.ph)*.004;
+  if(c.pat<=0){say(c,'もういいよ！',2);G.stats.angry++;G.combo=0;S.rep=clamp(S.rep-.12,.5,5);floatAt(g.position.clone().add(V(0,1.9,0)),'怒って帰った… 評判↓','#ff7a7a',16);sfx.bad();leave(c,'angry')}
+  else if(c.pat/c.patMax<.3&&c.mood!=='angry'){c.mood='angry';c.dirty=1}}
+ else if(c.status==='drinking'){c.drinkT-=dt;g.rotation.z=Math.sin(c.t*1.3+c.ph)*.02;
+  if(c.served){c.served.shownFill=Math.max(.04,c.served.fill0*(c.drinkT/c.drinkMax));
+   const sip=(c.t%4)<.9;const hp=V(SEATX[c.seat]+.05,1.125,-.78);if(sip){const k=Math.sin((c.t%4)/.9*Math.PI);c.served.g.position.set(hp.x,hp.y+k*.38,hp.z-k*.42);c.served.g.rotation.x=-k*.9}else{c.served.g.position.copy(hp);c.served.g.rotation.x=0}}
+  if(c.drinkT<=0){c.drinks++;const seat=G.seats[c.seat];const gl=c.served;c.served=null;gl.dirtyGlass=true;gl.shownFill=.05;seat.glasses.push(gl);layoutSeat(seat);
+   if(!G.tutorial&&!G.closing&&c.drinks<3&&Math.random()<.55&&G.time<G.dayLen*.9){c.status='relax';c.relaxT=DF().brk*rnd(.8,1.3);c.mood='happy';c.dirty=1;g.rotation.z=0}
+   else{say(c,'ごちそうさま！',1.5);leave(c,c.mood==='happy'?'happy':'neutral')}}}
+ else if(c.status==='leave'){const k=clamp(c.t/2,0,1);g.position.lerpVectors(c.from,DOOR,k);g.position.y=Math.abs(Math.sin(c.t*9))*.03;g.rotation.y=Math.atan2(DOOR.x-c.from.x,DOOR.z-c.from.z);
+  if(c.t>2){scene.remove(g);PICK.splice(PICK.indexOf(g),1);c.bub.remove();G.customers.splice(G.customers.indexOf(c),1)}}
+}
+function startClosing(){G.closing=true;toast('🌙 閉店時間！ 最後のお客さんを見送ろう');
+ for(const c of [...G.customers]){if(c.status==='waiting'||c.status==='ordered'||c.status==='enter'||c.status==='relax'){say(c,'また来るね',1.5);leave(c,'neutral')}else if(c.status==='drinking')c.drinkT=Math.min(c.drinkT,2)}}
+
+/* ====================== CONTAINER OPS ====================== */
+function placeGlass(gl,slot){slot.glass=gl;gl.loc={kind:'slot',slot};gl.g.position.copy(slot.pos);gl.g.rotation.set(0,0,0)}
+function freeSlot(gl,pt,maxD=.3){let best=null,bd=maxD;for(const s of SLOTS){if(s.glass)continue;if(s.kind==='home'&&gl.type!=='shaker')continue;if(gl.type==='shaker'&&s.kind==='tap')continue;const d=Math.hypot(s.pos.x-pt.x,s.pos.z-pt.z);if(d<bd){bd=d;best=s}}return best}
+function slotGlassNear(pt,maxD=.13,exclude){let best=null,bd=maxD;for(const s of SLOTS){if(!s.glass||s.glass===exclude)continue;const d=Math.hypot(s.pos.x-pt.x,s.pos.z-pt.z);if(d<bd){bd=d;best=s.glass}}return best}
+function takeGlass(gl){if(gl.loc&&gl.loc.kind==='slot')gl.loc.slot.glass=null;gl.loc={kind:'hand'};H={kind:'glass',glass:gl};sfx.clink()}
+function addLiquid(gl,k,amt){const c=gl.c;S.stock[k]-=amt;G.stats.cost+=amt*ING[k].price/ING[k].unit;
+ const free=gl.cap()-gl.vol();if(free<=0){if(!c.overflow)floatAt(gl.g.position.clone().add(V(0,.2,0)),'こぼれた！','#ff7a7a',18);c.overflow=true;G.stats.waste+=amt;return}
+ const a=Math.min(amt,free);c.ings[k]=(c.ings[k]||0)+a;if(a<amt){c.overflow=true;floatAt(gl.g.position.clone().add(V(0,.2,0)),'こぼれた！','#ff7a7a',18)}}
+function msgNoStock(k){msg(ING[k].name+'の在庫切れ！ 閉店後に仕入れよう')}
+function dumpGlass(gl){G.stats.waste+=gl.liquid();if(gl.type==='shaker'){gl.c=newCont();placeGlass(gl,SLOTS.find(s=>s.id==='H'))}else{G.dirty.push(gl.type);gl.dispose()}sfx.splash();if(H&&H.glass===gl)H=null}
+function finishGauge(kind,v){
+ const gg=DF().gauge;const q=(v>=gg.p[0]&&v<=gg.p[1])?'perfect':(v>=gg.o[0]&&v<=gg.o[1])?'ok':'bad';
+ const gl=kind==='shake'?G.shaker:arguments[2];let qq=q;if(kind==='shake'&&!gl.c.ice&&q==='perfect')qq='ok';
+ gl.c[kind==='shake'?'shaken':'stirred']=qq;
+ if(gl.c.ice&&!gl.c.water)gl.c.water=gl.liquid()*(kind==='shake'?.2:(gl.type==='shaker'?.15:.04));
+ const lab={perfect:'パーフェクト！',ok:'OK',bad:v<.5?'足りない…':'やりすぎ…'}[qq];
+ floatAt(gl.g.position.clone().add(V(0,.25,0)),lab+(kind==='shake'&&!gl.c.ice?'（氷なし）':''),qq==='perfect'?'#7cff9a':qq==='ok'?'#ffd77a':'#ff7a7a',22);
+ qq==='perfect'?sfx.good():qq==='ok'?sfx.ok():sfx.bad();D.ticket=1;
+}
+function collect(seat){if(!seat.glasses.length&&!seat.money)return;
+ const p=V(SEATX[seat.i],1.25,-.8);
+ if(seat.money){S.money+=seat.money;floatAt(p,'+'+yen(seat.money),'#ffd34a',22);sfx.coin();seat.money=0}
+ if(seat.glasses.length){for(const gl of seat.glasses){G.dirty.push(gl.type);gl.dispose()}seat.glasses=[];sfx.clink()}
+ layoutSeat(seat)}
+function washOne(){if(!G.dirty.length)return;const t=G.dirty.shift();G.clean[t]++;sfx.clink()}
+
+/* ====================== EVALUATION ====================== */
+function tol(){return DF().tol+(S.up.jigger?.07:0)+(S.flags&&S.flags.gen?.05:0)}
+function amtOk(a,t){return Math.abs(a-t)/t<=tol()}
+function fillBand(r){const lo=DF().fillLo;return r.method==='tap'?[Math.min(.88,lo+.06),.99]:[lo,.97]}
+const FOAM=[.18,.35];
+function foamR(gl){const l=gl.liquid()+gl.c.foam;return l>0?gl.c.foam/l:0}
+function evaluate(gl,rid){
+ const r=RECIPES[rid],c=gl.c;let s=100;const n=[];
+ if(gl.type!==r.glass){s-=35;n.push('グラスが違う')}
+ if(!!c.ice!==r.ice){s-=12;n.push(r.ice?'氷が入っていない':'氷は不要')}
+ const fills=Object.keys(r.ings).filter(k=>r.ings[k]==='fill');
+ for(const k in r.ings){const t=r.ings[k],a=c.ings[k]||0;if(a<1){s-=35;n.push(ING[k].name+'が入っていない');continue}
+  if(t!=='fill'){const e=Math.abs(a-t)/t;if(e>tol()){s-=Math.min(25,Math.round((e-tol())*70)+6);n.push(`${ING[k].name}が${a>t?'多い':'少ない'}（${Math.round(a)}ml/${t}ml）`)}}}
+ for(const k in c.ings)if(!(k in r.ings)&&c.ings[k]>2){s-=20;n.push(ING[k].name+'は入れない')}
+ if(fills.length){const f=gl.fill(),[lo]=fillBand(r);if(c.overflow){s-=10;n.push('こぼした')}
+  if(f<lo){s-=Math.min(30,Math.round((lo-f)*110));n.push(`量が少ない（${Math.round(f*100)}%）`)}
+  if(fills.length>1){const tot=fills.reduce((a,k)=>a+(c.ings[k]||0),0);if(tot>0)for(const k of fills){if(Math.abs((c.ings[k]||0)/tot-1/fills.length)>.15){s-=12;n.push('割合が偏っている（半々に）');break}}}}
+ if(r.method==='tap'){const fr=foamR(gl);if(fr<FOAM[0]){s-=Math.min(22,Math.round((FOAM[0]-fr)*120)+4);n.push(`泡が少ない（${Math.round(fr*100)}%・理想は2〜3割）`)}else if(fr>FOAM[1]){s-=Math.min(25,Math.round((fr-FOAM[1])*100)+4);n.push(`泡が多すぎ（${Math.round(fr*100)}%）`)}}
+ if(r.method==='shake'){if(!c.shaken){s-=30;n.push('シェイクしていない')}else if(c.shaken==='ok')s-=6;else if(c.shaken==='bad'){s-=16;n.push('シェイクの加減がイマイチ')}}
+ else if(c.shaken){s-=10;n.push('シェイクは不要')}
+ if(r.method==='stir'){if(!c.stirred){s-=12;n.push('ステアしていない')}else if(c.stirred==='ok')s-=3;else if(c.stirred==='bad'){s-=9;n.push('ステアの加減がイマイチ')}}
+ if(r.garnish){if(!c.garnish){s-=10;n.push(ING[r.garnish].name+'を飾り忘れ')}else if(c.garnish!==r.garnish){s-=6;n.push('ガーニッシュが違う')}}else if(c.garnish)s-=3;
+ return{score:clamp(s,0,100),notes:n}}
+function serve(c,gl){
+ const r=RECIPES[c.order];const ev=evaluate(gl,c.order);const pr=c.pat/c.patMax;
+ const ct=CT[c.ty]||CT.office;const tricks=[...(gl.c.tricks||[])];if(c.orderT<=20&&ev.score>=70)tricks.push('神速サーブ');
+ if(ev.score>=90){G.combo=(G.combo||0)+1}else G.combo=0;G.hl.maxCombo=Math.max(G.hl.maxCombo,G.combo||0);
+ let price=r.price,tip=0;if(ev.score>=90)tip=price*.3*(.5+pr);else if(ev.score>=70)tip=price*.12*(.5+pr);if(S.up.tipjar)tip*=1.4;
+ tip*=ct.tip*(1+.2*tricks.length)*(1+Math.min(.5,.05*Math.max(0,(G.combo||0)-1)))*(rankIdx()>=4?1.2:rankIdx()>=2?1.1:1);if(tricks.length&&ev.score>=50&&tip<100)tip+=100*tricks.length;
+ tip=Math.round(tip/10)*10;if(ev.score<40)price=Math.round(price*.5/10)*10;
+ for(const t of tricks){G.hl.tricks[t]=(G.hl.tricks[t]||0)+1}
+ if(!G.hl.best||ev.score>=G.hl.best.score)G.hl.best={score:ev.score,name:r.name,who:custLabel(c)};if(ev.score>=70&&(!G.hl.fast||c.orderT<G.hl.fast.t))G.hl.fast={t:c.orderT,name:r.name};
+ const xp=Math.round(ev.score/10)+(ev.score>=90?5:0)+tricks.length*8+(G.combo>=3?3:0);addXP(xp);
+ if(tricks.length){applause();tricks.forEach((t,i)=>setTimeout(()=>floatAt(c.m.g.position.clone().add(V(0,1.55+i*.12,.3)),'✨'+t+'！','#ff9ae0',22),i*250))}
+ c.bill+=price+tip;G.stats.served++;G.stats.sales+=price;G.stats.tips+=tip;G.stats.scoreSum+=ev.score;S.totals.served++;S.totals.sales+=price+tip;
+ S.rep=clamp(S.rep+(ev.score>=90?.07:ev.score>=70?.03:ev.score>=50?-.02:-.1)*(ct.repMul||1)+.01*tricks.length,.5,5);
+ if(c.ty==='critic')floatAt(c.m.g.position.clone().add(V(0,2.05,0)),ev.score>=90?'評論家が絶賛！ 評判大幅UP':ev.score>=70?'評論家：悪くない':'評論家に酷評された…',ev.score>=70?'#7cff9a':'#ff7a7a',17);
+ if(c.reg&&ev.score>=70){const st=S.regs[c.reg];if(st&&st.aff<5){st.aff++;setTimeout(()=>talk(c.reg,st.aff),1200)}}
+ if(ev.score>=90){G.stats.perfect++;S.totals.perfect++;if(r.method==='tap')S.totals.beerPerfect++}
+ H=null;gl.loc={kind:'served'};gl.fill0=Math.min(1,gl.fill());gl.shownFill=gl.fill0;c.served=gl;gl.g.position.set(SEATX[c.seat]+.05,1.125,-.78);gl.g.rotation.set(0,0,0);
+ c.status='drinking';c.drinkT=c.drinkMax=rnd(12,18);c.t=0;c.mood=ev.score>=70?'happy':ev.score>=50?'neutral':'sad';
+ if(ev.score>=90){say(c,'最高！',1.8);sfx.good()}else if(ev.score>=70){say(c,'おいしい！',1.8);sfx.ok()}else if(ev.score>=50){say(c,'まあまあ…',1.8);sfx.ok()}else{say(c,'これ違うよ…',2);sfx.bad()}
+ floatAt(c.m.g.position.clone().add(V(0,1.3,.3)),`${yen(price)}${tip?' +チップ'+yen(tip):''}`,'#ffd34a',18);
+ if(ev.score>=90)for(let i=0;i<14;i++)emit(gl.g.position.clone().add(V(0,.15,0)),'#ffe27a',1,.5);
+ G.lastEval={name:r.name,score:ev.score,notes:ev.notes,tip,tricks,combo:G.combo||0};G.evalT=3.8;showEval();pickNextActive();c.dirty=1;checkAch()}
+function showEval(){const e=G.lastEval,p=$('#evalPop');const st=e.score>=90?'★★★':e.score>=70?'★★☆':e.score>=50?'★☆☆':'☆☆☆';const col=e.score>=90?'#7cff9a':e.score>=70?'#ffd77a':e.score>=50?'#ffb070':'#ff7a7a';
+ p.innerHTML=`<div style="font-size:13px;font-weight:800">${e.name}</div><div class="sc" style="color:${col}">${st} ${e.score}点</div>${e.tricks&&e.tricks.length?`<div style="color:#ff9ae0;font-weight:900">✨ ${e.tricks.join(' ・ ')}</div>`:''}${e.combo>=2?`<div style="color:#ffe14a;font-weight:900">COMBO ×${e.combo}</div>`:''}${e.tip?`<div style="color:#ffd34a;font-weight:800">チップ ${yen(e.tip)}</div>`:''}<div class="nt">${e.notes.length?e.notes.slice(0,3).join('<br>'):'完璧な一杯！'}</div>`;p.style.display='block'}
+
+/* ====================== STEPS / HINT ====================== */
+function workGlass(rid){const r=RECIPES[rid];
+ if(H&&H.kind==='glass'&&H.glass.type!=='shaker')return H.glass;
+ const gs=SLOTS.filter(s=>s.glass&&s.glass.type!=='shaker').map(s=>s.glass);
+ return gs.find(g=>g.type===r.glass&&g.hasIngs())||gs.find(g=>g.hasIngs())||gs.find(g=>g.type===r.glass)||gs[0]||null}
+function tapIndex(k){return TAPS.indexOf(k)}
+function steps(rid){
+ const r=RECIPES[rid],st=[],gn=GL[r.glass].full,gnS=GL[r.glass].name;const w=workGlass(rid);const sh=G.shaker;
+ const fills=Object.keys(r.ings).filter(k=>r.ings[k]==='fill');
+ const inHand=(kind,k)=>H&&H.kind===kind&&(k===undefined||H.k===k);
+ if(r.method==='shake'){
+  const shOn=sh.loc.kind==='slot'&&sh.loc.slot.kind==='mat';const strained=w&&w.type===r.glass&&w.c.shaken;
+  st.push({t:'シェイカーをマットに置く',d:shOn||sh.c.ice||strained||(H&&H.glass===sh),h:H&&H.glass===sh?'マットをクリックしてシェイカーを置く':'シェイカーをクリックして持つ → マットをクリックして置く',hl:'shaker'});
+  st.push({t:'氷を入れる',d:sh.c.ice||strained,h:inHand('scoop')?'シェイカーの上でクリックして氷を入れる':'氷入れをクリックしてすくう → シェイカーの上でクリック',hl:inHand('scoop')?'shaker':'ice'});
+  for(const k in r.ings){const t=r.ings[k],a=(strained?w.c.ings[k]:sh.c.ings[k])||0;st.push({t:`${ING[k].name} ${t}ml`,d:strained||amtOk(a,t),amt:`${Math.round(a)}ml`,h:inHand('bottle',k)?(DF().assist?`シェイカーの上で長押し（${t}mlで自動ストップ）`:`シェイカーの上で長押しして注ぐ（下にドラッグで傾き↑）→ ${t}mlで離す`):`「${ING[k].short}」のボトルをクリックして持つ`,hl:inHand('bottle',k)?'shaker':'bottle:'+k})}
+  st.push({t:'シェイクする',d:!!sh.c.shaken||strained,h:H&&H.glass===sh?'押したままマウスを左右にブンブン振る！ ゲージが緑で離す':'シェイカーをクリックして持つ',hl:'shaker'});
+  st.push({t:`${gn}を置く`,d:!!(w&&w.type===r.glass),h:H&&H.glass===sh?'右クリックでシェイカーを置いてから、グラス棚の'+gnS+'をクリック':`グラス棚の「${gnS}」をクリック → マットに置く`,hl:'rack:'+r.glass});
+  st.push({t:`${gn}に注ぐ`,d:strained&&w.hasIngs(),h:H&&H.glass===sh?`${gn}の上で長押しして注ぐ`:'シェイカーをクリックして持つ',hl:H&&H.glass===sh?'glass':'shaker'});
+ }else{
+  const tapR=r.method==='tap';const firstTap=fills.find(k=>ING[k].type==='tap');
+  st.push({t:`${gn}を用意する`,d:!!(w&&w.type===r.glass),h:`グラス棚の「${gnS}」をクリックして持つ`,hl:'rack:'+r.glass});
+  if(r.ice)st.push({t:'氷を入れる',d:!!(w&&w.c.ice),h:inHand('scoop')?'グラスの上でクリックして氷を入れる':'氷入れをクリックしてすくう',hl:inHand('scoop')?'glass':'ice'});
+  for(const k in r.ings)if(r.ings[k]!=='fill'){const t=r.ings[k],a=w?(w.c.ings[k]||0):0;st.push({t:`${ING[k].name} ${t}ml`,d:amtOk(a,t),amt:`${Math.round(a)}ml`,h:inHand('bottle',k)?(DF().assist?`グラスの上で長押し（${t}mlで自動ストップ）`:`グラスの上で長押し（下ドラッグで傾き↑）→ ${t}mlで離す`):`「${ING[k].short}」のボトルをクリックして持つ`,hl:inHand('bottle',k)?'glass':'bottle:'+k})}
+  if(fills.length){const f=w?w.fill():0,[lo]=fillBand(r);const ok=w&&f>=lo&&!w.c.overflow;
+   if(tapR){const k=fills[0],fr=w?foamR(w):0;st.push({t:`タップを引いて注ぐ（泡2〜3割）`,d:ok&&fr>=FOAM[0]&&fr<=FOAM[1],amt:w?`${Math.round(f*100)}% 泡${Math.round(fr*100)}%`:'',h:H&&H.kind==='glass'?`グラスを持ったまま「${ING[k].short}」タップのハンドルを押して、手前（下）へドラッグ！${DF().assist?'（ちょうどで自動ストップ）':'水色の線の間で離す'}`:`「${ING[k].short}」タップのハンドルを押したまま手前（下）へドラッグ。${DF().assist?'ちょうどで自動ストップ':'水色の線の間で離す'}`,hl:'tap:'+k})}
+   else{let cur=fills[0];if(fills.length>1&&w&&(w.c.ings[fills[0]]||0)>GL[r.glass].cap*.3)cur=fills[1];const I=ING[cur];
+    const how=I.type==='tap'?`グラスを持ったまま「${I.short}」タップのハンドルを手前に引いて半分まで`:(inHand('bottle',cur)?`グラスの上で長押し → 水色の線の間で離す`:`「${I.short}」のボトルをクリックして持つ`);
+    st.push({t:fills.length>1?`${fills.map(k=>ING[k].short).join('と')}を半々で線まで`:`${I.name}を線まで注ぐ`,d:ok,amt:w?Math.round(f*100)+'%':'',h:how,hl:I.type==='tap'?'tap:'+cur:(inHand('bottle',cur)?'glass':'bottle:'+cur)})}}
+  if(r.method==='stir')st.push({t:'ステアする',d:!!(w&&w.c.stirred),h:inHand('spoon')?'グラスの上で押したまま、マウスでぐるぐる円を描く → ゲージ緑で離す':'バースプーンをクリックして持つ',hl:inHand('spoon')?'glass':'spoon'});
+ }
+ if(r.garnish)st.push({t:`${ING[r.garnish].name}を飾る`,d:!!(w&&w.c.garnish===r.garnish),h:inHand('garnish',r.garnish)?'グラスの上でクリックして飾る':`ガーニッシュの「${ING[r.garnish].short}」をクリックして持つ`,hl:inHand('garnish',r.garnish)?'glass':'garnish:'+r.garnish});
+ const a=activeCust();st.push({t:'お客さんに提供',d:false,h:`完成！ ${a?a.seat+1:''}番席のお客さんをクリックして提供（マウスを上へ）`,hl:'serve'});
+ return st}
+function nextHint(){
+ if(!G||S.phase!=='service')return{t:''};
+ if(G.closing)return{t:'閉店時間です。お客さんを見送りましょう'};
+ const a=activeCust();
+ if(a){const r=RECIPES[a.order];
+  const w=workGlass(a.order);if(w&&w.hasIngs()){if(r.method!=='shake'&&w.type!==r.glass)return{t:'グラスが違います。グラスを持ってシンクをクリックで捨てよう',hl:'sink'};for(const k in w.c.ings)if(!(k in r.ings)&&w.c.ings[k]>2)return{t:`${ING[k].name}は使いません。グラスを持ってシンクで捨てて作り直そう`,hl:'sink'}}
+  const s=steps(a.order).find(x=>!x.d);return s?{t:s.h,hl:s.hl}:{t:''}}
+ if(G.customers.some(c=>c.status==='waiting'))return{t:'「🙋注文！」のお客さんをクリックして注文を聞こう',hl:'callers'};
+ if(G.seats.some(s=>s.money||(!s.cust&&s.glasses.length)))return{t:'カウンターのお会計・空きグラスをクリックして片付けよう（片付けないと次のお客さんが座れない）',hl:'tables'};
+ if(G.dirty.length>=3&&!S.up.dish)return{t:'シンクを押したままマウスを左右にこすってグラスを洗おう',hl:'sink'};
+ if(G.customers.some(c=>c.status==='relax'))return{t:'お客さんはひと休み中。次の注文までに片付けや洗い物をしておこう'};
+ if(G.seats.some(s=>s.glasses.length))return{t:'飲み終わったグラスをクリックして下げよう',hl:'tables'};
+ return{t:'お客さんを待っています…（マウスを上に動かすと客席が見える）'}}
+
+/* ====================== INPUT ====================== */
+const ray=new THREE.Raycaster();const ndc=new THREE.Vector2();
+function setRay(){ndc.set(P.x/1280*2-1,-(P.y/720*2-1));ray.setFromCamera(ndc,camera)}
+function findAct(o){while(o){if(o.userData.act)return o.userData.act;if(o.userData.block)return{kind:'block'};o=o.parent}return null}
+function anchors(){const L=[];
+ for(const k in ST.bottles){const b=ST.bottles[k];if(!ingUnlocked(k)||!b.visible)continue;const sp=ING[k].type==='spirit';L.push({act:{kind:'bottle',k},p:b.position.clone().add(V(0,sp?.19:.08,0)),r:sp?26:30})}
+ ST.taps.forEach((t,i)=>{if(t.piv.visible)L.push({act:{kind:'tap',i,k:t.k},p:t.piv.position.clone().add(V(0,.12,0)),r:30})});
+ for(const k in ST.garn)if(ST.garn[k].visible)L.push({act:{kind:'garnish',k},p:ST.garn[k].position.clone().add(V(0,.03,0)),r:28});
+ for(const t in ST.rack)L.push({act:{kind:'rack',t},p:ST.rack[t].g.position.clone().add(V(0,.06,-.2)),r:36});
+ L.push({act:{kind:'ice'},p:ST.ice.position.clone().add(V(0,.06,0)),r:44});
+ L.push({act:{kind:'spoon'},p:ST.spoon.position.clone().add(V(0,.14,0)),r:24});
+ L.push({act:{kind:'sink'},p:ST.sink.g.position.clone().add(V(0,.02,0)),r:52});
+ for(const sl of SLOTS)if(sl.glass&&!(H&&H.kind==='glass'&&H.glass===sl.glass))L.push({act:{kind:'glass',glass:sl.glass},p:sl.glass.g.position.clone().add(V(0,sl.glass.def.inner.t*.55,0)),r:32});
+ return L}
+function sameAct(x,y){return x.kind===y.kind&&x.k===y.k&&x.t===y.t&&x.i===y.i&&x.glass===y.glass}
+function pickAnchor(){let best=null,bd=1e9,all=[];const sc=touchMode?1.5:1;for(const a of anchors()){const q=toScreen(a.p);if(!q.vis)continue;const d=Math.hypot(q.x-P.x,q.y-P.y);a.nd=d/(a.r*sc);all.push(a);if(a.nd<1&&a.nd<bd){bd=a.nd;best=a}}if(best)best.all=all;return best}
+function pickAt(){const ra=pickRay();const an=pickAnchor();
+ if(!an)return ra;const A0={act:an.act,point:an.p};
+ if(!ra)return A0;const k=ra.act.kind;
+ if(k==='cust'||k==='seat')return P.y<toScreen(an.p).y-30?ra:A0;
+ if(k==='surface'||k==='block'||k==='slot'||k==='drip')return A0;
+ if(sameAct(an.act,ra.act))return ra;
+ const rAn=an.all.find(x=>sameAct(x.act,ra.act));
+ if(an.nd<.55&&(!rAn||rAn.nd>1))return A0;
+ return ra}
+function pickRay(){setRay();const hits=ray.intersectObjects(PICK,true);for(const h of hits){
+  if(H&&H.kind==='glass'&&isAncestor(H.glass.g,h.object))continue;
+  if(handObj&&isAncestor(handObj,h.object))continue;
+  const a=findAct(h.object);if(!a)continue;if(a.kind==='cust'&&a.c.status==='leave')continue;if(a.kind==='glass'&&a.glass.loc&&a.glass.loc.kind==='served')continue;
+  return {act:a,point:h.point}}return null}
+function isAncestor(a,o){while(o){if(o===a)return true;o=o.parent}return false}
+const handPt=V(0,1,-.3);let handFloat=false;
+function computeHand(){setRay();const o=ray.ray.origin,d=ray.ray.direction;const y=.98;const t=(y-o.y)/d.y;
+ if(t>0){const p=o.clone().addScaledVector(d,t);if(p.z>-.6){handPt.set(clamp(p.x,-1.55,1.75),y,clamp(p.z,-.58,-.04));handFloat=false;return}}
+ handPt.copy(o).addScaledVector(d,.62);handFloat=true}
+function stagePos(e){const r=cv.getBoundingClientRect();return[(e.clientX-r.left)/r.width*1280,(e.clientY-r.top)/r.height*720]}
+cv.addEventListener('contextmenu',e=>e.preventDefault());
+cv.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'&&touchMode&&!IS_TOUCH){touchMode=false;document.body.classList.remove('touch')}const [x,y]=stagePos(e);P.dx=x-P.x;P.dy=y-P.y;P.x=x;P.y=y;onDrag(Math.hypot(P.dx,P.dy))});
+cv.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'&&!touchMode){touchMode=true;document.body.classList.add('touch')}const [x,y]=stagePos(e);P.x=x;P.y=y;if(!G||S.phase!=='service'||G.paused)return;ac();
+ try{cv.setPointerCapture(e.pointerId)}catch(_){}
+ if(e.button===2){returnHand();return}if(e.button!==0)return;
+ P.down=true;P.sx=x;P.sy=y;P.moved=0;onDown()});
+addEventListener('pointerup',()=>{if(!P.down)return;P.down=false;onUp()});
+addEventListener('blur',()=>{if(P.down){P.down=false;onUp()}});
+$('#hand').addEventListener('pointerdown',e=>{if(e.target.closest('#retBtn')){e.stopPropagation();if(G&&S.phase==='service'&&!G.paused)returnHand()}});
+addEventListener('keydown',e=>{if(e.key==='Escape'||e.key===' '){if(e.key===' ')e.preventDefault();if(G&&S.phase==='service'&&!G.paused)returnHand()}});
+function returnHand(){if(!H)return;
+ if(H.kind==='glass'){const gl=H.glass;
+  if(gl.type==='shaker'){const s=freeSlot(gl,handPt,.35)||SLOTS.find(s=>s.id==='H'&&!s.glass);if(s){placeGlass(gl,s);H=null;sfx.clink()}return}
+  if(gl.empty()){G.clean[gl.type]++;gl.dispose();H=null;sfx.clink();return}
+  const s=freeSlot(gl,handPt,9);if(s){placeGlass(gl,s);H=null;sfx.clink()}else msg('置ける場所がありません');return}
+ H=null;sfx.pop()}
+const TOOLK=['bottle','ice','garnish','spoon'];
+function autoServe(c){if(!c||c.status!=='ordered')return false;const w=workGlass(c.order);if(!w||!w.hasIngs()||w.type==='shaker')return false;const st=steps(c.order);if(st.slice(0,-1).some(s=>!s.d))return false;if(w.loc.kind==='slot')w.loc.slot.glass=null;serve(c,w);return true}
+function onDown(depth=0){
+ const hit=pickAt();const a=hit&&hit.act;computeHand();if(depth>2)return;
+ if(a&&a.kind==='tap'){if(!ingUnlocked(a.k)){msg('メニュー解禁で使えるようになります');return}
+  if(H&&H.kind==='glass'&&H.glass.type!=='shaker'){const s=SLOTS.find(x=>x.id==='T'+a.i);if(!s.glass){placeGlass(H.glass,s);H=null;sfx.clink()}}
+  P.act={kind:'tap',i:a.i,y0:P.y};return}
+ if(H&&H.kind!=='glass'){const tg0=handFloat?null:slotGlassNear(handPt,.15);const usable=tg0&&!(H.kind==='garnish'&&tg0.type==='shaker');
+  const same=a&&((H.kind==='bottle'&&a.kind==='bottle'&&a.k===H.k)||(H.kind==='scoop'&&a.kind==='ice')||(H.kind==='spoon'&&a.kind==='spoon')||(H.kind==='garnish'&&a.kind==='garnish'&&a.k===H.k));
+  if(!usable&&a&&!same&&['bottle','ice','garnish','spoon','rack','glass','slot','cust','seat','sink'].includes(a.kind)){H=null;onDown(depth+1);return}}
+ if(H&&H.kind==='glass'&&H.glass.type!=='shaker'&&a&&TOOLK.includes(a.kind)){const gl=H.glass;const s=SLOTS.find(x=>x.kind==='mat'&&!x.glass)||freeSlot(gl,handPt,9);if(s){placeGlass(gl,s);H=null;sfx.clink();onDown(depth+1);return}}
+ if(!H){
+  if(!a)return;
+  switch(a.kind){
+   case 'cust':if(!autoServe(a.c))clickCust(a.c);break;
+   case 'seat':{const s=G.seats[a.i];if(s.glasses.length||s.money)collect(s);else if(s.cust&&!autoServe(s.cust))clickCust(s.cust);break}
+   case 'rack':if(G.clean[a.t]<=0){msg(GL[a.t].name+'の清潔なグラスがありません。シンクで洗おう！');break}G.clean[a.t]--;{const gl=new Glass(a.t);gl.loc={kind:'hand'};H={kind:'glass',glass:gl};sfx.clink()}break;
+   case 'glass':if(a.glass.loc.kind==='slot')takeGlass(a.glass);else if(a.glass.loc.kind==='bar')collect(G.seats[a.glass.loc.seat]);break;
+   case 'slot':if(a.slot.glass)takeGlass(a.slot.glass);break;
+   case 'bottle':if(!ingUnlocked(a.k)){msg('メニュー解禁で使えるようになります');break}if(S.stock[a.k]<=0){msgNoStock(a.k);break}H={kind:'bottle',k:a.k};sfx.clink();break;
+   case 'ice':H={kind:'scoop'};sfx.ice();break;
+   case 'garnish':if(!ingUnlocked(a.k)){msg('メニュー解禁で使えるようになります');break}if(S.stock[a.k]<1){msgNoStock(a.k);break}H={kind:'garnish',k:a.k};sfx.pop();break;
+   case 'spoon':H={kind:'spoon'};sfx.clink();break;
+   case 'sink':if(!G.dirty.length){msg('洗うグラスがありません');break}P.act={kind:'scrub'};break;
+  }
+  return}
+ if(H.kind==='glass'){const gl=H.glass;
+  if(a&&a.kind==='cust'){handGlassToCust(a.c,gl);return}
+  if(a&&a.kind==='seat'){const s=G.seats[a.i];if(s.cust&&s.cust.status==='ordered'){handGlassToCust(s.cust,gl);return}if(s.glasses.length||s.money){collect(s);return}if(s.cust){handGlassToCust(s.cust,gl);return}return}
+  if(a&&a.kind==='sink'){if(gl.empty()&&gl.type!=='shaker'){G.clean[gl.type]++;gl.dispose();H=null;sfx.clink();return}dumpGlass(gl);floatAt(V(1.52,1.05,-.27),'捨てた','#ccc',15);return}
+  if(a&&a.kind==='rack'&&gl.empty()&&gl.type===a.t){G.clean[gl.type]++;gl.dispose();H=null;sfx.clink();return}
+  if(gl.type==='shaker'){const tg=slotGlassNear(handPt,.14);if(tg&&gl.hasIngs()&&!handFloat){P.act={kind:'strain',glass:tg,y0:P.y,tilt:.4};return}P.act={kind:'pendShake',hit:a,energy:0};return}
+  if(a&&(a.kind==='surface'||a.kind==='slot'||a.kind==='drip'||a.kind==='glass'||a.kind==='rack'||a.kind==='bottle'||a.kind==='block')||!handFloat){const s=freeSlot(gl,handPt,.3);if(s){placeGlass(gl,s);H=null;sfx.clink()}else msg('置ける場所がありません（マット・タップの受け皿）');return}
+  return}
+ const tg=handFloat?null:slotGlassNear(handPt,.15);
+ if(H.kind==='bottle'){if(tg){if(S.stock[H.k]<=0){msgNoStock(H.k);return}P.act={kind:'pour',glass:tg,k:H.k,y0:P.y,tilt:.35,tv:0,start:tg.c.ings[H.k]||0,t0:performance.now()};return}
+  if(a&&a.kind==='bottle'&&a.k!==H.k){if(!ingUnlocked(a.k))return;H={kind:'bottle',k:a.k};sfx.clink();return}H=null;sfx.pop();return}
+ if(H.kind==='spoon'){if(tg){P.act={kind:'stir',glass:tg,acc:0,last:null,t0:performance.now()};return}H=null;return}
+ if(H.kind==='scoop'){if(tg){if(tg.c.ice){msg('氷はもう入っています');return}if(tg.fill()>.62){msg('液体が多すぎて氷が入りません');return}tg.c.ice=true;sfx.ice();H=null;return}if(a&&a.kind==='ice')return;H=null;return}
+ if(H.kind==='garnish'){if(tg&&tg.type!=='shaker'){if(tg.c.garnish===H.k)return;S.stock[H.k]--;G.stats.cost+=ING[H.k].price/ING[H.k].unit;tg.c.garnish=H.k;sfx.pop();H=null;return}H=null;return}
+}
+function handGlassToCust(c,gl){
+ if(c.status==='waiting'){takeOrder(c);return}
+ if(c.status!=='ordered'){say(c,pick(['まだ飲んでるよ','ありがとう、大丈夫']),1.4);return}
+ if(gl.type==='shaker'){msg('シェイカーのままでは出せません。グラスに注ごう');return}
+ if(!gl.hasIngs()){msg('空のグラスです');return}
+ serve(c,gl)}
+function clickCust(c){if(c.status==='waiting')takeOrder(c);else if(c.status==='ordered'){G.active=c.id;D.ticket=1;for(const x of G.customers)x.dirty=1;sfx.pop()}else if(c.status==='drinking')say(c,pick(['うまい！','いい店だね','♪','最高の夜だ']),1.6)}
+function onDrag(dist){if(!P.down||!P.act)return;P.moved+=dist;const A=P.act;
+ if(A.kind==='tap'){}
+ else if(A.kind==='pendShake'){A.energy+=dist;if(P.moved>16){P.act={kind:'shake',energy:A.energy,v:0};showGauge('シェイク！ ブンブン振って、緑で離す')}}
+ else if(A.kind==='shake'){A.energy+=dist;A.v=A.energy/5200;if(dist>4){const ang=Math.atan2(P.dy,P.dx);if(A.la!==undefined){let d=ang-A.la;if(d>Math.PI)d-=2*Math.PI;if(d<-Math.PI)d+=2*Math.PI;if(Math.abs(d)<1.2)A.turn=(A.turn||0)+d}A.la=ang;if(Math.abs(A.turn||0)>Math.PI*4&&!A.rolled&&rankIdx()>=2){A.rolled=1;addTrick(G.shaker,'ローリングシェイク')}}if(Math.random()<dist/60)sfx.shake();if(DF().assist&&A.v>=.8&&G.shaker.hasIngs()){P.act=null;$('#gaugeBox').style.display='none';finishGauge('shake',.8)}}
+ else if(A.kind==='stir'){const c=toScreen(A.glass.g.position.clone().add(V(0,.1,0)));const ang=Math.atan2(P.y-c.y,P.x-c.x);const r=Math.hypot(P.y-c.y,P.x-c.x);
+  if(r>12&&A.last!==null){let d=ang-A.last;if(d>Math.PI)d-=2*Math.PI;if(d<-Math.PI)d+=2*Math.PI;A.acc+=Math.abs(d);A.spin=(A.spin||0)+d;if(Math.random()<Math.abs(d))sfx.stir()}
+  A.last=r>12?ang:A.last;A.v=A.acc/(Math.PI*2*6);if(A.v>0&&$('#gaugeBox').style.display!=='block')showGauge('ステア！ ぐるぐる回して、緑で離す');if(DF().assist&&A.v>=.8){P.act=null;$('#gaugeBox').style.display='none';if(A.glass.hasIngs())finishGauge('stir',.8,A.glass)}}
+ else if(A.kind==='scrub'){G.scrubAcc+=dist;if(Math.random()<dist/50)sfx.scrub();if(G.scrubAcc>700){G.scrubAcc=0;washOne();floatAt(V(1.52,1.05,-.27),'ピカピカ！','#9fe8ff',15)}}
+}
+function onUp(){const A=P.act;P.act=null;$('#gaugeBox').style.display='none';loopSet('pour',false);if(!A)return;
+ if(A.kind==='pendShake'){const gl=H&&H.glass;if(!gl)return;const a=A.hit;if(a&&TOOLK.includes(a.kind)){const s2=SLOTS.find(x=>x.kind==='mat'&&!x.glass)||freeSlot(gl,handPt,9);if(s2){placeGlass(gl,s2);H=null;sfx.clink();onDown(1)}return}if(a&&(a.kind==='surface'||a.kind==='slot'||a.kind==='glass'||a.kind==='block')||!handFloat){const s=freeSlot(gl,handPt,.3);if(s){placeGlass(gl,s);H=null;sfx.clink()}}return}
+ if(A.kind==='shake'){if(!G.shaker.hasIngs()){msg('材料を入れてから振ろう');return}finishGauge('shake',A.v);return}
+ if(A.kind==='stir'){if(A.v>.05){if(!A.glass.hasIngs()){msg('材料を入れてからステアしよう');return}finishGauge('stir',A.v,A.glass)}else if(performance.now()-A.t0<230&&P.moved<6){H=null;if(A.glass.loc.kind==='slot')takeGlass(A.glass)}return}
+ if(A.kind==='tap'){ST.taps[A.i].pull=0}
+ if((A.kind==='pour'||A.kind==='stir')&&performance.now()-A.t0<230&&P.moved<6&&(A.kind==='stir'?A.acc<.3:(A.glass.c.ings[A.k]||0)-A.start<.5)){H=null;if(A.glass.loc.kind==='slot')takeGlass(A.glass);return}
+ if(A.kind==='pour'&&!DF().assist){const ac=activeCust();const t=ac&&RECIPES[ac.order].ings[A.k];const amt=A.glass.c.ings[A.k]||0;if(typeof t==='number'&&A.start<.5&&Math.abs(amt-t)/t<=.05)addTrick(A.glass,'ジャストポア')}
+}
+
+function showGauge(t){const g=DF().gauge,sc=v=>(v/1.25*100).toFixed(1);$('#gaugeBox .gt').style.background=`linear-gradient(90deg,#c0392b 0 ${sc(g.o[0])}%,#e0b030 ${sc(g.o[0])}% ${sc(g.p[0])}%,#2ecc71 ${sc(g.p[0])}% ${sc(g.p[1])}%,#e0b030 ${sc(g.p[1])}% ${sc(g.o[1])}%,#c0392b ${sc(g.o[1])}%)`;$('#gaugeBox').style.display='block';$('#glab').textContent=t+(DF().assist?'（かんたん：緑で自動完了）':'')}
+function assistPour(A){if(!DF().assist)return;const ac=activeCust();if(!ac)return;const r=RECIPES[ac.order];const t=r.ings[A.k];const gl=A.glass;let stop=false;
+ if(typeof t==='number'){if((gl.c.ings[A.k]||0)>=t)stop=true}
+ else if(t==='fill'){const fills=Object.keys(r.ings).filter(x=>r.ings[x]==='fill');const [lo,hi]=fillBand(r);let goal=(lo+hi)/2;if(fills.length>1&&A.k===fills[0])goal=goal/2+(gl.c.ice?.17:0);if(gl.fill()>=goal)stop=true}
+ if(stop){P.act=null;loopSet('pour',false);floatAt(gl.g.position.clone().add(V(0,.25,0)),'ぴったり！','#7cff9a',20);sfx.ok()}}
+/* ====================== UPDATE ====================== */
+function update(dt){
+ if(G.tutorial){tutUpdate()}else G.time+=dt;
+ if(!G.closing&&!G.tutorial){const f=G.time/G.dayLen;if(f>.3&&G.phaseShown<1){G.phaseShown=1;toast('🔔 ピークタイム！ お客さんが増えてきた');tone(784,.3,'triangle',.06);tone(988,.4,'triangle',.06,.12)}if(f>.7&&G.phaseShown<2){G.phaseShown=2;toast('🌙 ひと段落。ラストオーダーまであと少し')}
+ G.spawnT-=dt;if(G.spawnT<=0){if(G.time<G.dayLen*.9)spawnCustomer();G.spawnT=spawnInterval()}if(G.time>=G.dayLen)startClosing()}
+ for(const c of [...G.customers])updateCust(c,dt);
+ const A=P.act;let pouring=false;
+ // taps
+ ST.taps.forEach((tp,i)=>{let target=0;if(A&&A.kind==='tap'&&A.i===i)target=clamp((P.y-A.y0)/110,0,1);tp.pull+=(target-tp.pull)*Math.min(1,dt*14);tp.piv.rotation.x=tp.pull*.85;
+  const flow=tp.pull>.06?tp.pull:0;const slot=SLOTS.find(s=>s.id==='T'+i);const gl=slot.glass;
+  if(flow>0){pouring=true;const k=tp.k;let amt=150*flow*dt;if(S.stock[k]<=0){if(!tp.warned){msgNoStock(k);tp.warned=1}amt=0}else{tp.warned=0;amt=Math.min(amt,S.stock[k])}
+   if(amt>0){if(gl){gl.wob=Math.min(1.2,(gl.wob||0)+dt*4*flow);if(Math.random()<flow*dt*50)emit(surf(gl),Math.random()<.5?'#fff6e4':ING[k].color,1,.15);const ff=.06+.55*Math.pow(flow,3);const foam=amt*ff;const liq=amt-foam;addLiquid(gl,k,liq);const free=gl.cap()-gl.vol();if(free>0)gl.c.foam+=Math.min(foam*1.6,free);else{gl.c.overflow=true}}else{S.stock[k]-=amt;G.stats.waste+=amt}}
+   if(gl&&DF().assist&&A&&A.kind==='tap'&&A.i===i){const ac=activeCust();const r=ac&&RECIPES[ac.order];const fills=r?Object.keys(r.ings).filter(x=>r.ings[x]==='fill'):[];const goal=fills.length>1?.47:.94;if(gl.fill()>=goal){P.act=null;loopSet('pour',false);floatAt(gl.g.position.clone().add(V(0,.25,0)),'ちょうどいい！','#7cff9a',20);sfx.ok()}}
+   const top=gl?gl.g.position.y+gl.def.inner.b+gl.levelH(Math.min(1,gl.fill())):.91;const y0=1.13;tp.stream.visible=true;tp.stream.scale.set(1+flow,y0-top,1+flow);tp.stream.position.set(tp.x,(y0+top)/2,-.42)}
+  else tp.stream.visible=false});
+ if(A&&A.kind==='tap'){const gT=SLOTS.find(s=>s.id==='T'+A.i).glass;loopSet('pour',ST.taps[A.i].pull>.06,450+(gT?gT.fill():0)*1000,.04+.08*ST.taps[A.i].pull);if(gT&&A&&!A.inZ){const r0=activeCust()&&RECIPES[activeCust().order];if(r0&&gT.fill()>=fillBand(r0)[0]){A.inZ=1;ding()}}}
+ // pour bottle
+ if(A&&A.kind==='pour'){const up=A.y0-P.y;A.raise=rankIdx()>=1?clamp((up-10)/130,0,1):0;A.tilt=clamp(.35+(P.y-A.y0)/120,.35,1);if(A.raise>0)A.tilt=.6;A.tv=(A.tv||0)+(A.tilt-(A.tv||0))*Math.min(1,dt*9);
+  const I=ING[A.k];const fk=clamp((A.tv-.12)/.2,0,1)*A.tv;let amt=I.rate*fk*(S.up.jigger?.65:1)*dt;
+  if(S.stock[A.k]<=0){msgNoStock(A.k);P.act=null;H=null}else if(amt>0){amt=Math.min(amt,S.stock[A.k]);addLiquid(A.glass,A.k,amt);pouring=true;A.glass.wob=Math.min(1.2,(A.glass.wob||0)+dt*4);
+   G.glugT=(G.glugT||0)-dt;if(G.glugT<=0){G.glugT=rnd(.1,.17)/(.6+A.tv);glug(A.glass.fill())}
+   if(Math.random()<fk*dt*45)emit(surf(A.glass),I.color,1,.18+A.raise*.2);
+   if(A.raise>.55){A.highT=(A.highT||0)+dt;if(A.highT>.8&&!A.hp){A.hp=1;addTrick(A.glass,'ハイポア')}}
+   zoneCheck(A);assistPour(A)}
+  loopSet('pour',fk>0,500+A.glass.fill()*1300,(.04+.06*A.tv)*(fk>0?1:0))}
+ if(A&&A.kind==='strain'){A.tilt=clamp(.4+(P.y-A.y0)/120,.4,1);const sh=G.shaker,tg=A.glass;const tot=sh.liquid();if(tot>.5){let amt=Math.min(tot,80*A.tilt*dt);const free=tg.cap()-tg.vol();if(free<=0){tg.c.overflow=true;sh.c.water=Math.max(0,sh.c.water-amt*(sh.c.water/tot));for(const k in sh.c.ings)sh.c.ings[k]-=amt*(sh.c.ings[k]/tot);G.stats.waste+=amt}else{const ratio=Math.min(amt,free)/tot;for(const k in sh.c.ings){const m=sh.c.ings[k]*ratio;sh.c.ings[k]-=m;tg.c.ings[k]=(tg.c.ings[k]||0)+m}const wm=sh.c.water*ratio;sh.c.water-=wm;tg.c.water+=wm;if(sh.c.shaken)tg.c.shaken=sh.c.shaken;if(sh.c.tricks)tg.c.tricks=[...new Set([...(tg.c.tricks||[]),...sh.c.tricks])];tg.wob=1;if(Math.random()<.5)emit(surf(tg),mixColor(sh.c.ings),1,.15);if(sh.c.stirred)tg.c.stirred=sh.c.stirred}
+   for(const k in sh.c.ings)if(sh.c.ings[k]<.3)delete sh.c.ings[k];pouring=true;loopSet('pour',true,1100,.07)}
+  else{loopSet('pour',false);if(!sh.c.done){sh.c.done=1;floatAt(tg.g.position.clone().add(V(0,.25,0)),'注ぎ終わり！','#bff6f2',16)}}}
+ // foam settle
+ for(const gl of GLASSOBJS){if(gl.c.foam>0&&!(gl.loc&&gl.loc.kind==='slot'&&gl.loc.slot.kind==='tap'&&ST.taps[gl.loc.slot.tap].pull>.06)){const d=gl.c.foam*.022*dt;gl.c.foam-=d;const tk=Object.keys(gl.c.ings).find(k=>ING[k].type==='tap');if(tk)gl.c.ings[tk]+=d*.25}}
+ if(S.up.dish){G.dishT+=dt;if(G.dishT>=3){G.dishT=0;if(G.dirty.length)washOne()}}
+ if(G.evalT>0){G.evalT-=dt;if(G.evalT<=0)$('#evalPop').style.display='none'}
+ if(G.closing&&!G.ended&&G.customers.length===0&&!G.tutorial)endDay();
+ D.ticket=1;
+}
+
+/* ====================== VISUALS ====================== */
+let handObj=null,handKey='';
+const tmpQ=new THREE.Quaternion();
+function resetHandVisual(){if(handObj){scene.remove(handObj);handObj=null}handKey=''}
+function updateHandVisual(t){
+ const key=H?(H.kind+(H.k||'')+(H.glass?H.glass.type:'')):'';
+ if(key!==handKey){if(handObj)scene.remove(handObj);handObj=null;handKey=key;
+  if(H){if(H.kind==='bottle'){handObj=makeBottle(H.k);scene.add(handObj)}else if(H.kind==='spoon'){handObj=makeSpoon();scene.add(handObj)}else if(H.kind==='scoop'){handObj=makeScoop(true);scene.add(handObj)}else if(H.kind==='garnish'){handObj=makeGarnishMesh(H.k);scene.add(handObj)}}
+  if(handObj)handObj.traverse(o=>{o.raycast=()=>{}})}
+ // home items visibility
+ for(const k in ST.bottles)ST.bottles[k].visible=!(H&&H.kind==='bottle'&&H.k===k);
+ ST.spoonMesh.visible=!(H&&H.kind==='spoon');
+ const A=P.act;
+ if(H&&H.kind==='glass'){const g=H.glass.g;
+  if(A&&A.kind==='shake'){g.position.copy(handPt).add(V(0,.08,0));g.position.x+=clamp(P.dx*.002,-.04,.04);g.position.y+=Math.sin(t*40)*.01;g.rotation.z=clamp(-P.dx*.02,-.6,.6)}
+  else if(A&&A.kind==='strain'){const tg=A.glass;const th=-(1.3+.6*A.tilt);const L=.17;const top=tg.g.position.clone().add(V(0,tg.def.inner.t+.05,0));g.position.set(top.x-L*Math.sin(-th)*.95,top.y-L*Math.cos(th)*.4,top.z);g.rotation.set(0,0,th)}
+  else{g.position.copy(handPt).add(V(0,handFloat?-.05:.03,0));g.rotation.set(handFloat?-.2:0,0,Math.sin(t*2)*.02)}}
+ if(handObj){
+  if(H.kind==='bottle'){if(A&&A.kind==='pour'){const tg=A.glass;const tv=A.tv||0;const th=-(.2+1.05*clamp(tv/.35,0,1)+.75*clamp((tv-.35)/.65,0,1));const L=handObj.userData.neck;const top=tg.g.position.clone().add(V(0,tg.def.inner.t+.04+(A.raise||0)*.22+Math.sin(t*30)*.002,0));handObj.position.set(top.x+L*Math.sin(th),top.y-L*Math.cos(th),top.z);handObj.rotation.set(0,0,th)}
+   else{handObj.position.copy(handPt).add(V(0,handFloat?-.12:.04,0));handObj.rotation.set(0,0,-.15)}}
+  else if(H.kind==='spoon'){if(A&&A.kind==='stir'){const tg=A.glass;const ang=(A.spin||0);const r=tg.radAt(.04)*.5;handObj.position.set(tg.g.position.x+Math.cos(-ang)*r,tg.g.position.y+tg.def.inner.b+.01,tg.g.position.z+Math.sin(-ang)*r);handObj.rotation.set(0,0,.08)}
+   else{handObj.position.copy(handPt).add(V(0,.0,0));handObj.rotation.set(0,0,.5)}}
+  else if(H.kind==='scoop'){handObj.position.copy(handPt).add(V(0,.08,0));handObj.rotation.set(0,.4,0)}
+  else{handObj.position.copy(handPt).add(V(0,.06,0));handObj.rotation.set(0,0,0)}}
+ // bottle stream
+ if(!STREAM){STREAM=new THREE.Mesh(new THREE.CylinderGeometry(.0025,.0025,1,8),std({color:0xffffff,transparent:true,opacity:.8}));STREAM.raycast=()=>{};scene.add(STREAM)}
+ if(A&&(A.kind==='pour'||A.kind==='strain')){const tg=A.glass;const sx=tg.g.position.x,sz=tg.g.position.z;const top=tg.g.position.y+tg.def.inner.b+tg.levelH(Math.min(1,tg.fill()));const y0=tg.g.position.y+tg.def.inner.t+.04+(A.raise||0)*.22;const tvv=A.kind==='pour'?(A.tv||0):A.tilt;STREAM.visible=A.kind!=='pour'||tvv>.14;STREAM.material.color.set(A.kind==='pour'?ING[A.k].color:mixColor(G.shaker.c.ings));STREAM.scale.set(.4+tvv*1.2+Math.sin(t*50)*.08,Math.max(.01,y0-top),.4+tvv*1.2);STREAM.position.set(sx,(y0+top)/2,sz)}else if(STREAM)STREAM.visible=false;
+}
+let STREAM=null;
+let camYaw=0,camPitch=-.5;
+const LOOK={x:640,y:520};
+function updateCamera(dt,t){const src=touchMode?LOOK:P;const nx=src.x/1280*2-1,ny=src.y/720;
+ const dz=.4;let yt=0;if(Math.abs(nx)>dz)yt=-Math.sign(nx)*(Math.abs(nx)-dz)/(1-dz)*.42;
+ const pt=-(.16+.46*clamp((ny-.08)/.84,0,1));
+ const k=Math.min(1,dt*3.2);camYaw+=(yt-camYaw)*k;camPitch+=(pt-camPitch)*k;
+ let sh=0;if(P.act&&P.act.kind==='shake')sh=.004;
+ camera.position.set(CAM0.x+Math.sin(t*.7)*.004+rnd(-sh,sh),CAM0.y+Math.sin(t*1.3)*.003+rnd(-sh,sh),CAM0.z);camera.rotation.set(camPitch,camYaw,0)}
+// glow
+let glowing=[];
+function glowRoot(r,col,int){r.traverse(o=>{if(o.isMesh&&o.material){const ms=Array.isArray(o.material)?o.material:[o.material];ms.forEach((m,i)=>{if(!m.emissive)return;if(!o.userData.own){o.material=Array.isArray(o.material)?o.material.map(x=>x.clone()):o.material.clone();o.userData.own=1}const mm=Array.isArray(o.material)?o.material[i]:o.material;if(mm.userData.e0===undefined){mm.userData.e0=mm.emissive.getHex();mm.userData.i0=mm.emissiveIntensity}mm.emissive.setHex(col);mm.emissiveIntensity=int;glowing.push(mm)})}})}
+function clearGlow(){for(const m of glowing){m.emissive.setHex(m.userData.e0);m.emissiveIntensity=m.userData.i0}glowing=[]}
+function hlTargets(hl){const out=[];if(!hl||!G)return out;const [a,b]=hl.split(':');
+ if(a==='bottle')out.push(ST.bottles[b]);else if(a==='tap'){const tp=ST.taps.find(x=>x.k===b);if(tp)out.push(tp.piv)}else if(a==='garnish')out.push(ST.garn[b]);else if(a==='rack')out.push(ST.rack[b].g);else if(a==='ice')out.push(ST.ice);else if(a==='spoon')out.push(ST.spoon);else if(a==='sink')out.push(ST.sink.g);
+ else if(a==='shaker'){if(G.shaker.loc.kind==='slot')out.push(G.shaker.g)}
+ else if(a==='mat')SLOTS.filter(s=>s.kind==='mat'&&!s.glass).forEach(s=>out.push(s.mesh));
+ else if(a==='drip'){}
+ else if(a==='glass'){const ac=activeCust();const w=ac&&workGlass(ac.order);if(w&&w.loc.kind==='slot')out.push(w.g)}
+ else if(a==='serve'){const ac=activeCust();if(ac)out.push(ac.m.g)}
+ else if(a==='callers')G.customers.filter(c=>c.status==='waiting').forEach(c=>out.push(c.m.g));
+ else if(a==='tables')G.seats.filter(s=>s.money||s.glasses.length).forEach(s=>out.push(SEATOBJ[s.i].money.visible?SEATOBJ[s.i].money:(s.glasses[0]&&s.glasses[0].g)));
+ return out.filter(Boolean)}
+let hover=null;
+function updateGlow(t,hl){clearGlow();const pul=.18+.18*Math.sin(t*6);for(const r of hlTargets(hl))glowRoot(r,0x3fd0c9,pul);if(hover&&hover.root)glowRoot(hover.root,0xffe2a0,.28)}
+function actRoot(a){if(!a)return null;switch(a.kind){case 'bottle':return ST.bottles[a.k];case 'tap':return ST.taps[a.i].piv;case 'garnish':return ST.garn[a.k];case 'rack':return ST.rack[a.t].g;case 'ice':return ST.ice;case 'spoon':return ST.spoon;case 'sink':return ST.sink.g;case 'glass':return a.glass.g;case 'cust':return a.c.m.g;case 'slot':return a.slot.glass?a.slot.glass.g:a.slot.mesh;default:return null}}
+function tipText(a){if(!a)return'';switch(a.kind){
+ case 'bottle':{const I=ING[a.k];if(!ingUnlocked(a.k))return `${I.name}<small>🔒 メニュー解禁で使用可</small>`;return `${I.name}　在庫 ${fmtStock(a.k)}<small>${H&&H.kind==='bottle'?'クリックで持ち替え':'クリックで持つ → グラスの上で長押しで注ぐ'}</small>`}
+ case 'tap':{const I=ING[a.k];return `${I.name} タップ　在庫 ${fmtStock(a.k)}<small>押したまま手前（下）にドラッグで注ぐ</small>`}
+ case 'garnish':return `${ING[a.k].name}（残${S.stock[a.k]}）<small>クリックで持つ → グラスの上でクリック</small>`;
+ case 'rack':return `${GL[a.t].full}（清潔 ${G.clean[a.t]}個）<small>クリックで1個持つ</small>`;
+ case 'ice':return `氷入れ<small>クリックですくう → グラスの上でクリック</small>`;
+ case 'spoon':return `バースプーン<small>持ってグラスの上で押したまま、ぐるぐる回す</small>`;
+ case 'sink':return `シンク（汚れ ${G.dirty.length}個）<small>${H&&H.kind==='glass'?'クリックでグラスの中身を捨てる':'押したまま左右にこすって洗う'}</small>`;
+ case 'glass':{const gl=a.glass;if(gl.loc.kind==='bar')return '空きグラス<small>クリックで下げる</small>';const parts=Object.keys(gl.c.ings).map(k=>`${ING[k].short}${Math.round(gl.c.ings[k])}ml`);return `${GL[gl.type].full}　${Math.round(gl.fill()*100)}%${gl.c.ice?' 🧊':''}<small>${parts.join(' / ')||'空'}${gl.type==='shaker'?' ・ 持って押したまま振るとシェイク':''}</small>`}
+ case 'cust':{const c=a.c;const lab=custLabel(c);if(c.status==='waiting')return `${lab}<small>クリックで注文を聞く ・ ${CT[c.ty].trait}</small>`;if(c.status==='ordered')return `${RECIPES[c.order].name} を待っている<small>${H&&H.kind==='glass'?'クリックで提供':'クリックで伝票を選ぶ'}</small>`;return 'お客さん'}
+ case 'seat':{const s=G.seats[a.i];if(s.money||s.glasses.length)return `お会計 ${yen(s.money)}<small>クリックで回収・片付け</small>`;return ''}
+ case 'slot':return a.slot.glass?'':(H&&H.kind==='glass'?'ここに置く':'');
+ case 'drip':return H&&H.kind==='glass'?'タップの下に置く':'';
+ default:return''}}
+function fmtStock(k){const I=ING[k],v=S.stock[k];if(I.type==='garnish')return Math.floor(v)+'個';if(v>=1000)return (v/1000).toFixed(1)+'L';return Math.floor(v)+'ml'}
+const _v=new THREE.Vector3();
+function toScreen(v){_v.copy(v).project(camera);return{x:(_v.x+1)/2*1280,y:(1-_v.y)/2*720,vis:_v.z<1&&_v.z>-1}}
+function floatAt(v3,t,c='#ffd77a',size=18){const p=toScreen(v3);const d=document.createElement('div');d.className='ft';d.style.left=p.x+'px';d.style.top=p.y+'px';d.style.color=c;d.style.fontSize=size+'px';d.textContent=t;$('#fx').appendChild(d);setTimeout(()=>d.remove(),1500)}
+function msg(t){const m=$('#msg');m.innerHTML='';const d=document.createElement('div');d.textContent=t;m.appendChild(d);sfx.bad()}
+let toastT=null;function toast(t){const e=$('#toast');e.textContent=t;e.style.display='block';clearTimeout(toastT);toastT=setTimeout(()=>e.style.display='none',2600)}
+
+/* ====================== HUD ====================== */
+function renderTop(){$('#dayN').textContent=S.day;const ri=rankIdx(),nx=RANKS[ri+1];$('#rankN').textContent=RANKS[ri].n;$('#xpbar').style.width=(nx?clamp((S.xp-RANKS[ri].xp)/(nx.xp-RANKS[ri].xp),0,1)*100:100)+'%';$('#rankTb').title=nx?`次のランク「${nx.n}」まで ${nx.xp-S.xp}XP`:'最高ランク';
+ const cb=$('#combo');if(G&&S.phase==='service'&&(G.combo||0)>=2){cb.style.display='block';const h=`COMBO ×${G.combo}<small>チップ +${Math.min(50,5*(G.combo-1))}%</small>`;if(cb.innerHTML!==h)cb.innerHTML=h}else cb.style.display='none';
+ if(G){const p=clamp(G.time/G.dayLen,0,1);const m=Math.floor(p*8*60);const hh=18+Math.floor(m/60),mm=m%60;$('#clock').textContent=`${hh>=24?'翌'+(hh-24):hh}:${String(mm).padStart(2,'0')}`;$('#timebar').style.width=p*100+'%';$('#servedN').textContent=G.stats.served;$('#goalbar').style.width=clamp(G.stats.served/50*100,0,100)+'%'}
+ $('#money').textContent=Math.round(S.money).toLocaleString();$('#starsOn').style.width=(S.rep/5*100)+'%'}
+let lastTabs='';
+function renderTicket(){const os=orders();$('#ordCount').textContent=os.length?`${os.length}件`:'';
+ const tabsKey=os.map(c=>c.id+(c.id===G.active?'*':'')).join(',');
+ if(tabsKey!==lastTabs){lastTabs=tabsKey;$('#orderTabs').innerHTML=os.map(c=>`<div class="otab ${c.id===G.active?'on':''}" data-oid="${c.id}">${c.seat+1}番 ${RECIPES[c.order].name}<div class="pb"><i data-pb="${c.id}"></i></div></div>`).join('')}
+ os.forEach(c=>{const e=document.querySelector(`[data-pb="${c.id}"]`);if(e){const p=clamp(c.pat/c.patMax,0,1);e.style.width=p*100+'%';e.style.background=p>.5?'#7cd67c':p>.25?'#f0c040':'#ff5a5a'}});
+ const a=activeCust();let h;
+ if(!a)h=`<div class="tktEmpty">🧾<br>「注文！」のお客さんを<br>クリックすると伝票が届きます</div>`;
+ else{const r=RECIPES[a.order],st=steps(a.order);let cur=false;h=`<h2>${r.name}<small>${a.seat+1}番席・${yen(r.price)}</small></h2>`+st.map(s=>{let cls=s.d?'done':'';if(!s.d&&!cur){cls='cur';cur=true}return `<div class="step ${cls}"><span class="ck">${s.d?'✓':''}</span>${s.t}<span class="amt">${s.amt||''}</span></div>`}).join('')}
+ if(h!==renderTicket.last){$('#tkt').innerHTML=h;renderTicket.last=h}}
+$('#orderTabs').addEventListener('pointerdown',e=>{const o=e.target.closest('[data-oid]');if(o&&G){G.active=+o.dataset.oid;lastTabs='';for(const c of G.customers)c.dirty=1;sfx.pop()}});
+function renderBubbles(){for(const c of G.customers){const b=c.bub;const p=toScreen(c.m.g.position.clone().add(V(0,1.86,0)));
+  if(!p.vis||c.status==='enter'&&c.t<1||c.status==='leave'&&!c.say){b.style.display='none';continue}
+  let html='',cls='bub';
+  if(c.say){cls+=' say';html=c.say}
+  else if(c.status==='waiting'){cls+=' call';html=`${c.reg?'⭐'+REGS.find(r=>r.id===c.reg).name:CT[c.ty].icon} 注文！`}
+  else if(c.status==='ordered'){html=`${c.reg?'⭐':CT[c.ty].icon} ${RECIPES[c.order].name}`;if(G.active===c.id)cls+=' act'}
+  else{b.style.display='none';continue}
+  if(c.status==='waiting'||c.status==='ordered'){const pp=clamp(c.pat/c.patMax,0,1);html+=`<div class="pb"><i style="width:${pp*100}%;background:${pp>.5?'#7cd67c':pp>.25?'#f0c040':'#ff5a5a'}"></i></div>`}
+  b.style.display='block';if(b.className!==cls)b.className=cls;if(b.innerHTML!==html)b.innerHTML=html;b.style.left=p.x+'px';b.style.top=p.y+'px';
+  if(c.dirty){drawFace(c.m.ftex,c.mood,c.L);c.dirty=0}}
+ // money labels
+ let mh='';for(const s of G.seats){if(s.money>0){const p=toScreen(V(SEATX[s.i]+.13,1.16,-.72));if(p.vis)mh+=`<div class="mlab" style="left:${p.x}px;top:${p.y}px">💴${yen(s.money)}</div>`}}
+ if(mh!==renderBubbles.mh){$('#mlabs').innerHTML=mh;renderBubbles.mh=mh}}
+let lastHint='';
+function renderHUD(t){
+ renderTop();if(!G||S.phase!=='service'){$('#labels').innerHTML='';$('#arrow').style.display='none';$('#tut').style.display='none';$('#hintBar').style.display='none';$('#ticket').style.display='none';$('#hand').style.display='none';$('#tip').style.display='none';$('#readout').style.display='none';return}
+ $('#hintBar').style.display='flex';$('#ticket').style.display='block';$('#hand').style.display='block';
+ renderTicket();renderBubbles();
+ let h=nextHint();if(G.tutorial){const ts=TUT[G.tutorial.st];if(ts&&ts.hl)h={t:h.t,hl:ts.hl};if(ts&&ts.btn)h={t:'',hl:null}}
+ if(h.t!==lastHint){$('#hintTxt').textContent=h.t;lastHint=h.t}
+ $('#hintBar').style.display=(G.tutorial||!SET.hint)?'none':'flex';
+ updateGlow(t,h.hl);renderLabels(h.hl);renderArrow(h.hl,h.t);if(G.tutorial)tutRender();
+ // hand
+ const hn=!H?'なし':H.kind==='glass'?GL[H.glass.type].full+(H.glass.hasIngs()?'（中身あり）':''):H.kind==='bottle'?ING[H.k].name:H.kind==='spoon'?'バースプーン':H.kind==='scoop'?'氷（スコップ）':ING[H.k].name;
+ const hs=`手：<b>${hn}</b>${H?`<br><button class="ret" id="retBtn">✋ 置く・戻す</button>${touchMode?'':'<span style="color:#aaa;font-size:10.5px"> （右クリックでもOK）</span>'}`:''}`;if($('#hand').innerHTML!==hs)$('#hand').innerHTML=hs;
+ // tooltip
+ const tip=$('#tip');const tt=P.act?'':tipText(hover&&hover.act);if(tt){tip.style.display='block';if(tip.innerHTML!==tt)tip.innerHTML=tt;tip.style.left=Math.min(P.x,1080)+'px';tip.style.top=Math.min(P.y,660)+'px'}else tip.style.display='none';
+ // readout
+ const ro=$('#readout');const A=P.act;let gl=null,txt='';const a=activeCust();const r=a?RECIPES[a.order]:null;
+ if(A&&A.kind==='pour'){gl=A.glass;const amt=gl.c.ings[A.k]||0;const tv=r&&typeof r.ings[A.k]==='number'?r.ings[A.k]:null;
+  if(tv){const mx=tv*1.6,lo=tv*(1-tol()),hi=tv*(1+tol());txt=`${ING[A.k].short} <span style="color:${amtOk(amt,tv)?'#7cff9a':amt>tv?'#ff7a7a':'#fff'}">${Math.round(amt)}</span> / ${tv}ml<div class="meter"><em style="left:${lo/mx*100}%;width:${(hi-lo)/mx*100}%"></em><i style="width:${clamp(amt/mx,0,1)*100}%;background:${amtOk(amt,tv)?'#7cff9a':'#fff'}"></i></div><small>${A.raise>.3?'⬆ ハイポア中！':'下へドラッグで傾き↑'}${rankIdx()>=1?' ／ 上へドラッグでハイポア':''}</small>`}
+  else txt=`${ING[A.k].short} ${Math.round(amt)}ml ・ ${Math.round(gl.fill()*100)}%<small>水色の線の間で離す</small>`}
+ else if(A&&A.kind==='tap'){const sl=SLOTS.find(s=>s.id==='T'+A.i);gl=sl.glass;const pl=ST.taps[A.i].pull;if(gl)txt=`${Math.round(gl.fill()*100)}% ・ 泡 <span style="color:${foamR(gl)>=FOAM[0]&&foamR(gl)<=FOAM[1]?'#7cff9a':'#ffd77a'}">${Math.round(foamR(gl)*100)}%</span><small>ハンドル ${Math.round(pl*100)}%　${pl>.85?'全開：泡が多め':pl>.4?'中：液体多め':'弱め'}</small>`;else{txt='グラスがない！<small>受け皿にこぼれています</small>';gl=null;}}
+ else if(A&&A.kind==='strain'){gl=A.glass;txt=`注いでいます… ${Math.round(gl.fill()*100)}%`}
+ else if(H&&H.kind==='glass'&&H.glass.hasIngs()&&!handFloat){}
+ if(txt){const p=gl?toScreen(gl.g.position.clone().add(V(0,gl.def.inner.t+.12,0))):{x:640,y:300};ro.style.display='block';ro.style.left=p.x+'px';ro.style.top=p.y+'px';if(ro.innerHTML!==txt)ro.innerHTML=txt}else ro.style.display='none';
+ if(A&&(A.kind==='shake'||A.kind==='stir')&&A.v>0){$('#needle').style.left=(clamp(A.v,0,1.25)/1.25*100)+'%'}
+ if(A&&A.kind==='scrub'){if(!txt){const p=toScreen(V(1.52,1.05,-.27));ro.style.display='block';ro.style.left=p.x+'px';ro.style.top=p.y+'px';ro.innerHTML=`ゴシゴシ… ${Math.round(G.scrubAcc/7)}%<small>残り ${G.dirty.length}個</small>`}}
+ // target rings
+ updParts(FDT);for(const g2 of GLASSOBJS){if(g2.wob>0){g2.wob=Math.max(0,g2.wob-FDT*1.6);const w=g2.wob;g2.liq.rotation.z=Math.sin(T*15)*.07*w;g2.liq.rotation.x=Math.cos(T*12)*.05*w;g2.foamM.rotation.copy(g2.liq.rotation)}}
+ for(const g2 of GLASSOBJS){let lines=null;if(r&&g2.type===r.glass&&g2.loc&&(g2.loc.kind==='slot'||g2.loc.kind==='hand')&&Object.values(r.ings).includes('fill'))lines=fillBand(r);g2.refresh(lines)}
+ // cursor
+ cv.style.cursor=P.act?'grabbing':(hover&&hover.act&&tipText(hover.act))?'pointer':(H?'grab':'default');
+}
+
+/* ====================== LOOP ====================== */
+let last=performance.now(),T=0;
+let FDT=.016;
+function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;T+=dt;FDT=dt;
+ if(S&&S.phase==='service'&&G&&!G.paused){update(dt);computeHand();hover=P.act?null:pickAt();if(hover)hover.root=actRoot(hover.act)}else hover=null;
+ updateCamera(dt,T);if(G){updateHandVisual(T);rackRefresh();sinkRefresh()}
+ if(S)renderHUD(T);
+ renderer.render(scene,camera);requestAnimationFrame(frame)}
+
+/* ====================== FLOW / UI ====================== */
+function checkAch(){for(const a of ACH){if(!S.ach[a.id]&&a.c()){S.ach[a.id]=1;toast('🏆 実績解除：'+a.name);sfx.good()}}}
+function startService(){S.phase='service';newDay();closeOv();save();toast(`DAY ${S.day} 開店！ 🍺`)}
+function endDay(){G.ended=true;P.act=null;loopSet('pour',false);
+ let auto=0;for(const s of G.seats){auto+=s.money;s.money=0;for(const gl of s.glasses)gl.dispose();s.glasses=[];layoutSeat(s)}S.money+=auto;
+ if(H&&H.kind==='glass'&&H.glass.type!=='shaker')H.glass.dispose();H=null;
+ const rent=3000+(S.up.seats-4)*1000;S.money-=rent;S.totals.best=Math.max(S.totals.best,G.stats.served);checkAch();
+ const st=G.stats,avg=st.served?Math.round(st.scoreSum/st.served):0,profit=S.money-G.moneyStart,dayDone=S.day;S.phase='report';S.day++;save();const repD=S.rep-G.repStart;
+ openOv(`<div class="modal rep"><h1>🌙 DAY ${dayDone} 営業終了</h1><table class="rtab">
+ <tr><td>提供した杯数</td><td>${st.served}杯 ${st.served>=50?'🏆':''}</td></tr><tr><td>パーフェクト（90点以上）</td><td>${st.perfect}杯</td></tr><tr><td>平均スコア</td><td>${avg}点</td></tr><tr><td>怒って帰ったお客さん</td><td>${st.angry}人</td></tr>
+ <tr><td>売上</td><td>${yen(st.sales)}</td></tr><tr><td>チップ</td><td>${yen(st.tips)}</td></tr><tr><td>使った材料の原価（参考）</td><td style="color:#ffb0a0">${yen(st.cost)}</td></tr><tr><td>家賃・光熱費</td><td style="color:#ffb0a0">-${yen(rent)}</td></tr>
+ <tr><td>評判</td><td>★${S.rep.toFixed(2)} <span style="color:${repD>=0?'#7cff9a':'#ff7a7a'}">(${repD>=0?'+':''}${repD.toFixed(2)})</span></td></tr><tr class="tot"><td>所持金の増減</td><td>${profit>=0?'+':''}${yen(profit)}</td></tr></table>
+ ${hlHTML()}
+ <p style="font-size:12px;color:#f5e6c8aa;margin-top:8px">最高記録：1日${S.totals.best}杯 ／ 目標：1日50杯</p>
+ <div style="display:flex;justify-content:flex-end;margin-top:14px"><button class="btn" id="toShop">仕入れ・設備へ ▶</button></div></div>`);
+ $('#toShop').onclick=()=>openShop('stock')}
+/* small SVG icons for menus */
+const GS={pint:{o:'M20,6 L80,6 L71,134 L29,134 Z',i:'M23,8 L77,8 L69,131 L31,131 Z',top:8,bot:131,rim:[77,8]},highball:{o:'M27,6 L73,6 L73,134 L27,134 Z',i:'M30,8 L70,8 L70,130 L30,130 Z',top:8,bot:130,rim:[70,8]},cocktail:{o:'M6,20 L94,20 L53,72 L53,126 L74,132 L26,132 L47,126 L47,72 Z',i:'M10,22 L90,22 L50,70 Z',top:22,bot:70,cone:1,rim:[88,22]},mug:{o:'M22,26 L76,26 L74,134 L24,134 Z',i:'M25,28 L73,28 L71,131 L27,131 Z',top:28,bot:131,rim:[73,28],mug:1}};
+let gid=0;
+function glassSVG(type,o={}){const g=GS[type],id='gc'+(gid++),w=o.w||40,f=clamp(o.fill||0,0,1);const H2=g.bot-g.top;const y=g.bot-(g.cone?Math.cbrt(f):f)*H2;
+ let s=`<svg viewBox="0 0 100 140" width="${w}" height="${w*1.4}"><defs><clipPath id="${id}"><path d="${g.i}"/></clipPath></defs>`;if(!g.mug)s+=`<path d="${g.o}" fill="url(#glassG)"/>`;
+ s+=`<g clip-path="url(#${id})"><rect x="0" y="${y}" width="100" height="${140-y}" fill="${o.color}" opacity=".9"/>${o.foam?`<rect x="0" y="${y-2}" width="100" height="${H2*.12}" fill="#fff4dc"/>`:''}</g>`;
+ if(g.mug)s+=`<path d="${g.o}" fill="url(#copper)" opacity=".75"/>`;s+=`<path d="${g.o}" fill="none" stroke="rgba(255,255,255,.75)" stroke-width="3"/>`;
+ if(o.garnish){const [rx,ry]=g.rim;s+=`<circle cx="${rx}" cy="${ry}" r="12" fill="${ING[o.garnish].color}"/>`}return s+'</svg>'}
+function bottleSVG(k,w=30){const I=ING[k];return `<svg viewBox="0 0 40 70" width="${w}" height="${w*1.75}"><path d="M15,8 L25,8 L25,20 Q34,24 34,32 L34,66 L6,66 L6,32 Q6,24 15,20 Z" fill="${I.bottle||I.color}" stroke="#0006"/><rect x="9" y="38" width="22" height="16" rx="2" fill="#f5ead0"/><rect x="9" y="40" width="22" height="4" fill="${I.color}"/></svg>`}
+function iconFor(k){const I=ING[k];if(I.type==='tap')return `<svg viewBox="0 0 40 60" width="34" height="50"><rect x="13" y="2" width="14" height="34" rx="6" fill="${I.handle}"/><rect x="15" y="10" width="10" height="14" fill="#f5ead0"/><rect x="2" y="38" width="36" height="10" rx="4" fill="url(#metal)"/></svg>`;if(I.type==='garnish')return `<svg viewBox="0 0 40 40" width="34" height="34"><circle cx="20" cy="20" r="15" fill="${I.color}"/><circle cx="20" cy="20" r="11" fill="#fffbe0" opacity=".8"/></svg>`;return bottleSVG(k)}
+function recipeColor(r){return mixColor(Object.fromEntries(Object.keys(r.ings).map(x=>[x,r.ings[x]==='fill'?100:r.ings[x]])))}
+function recipeText(k){const r=RECIPES[k];const p=[GL[r.glass].full];if(r.method==='shake')p[0]='シェイカー→'+p[0];if(r.ice)p.push('氷');for(const x in r.ings)p.push(r.ings[x]==='fill'?(ING[x].type==='tap'?ING[x].short+'をタップで（泡2〜3割）':ING[x].short+'で満たす'):ING[x].short+r.ings[x]+'ml');if(r.method==='shake')p.push('シェイク');if(r.method==='stir')p.push('ステア');if(r.garnish)p.push(ING[r.garnish].short);return p.join(' → ')}
+let shopTab='stock',confirmOpen=false;
+function neededIngs(){const s=new Set();for(const r in RECIPES){if(!S.unlocked[r])continue;const R=RECIPES[r];for(const k in R.ings)s.add(k);if(R.garnish)s.add(R.garnish)}return[...s]}
+function lowStock(k){const I=ING[k],v=S.stock[k];if(I.type==='tap')return v<4000;if(I.type==='spirit')return v<400;if(I.type==='garnish')return v<6;return v<(I.unit>=1000?1000:250)}
+function autoTarget(k){const I=ING[k];if(I.type==='tap')return 5000;if(I.type==='spirit')return 1000;if(I.type==='garnish')return 12;return I.unit>=1000?2000:500}
+function autoPlan(){let cost=0;const plan={};for(const k of neededIngs()){const I=ING[k];let n=0;while(S.stock[k]+n*I.unit<autoTarget(k))n++;if(n){plan[k]=n;cost+=n*I.price}}return{plan,cost}}
+function openShop(tab){shopTab=tab||shopTab;S.phase='shop';
+ const tabs=`<div class="tabs"><button data-tab="stock" class="${shopTab==='stock'?'on':''}">📦 仕入れ</button><button data-tab="menu" class="${shopTab==='menu'?'on':''}">📜 メニュー解禁</button><button data-tab="orig" class="${shopTab==='orig'?'on':''}">🍸 オリジナル</button><button data-tab="upg" class="${shopTab==='upg'?'on':''}">🔧 設備</button></div>`;let body='';
+ if(shopTab==='orig'){openOrig(tabs);return}
+ if(shopTab==='stock'){const need=neededIngs();body=[...TAPS,...SPIRITS,...MIXERS,...GARN].filter(k=>need.includes(k)).map(k=>{const I=ING[k],low=lowStock(k);return `<div class="card ${low?'low':''}"><div style="width:44px;display:flex;justify-content:center">${iconFor(k)}</div><div class="info"><b>${I.name}</b><div>在庫 ${fmtStock(k)} ${low?'<span style="color:#ff7a7a;font-weight:800">少ない！</span>':''}</div><div class="sub">${I.pack} ${yen(I.price)}</div></div><button class="btn sm" data-buy="${k}" ${S.money<I.price?'disabled':''}>購入</button></div>`}).join('')}
+ else if(shopTab==='menu'){body=Object.keys(RECIPES).map(k=>{const r=RECIPES[k],u=S.unlocked[k];return `<div class="card ${u?'done':''}"><div style="width:40px">${glassSVG(r.glass,{w:36,fill:.85,color:recipeColor(r),garnish:r.garnish,foam:r.method==='tap'})}</div><div class="info"><b>${r.name}</b> <span class="sub">売値${yen(r.price)}</span><div class="sub">${recipeText(k)}</div></div>${u?'<span style="font-weight:800;color:#7cd67c">提供中</span>':`<button class="btn sm" data-unlock="${k}" ${S.money<r.cost?'disabled':''}>解禁<br>${yen(r.cost)}</button>`}</div>`}).join('')+`<div class="card" style="grid-column:1/-1;font-size:12px">💡 メニューを解禁すると、新しい材料が1セット付いてきます。</div>`}
+ else body=UPG.map(u=>{const d=u.done(),ok=u.ok();return `<div class="card ${d?'done':''}"><div style="font-size:30px;width:44px;text-align:center">${u.icon}</div><div class="info"><b>${u.name}</b><div class="sub">${u.desc}</div></div>${d?'<span style="font-weight:800;color:#7cd67c">導入済</span>':`<button class="btn sm" data-upg="${u.id}" ${(!ok||S.money<u.price)?'disabled':''}>${yen(u.price)}</button>`}</div>`}).join('');
+ const ap=autoPlan();
+ openOv(`<div class="modal shop"><h1 style="display:flex;justify-content:space-between">閉店後の準備 <span style="font-size:20px">💴 ${yen(S.money)}</span></h1>${tabs}<div class="sgrid">${body}</div><div class="sfoot">${shopTab==='stock'?`<button class="btn sec" id="autoBuy" ${!ap.cost||S.money<ap.cost?'disabled':''}>🛒 おまかせ補充 ${ap.cost?yen(ap.cost):'（十分あります）'}</button>`:''}${diffSel()}<div style="flex:1"></div><span style="font-size:12px;color:#f5e6c8aa">毎日の家賃 ${yen(3000+(S.up.seats-4)*1000)}</span><button class="btn" id="openBtn">DAY ${S.day} 開店 ▶</button></div></div>`);
+ document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{sfx.pop();openShop(b.dataset.tab)});
+ document.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{const k=b.dataset.buy,I=ING[k];if(S.money<I.price)return;S.money-=I.price;S.stock[k]+=I.unit;sfx.coin();save();openShop()});
+ document.querySelectorAll('[data-unlock]').forEach(b=>b.onclick=()=>{const k=b.dataset.unlock,r=RECIPES[k];if(S.money<r.cost)return;S.money-=r.cost;S.unlocked[k]=1;for(const x of [...Object.keys(r.ings),r.garnish].filter(Boolean))if(S.stock[x]<ING[x].unit*.5)S.stock[x]+=ING[x].unit;sfx.good();toast('🎉 '+r.name+' を解禁！');checkAch();save();openShop()});
+ document.querySelectorAll('[data-upg]').forEach(b=>b.onclick=()=>{const u=UPG.find(x=>x.id===b.dataset.upg);if(S.money<u.price||!u.ok())return;S.money-=u.price;u.buy();sfx.good();toast('🔧 '+u.name+' を導入！');save();openShop()});
+ const ab=$('#autoBuy');if(ab)ab.onclick=()=>{const a=autoPlan();if(S.money<a.cost)return;for(const k in a.plan){S.money-=a.plan[k]*ING[k].price;S.stock[k]+=a.plan[k]*ING[k].unit}sfx.coin();save();openShop()};
+ $('#openBtn').onclick=()=>{const miss=neededIngs().filter(k=>S.stock[k]<=0);if(miss.length&&!confirmOpen){confirmOpen=true;$('#openBtn').textContent='在庫切れあり。それでも開店 ▶';return}confirmOpen=false;startService()};
+ bindDiffSel(()=>openShop());refreshLocks()}
+function openOv(h){const o=$('#ov');o.innerHTML=h;o.classList.add('show')}
+function closeOv(){$('#ov').classList.remove('show');$('#ov').innerHTML=''}
+function showTitle(){const sv=load();
+ openOv(`<div class="modal title"><div class="neon">NIGHT TAP 3D</div><div class="neon2">BARTENDER POV SIMULATOR</div>
+ <p style="line-height:1.8;font-size:14px">あなたはクラフトビール＆バーのバーテンダー。目線はあなた自身の目。<br>タップを引いて泡を作り、シェイカーを振り、グラスを洗い、お会計をして…<br><b style="color:#ffd77a">目指せ、1日50杯！</b></p>
+ <div class="tbtns">${sv?`<button class="btn" id="tContinue">つづきから（DAY ${sv.day}・${DIFF[sv.diff||'normal'].name}）</button>`:''}<button class="btn ${sv?'sec':''}" id="tNew">はじめから</button><button class="btn sec" id="tTut">📘 チュートリアル</button><button class="btn sec" id="tHelp">操作方法</button></div>
+ <p style="font-size:11px;color:#f5e6c877;margin-top:16px">パソコン（マウス）・スマホ（横向き・タッチ）対応 ・ 音が出ます</p></div>`);
+ if(sv)$('#tContinue').onclick=()=>{ac();S=load();applyDiff();newDay();openShop('stock')};
+ $('#tNew').onclick=()=>newGameFlow();
+ $('#tTut').onclick=()=>{ac();const s0=load();S=s0||freshSave();syncOriginals();if(!s0)S.diff='easy';applyDiff();startTutorial(s0?'shop':'day1')};
+ $('#tHelp').onclick=()=>showHelp(false,true)}
+function showHelp(thenStart,fromTitle){const was=G&&G.paused;if(G&&S.phase==='service')G.paused=true;
+ openOv(`<div class="modal help"><h1>🍸 操作方法（マウスだけ）</h1><div class="hgrid">
+ <div class="hcard"><b>👀 見回す</b>マウスを<span class="mz">上</span>に動かすと客席、<span class="mz">下</span>で手元、<span class="mz">左右の端</span>で首を振ります。<br>📱スマホは右下の<span class="mz">⬆⬇◀▶</span>ボタンで見回し。タップ＝クリック、指でなぞる＝ドラッグ、右クリックの代わりに左下の<span class="mz">✋置く・戻す</span>。⚙設定で<span class="mz">ジャイロ</span>をONにすると、傾けて見回し、シェイカーを持ってスマホを振るとシェイク！</div>
+ <div class="hcard"><b>✋ 持つ・置く</b>物を<span class="mz">クリック</span>で手に持つ。別の道具をクリックすると<b>自動で持ち替え</b>（グラスはマットに自動で置かれる）。<span class="mz">右クリック</span>で戻す。</div>
+ <div class="hcard"><b>🍺 タップで注ぐ</b>グラスを持ったまま（または受け皿に置いて）ハンドルを<span class="mz">押したまま手前（下）へドラッグ</span>。強く引くほど勢いと泡が増えます。泡2〜3割が理想。</div>
+ <div class="hcard"><b>🥃 ボトルで注ぐ</b>ボトルを持ってグラスの上で<span class="mz">長押し</span>。押したまま<span class="mz">下にドラッグ</span>すると傾きが増えて速く注げます。目標mlで離す。</div>
+ <div class="hcard"><b>🍸 シェイク</b>シェイカーを持ち、<span class="mz">押したままマウスを左右にブンブン振る</span>。ゲージが緑で離す。氷を入れ忘れずに！ グラスの上で長押しで注ぐ。</div>
+ <div class="hcard"><b>🥄 ステア</b>バースプーンを持ってグラスの上で<span class="mz">押したままぐるぐる円を描く</span>。ゲージが緑で離す。</div>
+ <div class="hcard"><b>🧊 氷・飾り</b>氷入れ・フルーツを<span class="mz">クリック</span>で持ち、グラスの上で<span class="mz">クリック</span>。</div>
+ <div class="hcard"><b>🙋 接客</b>「注文！」のお客さんを<span class="mz">クリック</span>。完成したらお客さんを<span class="mz">クリック</span>するだけで提供（グラスを持っていてもOK）。</div>
+ <div class="hcard"><b>✨ 決め技（ランクで解放）</b><span class="mz">ジャストポア</span>一回の長押しで目標量ぴったり ／ <span class="mz">ハイポア</span>注ぎながら上へドラッグして高い位置から ／ <span class="mz">ローリングシェイク</span>円を描いて振る ／ <span class="mz">神速サーブ</span>注文から20秒以内。チップと評判UP！</div>
+ <div class="hcard"><b>🧽 片付け</b>お会計と空きグラスを<span class="mz">クリック</span>で回収。シンクを<span class="mz">押したまま左右にこする</span>と洗えます。</div>
+ </div><p style="margin-top:10px;font-size:13px;line-height:1.7">💡 迷ったら画面下の <b style="color:#3fd0c9">「次は▶」</b>。次に触る物が<span style="color:#3fd0c9">水色に光ります</span>。右上の伝票に手順と量が出ます。</p>
+ <div style="display:flex;justify-content:flex-end;margin-top:10px">${thenStart?'<button class="btn" id="hGo">DAY 1 開店する ▶</button>':'<button class="btn" id="hClose">閉じる</button>'}</div></div>`);
+ if(thenStart)$('#hGo').onclick=()=>startService();else $('#hClose').onclick=()=>{if(fromTitle){showTitle();return}if(S.phase==='shop'){openShop();return}closeOv();if(G)G.paused=was}}
+function showBook(){if(!S)return;const was=G&&G.paused;if(G&&S.phase==='service')G.paused=true;
+ openOv(`<div class="modal"><h1>📖 レシピ帳</h1><div class="bookgrid">${Object.keys(RECIPES).map(k=>{const r=RECIPES[k];return `<div class="recipe ${S.unlocked[k]?'':'lock'}"><div>${glassSVG(r.glass,{w:40,fill:.85,color:recipeColor(r),garnish:r.garnish,foam:r.method==='tap'})}</div><div><b>${r.name}</b> ${S.unlocked[k]?'':'🔒'} <span style="color:#f5e6c8aa">${yen(r.price)}</span><br>${recipeText(k)}</div></div>`}).join('')}</div>
+ <p style="font-size:12px;margin-top:10px;color:#f5e6c8aa">「満たす」＝ グラスに出る水色の線の間まで ／ 2種類を満たす場合は半々に ／ ビールの泡は2〜3割</p>
+ <div style="display:flex;justify-content:flex-end;margin-top:10px"><button class="btn" id="bClose">閉じる</button></div></div>`);
+ $('#bClose').onclick=()=>{if(S.phase==='shop'){openShop();return}if(S.phase==='title'){showTitle();return}closeOv();if(G)G.paused=was}}
+function togglePause(){if(!G||S.phase!=='service')return;
+ if(G.paused){G.paused=false;closeOv();$('#btnPause').textContent='Ⅱ 一時停止';return}
+ G.paused=true;P.act=null;loopSet('pour',false);$('#btnPause').textContent='▶ 再開';
+ openOv(`<div class="modal" style="width:420px;text-align:center"><h1>Ⅱ 一時停止中</h1><div style="display:flex;justify-content:center;margin:8px 0">${diffSel()}</div><div class="tbtns"><button class="btn" id="pRes">▶ 再開</button><button class="btn sec" id="pHelp">操作方法</button><button class="btn sec" id="pTitle">タイトルへ（今日の営業は破棄）</button></div></div>`);
+ bindDiffSel(()=>{G.paused=false;togglePause()});$('#pRes').onclick=togglePause;$('#pHelp').onclick=()=>showHelp(false);
+ $('#pTitle').onclick=()=>{G.paused=false;$('#btnPause').textContent='Ⅱ 一時停止';const s=load();if(s)S=s;S.phase='title';newDay();showTitle()}}
+$('#btnBook').onclick=showBook;$('#btnHelp').onclick=()=>{if(S&&S.phase==='service')showHelp(false)};
+$('#btnMute').onclick=()=>{muted=!muted;$('#btnMute').textContent=muted?'🔇':'🔊';if(muted)for(const k in loops)loopSet(k,false);bgmVol()};
+$('#btnPause').onclick=togglePause;
+$('#btnSet').onclick=()=>showSettings();
+document.querySelectorAll('[data-look]').forEach(b=>b.addEventListener('pointerdown',e=>{e.preventDefault();ac();const k=b.dataset.look;if(k==='up')LOOK.y=60;else if(k==='down')LOOK.y=560;else if(k==='left')LOOK.x=0;else if(k==='right')LOOK.x=1280;else{LOOK.x=640;LOOK.y=520}if(GY.on)gyroRecenter()}));
+if(IS_TOUCH)document.body.classList.add('touch');
+
+
+/* ====================== CUSTOMER TYPES ====================== */
+const CT={
+ office:{name:'会社員',icon:'💼',w:3,pat:1,tip:1,pref:['mix','beer','any'],trait:'ふつうのお客さん',look:{suit:1,tie:'#c0392b'}},
+ student:{name:'学生',icon:'🎓',w:1.8,pat:.9,tip:.6,pref:['mix','beer'],trait:'チップは少なめ',look:{phones:'#e04a6a'}},
+ tourist:{name:'観光客',icon:'🌏',w:1.3,pat:1.1,tip:1.6,pref:['beer'],trait:'ビール好き・チップ多め',look:{hat:'#d4a24c',hs:3}},
+ gent:{name:'紳士',icon:'🎩',w:.9,pat:1.4,tip:1.3,pref:['cocktail','mix'],trait:'気長に待ってくれる',look:{beard:1,hs:3,hat:'#1a1a1a',bow:'#8a1a1a'},minDay:2},
+ hurry:{name:'せっかち',icon:'⚡',w:1.1,pat:.6,tip:1.4,pref:['beer','mix'],trait:'待てる時間が短い！ 早く出せばチップ多め',look:{}},
+ drunk:{name:'ほろ酔い',icon:'🥴',w:1,pat:1.1,tip:1.2,pref:['beer','mix'],trait:'途中で注文を変えることがある',look:{blush:1},minDay:2},
+ beerfan:{name:'ビール通',icon:'🍺',w:1.1,pat:1,tip:1.25,pref:['beer'],trait:'ビールしか頼まない',look:{beard:1}},
+ critic:{name:'評論家',icon:'🧐',w:.35,pat:1,tip:1,repMul:3,pref:['cocktail','mix'],trait:'評価で評判が3倍動く',look:{glasses:1,beret:'#2a2a3a'},minDay:3},
+ vip:{name:'セレブ',icon:'💎',w:.4,pat:.9,tip:2.2,pref:['cocktail'],trait:'高いお酒を頼む・チップ2倍以上',look:{shades:1,shirt:'#e8e0d0'},minDay:4},
+ regular:{name:'常連',icon:'⭐',w:0,pat:1.3,tip:1.3,pref:['any'],trait:'おいしい一杯で仲良くなれる',reg:1},
+};
+function custLabel(c){if(c.reg){const R0=REGS.find(r=>r.id===c.reg);const a=(S.regs[c.reg]||{}).aff||0;return `⭐常連 ${R0.name}（${R0.job}）${'♥'.repeat(a)}${'♡'.repeat(5-a)}`}const t=CT[c.ty]||CT.office;return `${t.icon} ${t.name}`}
+
+/* ====================== REGULARS ====================== */
+const REGS=[
+ {id:'sato',name:'佐藤さん',job:'会社員・課長',fav:'highball',fb:'pale',col:'#3a4a6a',L:{skin:'#eec29b',hair:'#3b2416',shirt:'#3a4a6a',hs:4,glasses:true,tie:'#c0392b'},
+  lines:['はじめまして。仕事帰りに一杯だけ…って、毎回言うんだけどね。','ハイボールはこれくらいの濃さがいい。課長になってから、帰りがいつも遅くてさ。','娘が来年受験でね。家だと気を張るから、ここが息抜きなんだ。','部下に「最近顔色いいですね」って言われたよ。ここのおかげかな。','実は昇進の話が来てる。でも家族との時間も大事にしたくて…悩むね。','決めたよ、昇進は断った。家族と、たまにここで一杯。それが一番だ。これ、お祝いの気持ち。'],reward:{money:5000,txt:'お祝いに ¥5,000 もらった！'}},
+ {id:'mika',name:'ミカ',job:'デザイナー',fav:'gintonic',fb:'highball',col:'#c06a8a',L:{skin:'#f7d7b8',hair:'#7a2a2a',shirt:'#e8e0d0',hs:1},
+  lines:['わ、雰囲気いいお店。デザインの仕事してて、つい内装見ちゃうの。','ジントニックのライム、香りが立ってて好き。ネオンの色も素敵。','最近スランプでさ…。ここに来ると、色のアイデアが浮かぶんだよね。','このお店をモチーフにポスター描いてみた。今度見せるね。','そのポスター、コンペで賞とったの！ マスターのおかげ。','お礼にお店のロゴ、作り直させて。…ほら、評判上がるはず！'],reward:{rep:.3,txt:'新しいロゴで評判 +0.3！'}},
+ {id:'john',name:'ジョン',job:'旅行者',fav:'ipa',fb:'pale',col:'#3a8a5a',L:{skin:'#f7d7b8',hair:'#c49a5a',shirt:'#3a8a5a',hs:0,beard:true},
+  lines:['Hi！ 日本のクラフトビール、だいすきです。IPA ありますか？','このIPA、ホップの香り、Amazing！ ぼく、ポートランドから来ました。','日本語の勉強、むずかしい…。でもここのみんな、やさしいね。','決めました。ぼく、日本に住みます！ 仕事、見つけた！','友達に、このバーのことたくさん話しました。みんな来たいって。','Thank you, my friend！ 友達をいっぱい連れてくるね。Cheers！'],reward:{flag:'tourist',money:2000,txt:'観光客がよく来るようになった！'}},
+ {id:'gen',name:'源さん',job:'元バーテンダー',fav:'martini',fb:'highball',col:'#5a5a5a',L:{skin:'#dba87c',hair:'#9a9a9a',shirt:'#2a2a2a',hs:3,beard:true,hat:'#2a2a2a',bow:'#8a1a1a'},
+  lines:['…ほう、若いの。昔、わしもカウンターに立っておった。','カクテルはな、急いでも丁寧さを忘れるでないぞ。','わしの店は40年続いた。最後の夜も、こうして客と飲んだもんじゃ。','良いバーテンダーは、客の顔を見て一杯を決める。お主はその目をしておる。','わしの店の常連たちに、この店を勧めておいた。大事にせいよ。','これを持っていけ。わしが使っていた秘伝の計量のコツじゃ。'],reward:{flag:'gen',txt:'秘伝のコツ：計量の許容範囲が広がった！'}},
+ {id:'yuta',name:'ユウタ',job:'大学院生',fav:'cassis',fb:'gintonic',col:'#4a7a8a',L:{skin:'#eec29b',hair:'#1d1410',shirt:'#4a7a8a',hs:4,phones:'#2a2a2a'},
+  lines:['あの、甘めのお酒ありますか…？ お酒あんまり強くなくて。','大学院で研究してるんです。毎日実験で…ここは落ち着きます。','論文がリジェクトされました…。一杯、しみます。','もう一回出したら、通りました！ 一番に報告したくて来ました！','来月から海外の研究所に行くんです。寂しくなるなぁ。','向こうでもこの店の話をします。いつか、ここで乾杯しに戻ってきますね！'],reward:{money:3000,txt:'お礼に ¥3,000 もらった！'}},
+ {id:'reiko',name:'玲子さん',job:'小説家',fav:'stout',fb:'pale',col:'#6a4a8a',L:{skin:'#f7d7b8',hair:'#1d1410',shirt:'#6a4a8a',hs:2,glasses:true},
+  lines:['……ビールを。黒いビールは、夜の色だから好き。','小説を書いているの。ここのカウンター、物語の匂いがする。','締め切り前なのに一行も書けない。…もう一杯いただける？','あなたをモデルにした登場人物、書いてもいいかしら。','書き上げたわ。舞台は、小さなクラフトビールのバー。','本が出たの。読者がこの店を探しに来るかもね。'],reward:{rep:.5,txt:'小説の効果で評判 +0.5！'}},
+];
+let talkT=null;
+function talk(id,lv){const R0=REGS.find(r=>r.id===id);if(!R0)return;const a=(S.regs[id]||{}).aff||0;const el=$('#talk');
+ let rw='';if(lv===5&&!S.regs[id].rewarded){S.regs[id].rewarded=1;const w=R0.reward;if(w.money)S.money+=w.money;if(w.rep)S.rep=clamp(S.rep+w.rep,.5,5);if(w.flag)S.flags[w.flag]=1;rw=`<div class="rw">🎁 ${w.txt}</div>`;sfx.good();save()}
+ el.innerHTML=`<div class="tn"><div class="av" style="background:${R0.col}">${R0.name[0]}</div><div><div class="nm">${R0.name}</div><div class="jb">${R0.job}・好物：${RECIPES[R0.fav].name}</div></div><div class="hs">${'♥'.repeat(a)}${'♡'.repeat(5-a)}</div></div><div class="tx">「${R0.lines[lv]}」</div>${lv>0&&lv<5?`<div class="rw" style="color:#ff9ab0">♥ 仲良くなった！</div>`:''}${rw}<div style="font-size:10px;color:#aaa;text-align:right;margin-top:2px">クリックで閉じる</div>`;
+ el.style.display='block';el.style.animation='none';void el.offsetWidth;el.style.animation='';clearTimeout(talkT);talkT=setTimeout(()=>el.style.display='none',10000);
+ if(G&&G.hl)G.hl.talks.push({name:R0.name,text:R0.lines[lv],lv});if(lv>0)tone(880,.2,'sine',.05),tone(1320,.3,'sine',.04,.1)}
+$('#talk').onclick=()=>{$('#talk').style.display='none'};
+
+/* ====================== RANK / XP / TRICKS ====================== */
+const RANKS=[{n:'見習い',xp:0,perk:'決め技「ジャストポア」「神速サーブ」'},{n:'バーテンダー',xp:300,perk:'決め技「ハイポア」・オリジナルカクテル1枠'},{n:'シニア',xp:1200,perk:'決め技「ローリングシェイク」・オリジナル2枠・チップ+10%'},{n:'チーフ',xp:3000,perk:'常連がよく来る・オリジナル3枠'},{n:'マスター',xp:6000,perk:'チップ+20%'},{n:'レジェンド',xp:12000,perk:'伝説のバーテンダーの称号'}];
+function rankIdx(){let i=0;if(!S)return 0;RANKS.forEach((r,j)=>{if((S.xp||0)>=r.xp)i=j});return i}
+function origSlots(){return [0,1,2,3,3,3][rankIdx()]}
+function addXP(n){const before=rankIdx();S.xp=(S.xp||0)+n;if(G&&G.hl)G.hl.xp+=n;const after=rankIdx();if(after>before){const R0=RANKS[after];if(G&&G.hl)G.hl.ranks.push(R0.n);const el=$('#rankUp');el.innerHTML=`<div class="r1">🎖 RANK UP!</div><div class="r2">${R0.n}</div><div class="r3">解放：${R0.perk}</div>`;el.style.display='block';el.style.animation='none';void el.offsetWidth;el.style.animation='';setTimeout(()=>el.style.display='none',3300);[523,659,784,1046,1318].forEach((f,i)=>tone(f,.4,'triangle',.08,i*.09));applause()}}
+function addTrick(gl,name){gl.c.tricks=gl.c.tricks||[];if(gl.c.tricks.includes(name))return;gl.c.tricks.push(name);floatAt(gl.g.position.clone().add(V(0,.32,0)),'✨'+name+'！','#ff9ae0',24);tone(1046,.15,'triangle',.07);tone(1568,.25,'triangle',.06,.08);for(let i=0;i<10;i++)emit(gl.g.position.clone().add(V(0,.18,0)),'#ff9ae0',1,.45)}
+function applause(){if(muted)return;for(let i=0;i<22;i++)setTimeout(()=>noise(.05,rnd(1500,3200),.07,1.5),rnd(0,1100))}
+function ding(){tone(1568,.25,'sine',.06);tone(2093,.3,'sine',.035,.06)}
+function glug(f){tone(150+f*300,.07,'sine',.06);tone(300+f*600,.05,'triangle',.02)}
+function zoneCheck(A){if(A.inZ)return;const ac=activeCust();if(!ac)return;const r=RECIPES[ac.order];const t=r.ings[A.k];const gl=A.glass;
+ if(typeof t==='number'){if(amtOk(gl.c.ings[A.k]||0,t)){A.inZ=1;ding();floatAt(gl.g.position.clone().add(V(0,.3,0)),'OKゾーン！','#7cff9a',15)}}
+ else if(t==='fill'&&gl.fill()>=fillBand(r)[0]){A.inZ=1;ding();floatAt(gl.g.position.clone().add(V(0,.3,0)),'OKゾーン！','#7cff9a',15)}}
+function surf(gl){return gl.g.position.clone().add(V(rnd(-.01,.01),gl.def.inner.b+gl.levelH(Math.min(1,gl.fill()))+.004,rnd(-.01,.01)))}
+const PARTS=[];const partGeo=new THREE.SphereGeometry(.0032,6,4);
+function emit(pos,color,n=1,spd=.25){for(let i=0;i<n;i++){let p=PARTS.find(p=>!p.m.visible);if(!p){if(PARTS.length>90)return;const m=new THREE.Mesh(partGeo,new THREE.MeshBasicMaterial({color,transparent:true,opacity:.9}));m.raycast=()=>{};scene.add(m);p={m,v:new THREE.Vector3()};PARTS.push(p)}
+ p.m.visible=true;p.m.material.color.set(color);p.m.position.copy(pos);p.v.set(rnd(-1,1)*spd*.6,rnd(.4,1)*spd*1.3,rnd(-1,1)*spd*.6);p.life=rnd(.25,.5)}}
+function updParts(dt){for(const p of PARTS){if(!p.m.visible)continue;p.life-=dt;if(p.life<=0){p.m.visible=false;continue}p.v.y-=2.6*dt;p.m.position.addScaledVector(p.v,dt)}}
+function hlHTML(){const h=G.hl;const tr=Object.entries(h.tricks);const tl=h.talks.filter(x=>x.lv>0);
+ return `<h2 style="color:#ffd77a;font-size:17px;margin-top:12px">✨ 今日のハイライト</h2><div class="hlgrid">
+ <div class="hlc"><b>🏆 今日いちばんの一杯</b>${h.best?`<span class="big">${h.best.name} ${h.best.score}点</span><br>${h.best.who}へ`:'—'}</div>
+ <div class="hlc"><b>⚡ 最速の提供</b>${h.fast?`<span class="big">${h.fast.t.toFixed(1)}秒</span><br>${h.fast.name}`:'—'}</div>
+ <div class="hlc"><b>✨ 決め技</b>${tr.length?tr.map(([k,v])=>`${k} ×${v}`).join('<br>'):'まだなし（ランクで解放）'}</div>
+ <div class="hlc"><b>🔥 最大コンボ／獲得XP</b><span class="big">×${h.maxCombo}</span> ／ +${h.xp}XP${h.ranks.length?`<br>🎖 ランクアップ：${h.ranks.join('→')}`:''}</div>
+ ${tl.length?`<div class="hlc" style="grid-column:1/-1"><b>💬 常連との思い出</b>${tl.map(x=>`<b style="display:inline;color:#ffb0c4">${x.name}</b>「${x.text}」`).join('<br>')}</div>`:''}</div>
+ <p style="font-size:12px;margin-top:6px">🎖 ${RANKS[rankIdx()].n}　${RANKS[rankIdx()+1]?`次の「${RANKS[rankIdx()+1].n}」まで ${RANKS[rankIdx()+1].xp-S.xp}XP（解放：${RANKS[rankIdx()+1].perk}）`:'最高ランク！'}</p>`}
+
+/* ====================== ORIGINAL COCKTAILS ====================== */
+const FL={whisky:{a:40,str:1},gin:{a:40,herb:1},vodka:{a:40},rum:{a:40,sw:.3},cassis:{a:20,sw:2,fruit:1},vermouth:{a:18,herb:1,bit:.5},soda:{fizz:1},tonic:{fizz:1,bit:.4,sw:.4},ginger:{fizz:1,sw:.8},orange:{sw:1,fruit:1,sour:.3},limej:{sour:2.5},syrup:{sw:2.5},pale:{beer:1,a:5},ipa:{beer:1,a:6,bit:1},stout:{beer:1,a:6,bit:1},weizen:{beer:1,a:5,fruit:.4}};
+function syncOriginals(s0){const SS=s0||S;if(!SS)return;for(const k in RECIPES)if(k.startsWith('o_'))delete RECIPES[k];for(const o of SS.originals||[]){RECIPES[o.id]={name:esc(o.name),price:o.price,glass:o.glass,ice:o.ice,method:o.method,ings:o.ings,garnish:o.garnish,cost:0,cat:'original',stars:o.stars};SS.unlocked[o.id]=1}}
+function origWeight(r){const exp=450+150*r.stars;return (.3+.3*r.stars)*clamp(exp/r.price,.35,1.3)}
+function origVols(d){const cap=GL[d.glass].cap;const ks=d.ings.filter(x=>x.k);const fixed=ks.filter(x=>x.amt!=='fill'),fills=ks.filter(x=>x.amt==='fill');const fv=fixed.reduce((a,x)=>a+x.amt,0);const iceV=d.ice?cap*.35:0;const remain=Math.max(0,cap*.88-iceV-fv);const vols={};fixed.forEach(x=>vols[x.k]=(vols[x.k]||0)+x.amt);fills.forEach(x=>vols[x.k]=(vols[x.k]||0)+remain/fills.length);return{vols,total:Object.values(vols).reduce((a,b)=>a+b,0),fv,cap,iceV,ks,fills}}
+function rateOriginal(d){const n=[];let s=3;const {vols,total,fv,cap,iceV,ks,fills}=origVols(d);
+ if(!ks.length)return{stars:0,notes:['材料を選んでください'],ok:false};
+ if(new Set(ks.map(x=>x.k)).size<ks.length)return{stars:0,notes:['同じ材料が2回選ばれています'],ok:false};
+ if(fv+iceV>cap*.97)return{stars:0,notes:['量が多すぎてグラスに入りません'],ok:false};
+ if(d.method==='shake'&&fills.length)return{stars:0,notes:['シェイクでは「満たす」は使えません'],ok:false};
+ if(total<=0)return{stars:0,notes:['量が足りません'],ok:false};
+ const f={a:0,sw:0,sour:0,fizz:0,beer:0,herb:0,bit:0,fruit:0};for(const k in vols){const F=FL[k]||{};for(const t in f)f[t]+=(F[t]||0)*vols[k]/total}
+ const long=d.glass!=='cocktail';const [lo,hi]=long?[4,14]:[14,30];const abv=f.a;
+ if(abv<lo*.6){s-=1.5;n.push('アルコールが弱すぎて物足りない')}else if(abv<lo){s-=.5;n.push('少し薄め')}else if(abv>hi*1.5){s-=2;n.push('アルコールが強すぎる！')}else if(abv>hi){s-=.5;n.push('ちょっと強め')}else{s+=.5;n.push('お酒の濃さがちょうどいい')}
+ if(f.sour>.05&&f.sw>.05){const r=f.sw/f.sour;if(r>.4&&r<2.5){s+=1;n.push('甘さと酸味のバランス◎')}else n.push(r>=2.5?'甘さが勝ちすぎ':'酸っぱすぎ')}
+ else if(f.sw>.4){s-=.5;n.push('甘すぎる（酸味を足すと◎）')}else if(f.sour>.4){s-=.5;n.push('酸っぱすぎる（甘みを足すと◎）')}
+ if(f.fizz>.3&&long){s+=.5;n.push('炭酸で爽快')}
+ if(f.beer>.2&&(f.fruit>.05||f.sw>.1)){s+=.5;n.push('ビアカクテルとして飲みやすい')}
+ if(f.beer>.2&&abv>12){s-=1;n.push('ビールに強いお酒は合わない')}
+ if(ks.length===1){s-=1;n.push('シンプルすぎる')}else if(ks.length===3)s+=.25;
+ if(d.method==='shake'&&f.sour>.1){s+=.5;n.push('シェイクで酸味がまろやか')}
+ if(d.method==='stir'&&(f.herb>.3||abv>15)){s+=.5;n.push('ステアで香りが引き立つ')}
+ if(d.garnish){const g=d.garnish;if((g==='g_lemon'||g==='g_lime')&&(f.sour>.05||f.fizz>.3)){s+=.5;n.push('柑橘の飾りが香りを引き立てる')}else if(g==='g_orange'&&(f.fruit>.1||f.beer>.2)){s+=.5;n.push('オレンジの香りがよく合う')}else if(g==='g_olive'&&f.herb>.15&&!long){s+=.5;n.push('オリーブが渋い')}else{s-=.25;n.push('飾りが少しちぐはぐ')}}
+ if(!long&&d.ice){s-=.5;n.push('カクテルグラスに氷は合わない')}
+ if(long&&!d.ice&&f.beer<.2){s-=.5;n.push('氷があると飲みやすい')}
+ if(!fills.length&&(fv+iceV)<cap*.35){s-=.5;n.push('グラスに対して量が少ない')}
+ let cost=0;for(const k in vols)cost+=vols[k]*ING[k].price/ING[k].unit;if(d.garnish)cost+=ING[d.garnish].price/ING[d.garnish].unit;
+ return{stars:clamp(Math.round(s*2)/2,1,5),notes:n,ok:true,abv,cost}}
+let OD=null;
+function newOD(){return{name:'',glass:'highball',method:'build',ice:true,ings:[{k:null,amt:30},{k:null,amt:'fill'},{k:null,amt:15}],garnish:null,price:800}}
+const ONAMES1=['ミッドナイト','ネオン','ルビー','ムーン','黄昏','スターダスト','シルク','ブルー','真夜中の','秘密の','ほろ酔い','ゴールデン','ラスト'],ONAMES2=['・サワー','・フィズ','・ドリーム','・キッス','・リバー','・トニック','・ブリーズ','の約束','の一杯','・ノート','・タップ'];
+function openOrig(tabs){if(!OD)OD=newOD();const slots=origSlots(),used=(S.originals||[]).length;
+ const avail=[...SPIRITS,...MIXERS,...TAPS].filter(k=>ingUnlocked(k));
+ if(!slots){openOv(`<div class="modal shop"><h1>閉店後の準備</h1>${tabs}<div style="padding:40px;text-align:center;line-height:2;font-size:15px">🔒 オリジナルカクテルはランク<b style="color:#ffd77a">「バーテンダー」</b>で解放されます。<br>いまのランク：${RANKS[rankIdx()].n}（${S.xp}XP / ${RANKS[1].xp}XP）<br><span style="font-size:13px;color:#f5e6c8aa">おいしい一杯を出したり決め技を決めるとXPがたまります</span></div><div class="sfoot"><div style="flex:1"></div><button class="btn" id="openBtn">DAY ${S.day} 開店 ▶</button></div></div>`);bindShopCommon();return}
+ const r=rateOriginal(OD);const d=OD;const fillOk=k=>ING[k].type!=='spirit'&&d.method!=='shake';
+ const ingRow=(x,i)=>`<div class="orow"><span>材料${i+1}</span><select data-oi="${i}"><option value="">（なし）</option>${avail.map(k=>`<option value="${k}" ${x.k===k?'selected':''}>${ING[k].name}</option>`).join('')}</select>${[10,15,30,45,60].map(a=>`<button class="chip ${x.amt===a?'on':''}" data-oa="${i}:${a}" ${!x.k?'disabled':''}>${a}ml</button>`).join('')}<button class="chip ${x.amt==='fill'?'on':''}" data-oa="${i}:fill" ${!x.k||!fillOk(x.k)?'disabled':''}>満たす</button></div>`;
+ const prevR={name:d.name||'（名前未定）',glass:d.glass,ice:d.ice,ings:Object.fromEntries(Object.entries(origVols(d).vols)),garnish:d.garnish};
+ const exp=450+150*(r.stars||1);
+ openOv(`<div class="modal shop"><h1 style="display:flex;justify-content:space-between">オリジナルカクテル開発 <span style="font-size:15px">登録 ${used}/${slots}枠 ・ 💴 ${yen(S.money)}</span></h1>${tabs}
+ <div class="ob"><div>
+  <div class="orow"><span>名前</span><input id="oName" maxlength="14" value="${esc(d.name||'')}" placeholder="カクテルの名前" style="width:220px"><button class="chip" id="oRnd">🎲 おまかせ</button></div>
+  <div class="orow"><span>グラス</span>${['highball','pint','mug','cocktail'].map(g=>`<button class="chip ${d.glass===g?'on':''}" data-og="${g}">${GL[g].full}</button>`).join('')}</div>
+  <div class="orow"><span>作り方</span>${[['build','ビルド（注ぐだけ）'],['stir','ステア'],['shake','シェイク']].map(([m,l])=>`<button class="chip ${d.method===m?'on':''}" data-om="${m}">${l}</button>`).join('')}</div>
+  <div class="orow"><span>氷</span><button class="chip ${d.ice?'on':''}" data-oice="1" ${d.method==='shake'?'disabled':''}>あり</button><button class="chip ${!d.ice?'on':''}" data-oice="0">なし</button>${d.method==='shake'?'<span style="font-size:11px;color:#aaa">シェイクはシェイカーの氷を使います</span>':''}</div>
+  ${d.ings.map(ingRow).join('')}
+  <div class="orow"><span>飾り</span><button class="chip ${!d.garnish?'on':''}" data-ogn="">なし</button>${GARN.filter(k=>ingUnlocked(k)).map(k=>`<button class="chip ${d.garnish===k?'on':''}" data-ogn="${k}">${ING[k].name}</button>`).join('')}</div>
+  <div class="orow"><span>値段</span>${[600,800,1000,1200,1500].map(p=>`<button class="chip ${d.price===p?'on':''}" data-op="${p}">${yen(p)}</button>`).join('')}</div>
+  <div style="font-size:11.5px;color:#f5e6c8aa;line-height:1.6">💡 使えるのは解禁済みの材料だけ。甘み（シロップ・カシス）と酸味（ライム果汁）のバランス、お酒の濃さ、飾りの相性で評価が決まります。</div>
+  ${(S.originals||[]).length?`<div style="margin-top:8px"><b style="color:#d4a24c;font-size:12px">登録済み</b>${S.originals.map(o=>`<div class="card" style="margin-top:4px;padding:6px 10px"><div class="info"><b>${esc(o.name)}</b> <span style="color:#ffc840">${'★'.repeat(Math.floor(o.stars))}${o.stars%1?'☆':''}</span> <span class="sub">${yen(o.price)} ・ ${recipeText(o.id)}</span></div><button class="btn sm sec" data-odel="${o.id}">削除</button></div>`).join('')}</div>`:''}
+ </div><div class="oprev">${glassSVG(d.glass,{w:70,fill:.85,color:mixColor(prevR.ings),garnish:d.garnish,foam:ks0(d)})}
+  <div style="font-weight:900;font-size:17px;color:#ffd77a">${esc(d.name||'（名前未定）')}</div>
+  <div class="st">${r.ok?'★'.repeat(Math.floor(r.stars))+(r.stars%1?'☆':'')+'<span style="color:#5a4030">'+'★'.repeat(5-Math.ceil(r.stars))+'</span>':'—'}</div>
+  <div style="font-size:12px">${r.ok?`アルコール約${r.abv.toFixed(0)}% ・ 原価 約${yen(r.cost)}`:''}</div>
+  <ul>${r.notes.map(x=>`<li>${x}</li>`).join('')}</ul>
+  ${r.ok?`<div style="font-size:12px;margin-top:6px;color:${d.price>exp*1.2?'#ff9a7a':'#7cff9a'}">${d.price>exp*1.2?'この評価だと値段が高すぎて注文が減りそう':'値段は妥当。お客さんが頼んでくれそう'}（目安 ${yen(exp)}）</div>`:''}
+  <button class="btn" id="oSave" style="margin-top:10px;width:100%" ${!r.ok||used>=slots||S.money<3000?'disabled':''}>メニューに登録（${yen(3000)}）</button>
+  ${used>=slots?'<div style="font-size:11px;color:#ff9a7a;margin-top:4px">枠がいっぱい（ランクアップで増える）</div>':''}
+ </div></div>
+ <div class="sfoot"><div style="flex:1"></div><button class="btn" id="openBtn">DAY ${S.day} 開店 ▶</button></div></div>`);
+ const rer=()=>openOrig(tabs);
+ $('#oName').oninput=e=>{OD.name=e.target.value};$('#oName').onchange=rer;
+ $('#oRnd').onclick=()=>{OD.name=pick(ONAMES1)+pick(ONAMES2);rer()};
+ document.querySelectorAll('[data-og]').forEach(b=>b.onclick=()=>{OD.glass=b.dataset.og;if(OD.glass==='cocktail')OD.ice=false;rer()});
+ document.querySelectorAll('[data-om]').forEach(b=>b.onclick=()=>{OD.method=b.dataset.om;if(OD.method==='shake'){OD.ice=false;OD.ings.forEach(x=>{if(x.amt==='fill')x.amt=30})}rer()});
+ document.querySelectorAll('[data-oice]').forEach(b=>b.onclick=()=>{OD.ice=b.dataset.oice==='1';rer()});
+ document.querySelectorAll('[data-oi]').forEach(sl=>sl.onchange=()=>{const x=OD.ings[+sl.dataset.oi];x.k=sl.value||null;if(x.k&&x.amt==='fill'&&!fillOk(x.k))x.amt=30;rer()});
+ document.querySelectorAll('[data-oa]').forEach(b=>b.onclick=()=>{const [i,a]=b.dataset.oa.split(':');OD.ings[+i].amt=a==='fill'?'fill':+a;rer()});
+ document.querySelectorAll('[data-ogn]').forEach(b=>b.onclick=()=>{OD.garnish=b.dataset.ogn||null;rer()});
+ document.querySelectorAll('[data-op]').forEach(b=>b.onclick=()=>{OD.price=+b.dataset.op;rer()});
+ document.querySelectorAll('[data-odel]').forEach(b=>b.onclick=()=>{S.originals=S.originals.filter(o=>o.id!==b.dataset.odel);delete S.unlocked[b.dataset.odel];syncOriginals();save();rer()});
+ $('#oSave').onclick=()=>{const rr=rateOriginal(OD);if(!rr.ok||S.money<3000)return;const nm=(OD.name||'').trim()||pick(ONAMES1)+pick(ONAMES2);const ings={};OD.ings.filter(x=>x.k).forEach(x=>ings[x.k]=x.amt);
+  const o={id:'o_'+Date.now().toString(36),name:nm,glass:OD.glass,ice:OD.method==='shake'?false:OD.ice,method:OD.method,ings,garnish:OD.garnish,price:OD.price,stars:rr.stars};
+  S.money-=3000;S.originals.push(o);syncOriginals();save();sfx.good();applause();toast(`🍸「${nm.slice(0,14)}」をメニューに登録！`);OD=newOD();rer()};
+ bindShopCommon()}
+function ks0(d){return d.ings.some(x=>x.k&&ING[x.k].type==='tap')}
+function bindShopCommon(){document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{sfx.pop();openShop(b.dataset.tab)});
+ $('#openBtn').onclick=()=>{confirmOpen=false;startService()}}
+
+/* ====================== BGM (generative lo-fi jazz) ====================== */
+const BGM={gain:null,timer:null,next:0,bar:0};
+const PROG=[[50,53,57,60,64],[43,53,55,59,64],[48,52,55,59,62],[45,52,55,60,64],[50,53,57,60,64],[43,53,55,59,62],[52,55,59,62,65],[45,55,57,60,64]];
+const BEAT=60/66;const PENTA=[72,74,76,79,81,84,86];
+function mtof(m){return 440*Math.pow(2,(m-69)/12)}
+function bgmVol(){if(SFXG&&AC)SFXG.gain.setTargetAtTime(SET.sfxVol,AC.currentTime,.05);if(!BGM.gain||!AC)return;BGM.gain.gain.setTargetAtTime((S&&S.bgm&&!muted)?.6*SET.bgmVol:0,AC.currentTime,.2)}
+function bgmStart(){const a=AC;if(!a||BGM.timer)return;const g=a.createGain();g.gain.value=0;const lp=a.createBiquadFilter();lp.type='lowpass';lp.frequency.value=2600;g.connect(lp).connect(a.destination);BGM.gain=g;BGM.next=a.currentTime+.3;BGM.timer=setInterval(bgmTick,80);bgmVol()}
+function bgmTick(){const a=AC;if(!a)return;if(!(S&&S.bgm)||muted)return;if(BGM.next<a.currentTime)BGM.next=a.currentTime+.1;while(BGM.next<a.currentTime+.4){schedBar(BGM.next,BGM.bar);BGM.next+=BEAT*4;BGM.bar++}}
+function bv(t,type,freq,dur,vol,att=.01){const a=AC,o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+att);g.gain.exponentialRampToValueAtTime(.0008,t+dur);o.connect(g).connect(BGM.gain);o.start(t);o.stop(t+dur+.05)}
+function bn(t,dur,freq,vol,type='bandpass',q=1){const a=AC,src=a.createBufferSource();src.buffer=nbuf();const f=a.createBiquadFilter();f.type=type;f.frequency.value=freq;f.Q.value=q;const g=a.createGain();g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0008,t+dur);src.connect(f).connect(g).connect(BGM.gain);src.start(t,Math.random());src.stop(t+dur+.05)}
+function ep(t,m,dur,v){bv(t,'sine',mtof(m),dur,v,.015);bv(t,'sine',mtof(m)*2,dur*.35,v*.18,.005);bv(t,'triangle',mtof(m),dur*.6,v*.25,.02)}
+function schedBar(t,bar){const ch=PROG[bar%PROG.length],nx=PROG[(bar+1)%PROG.length];const sw=BEAT*.66;
+ ch.slice(1).forEach((m,i)=>ep(t+i*.012,m,BEAT*3.6,.05));
+ if(Math.random()<.7)ch.slice(2).forEach((m,i)=>ep(t+BEAT*1.66+i*.01,m,BEAT*1.5,.03));
+ const root=ch[0]-12;const walk=[root,root+(Math.random()<.5?7:3),root+(Math.random()<.5?12:5),nx[0]-12+(Math.random()<.5?-1:1)];
+ walk.forEach((m,i)=>bv(t+i*BEAT,'triangle',mtof(m),BEAT*.95,.16,.02));
+ bv(t,'sine',58,.35,.22,.005);if(Math.random()<.5)bv(t+BEAT*2,'sine',58,.3,.14,.005);
+ for(const b of [1,3])bn(t+b*BEAT,.22,2400,.035,'bandpass',.6);
+ for(let b=0;b<4;b++){bn(t+b*BEAT,.05,8000,.012,'highpass');bn(t+b*BEAT+sw,.04,8000,.008,'highpass')}
+ if(Math.random()<.6){const n=2+Math.floor(Math.random()*3);for(let i=0;i<n;i++){const st=Math.floor(Math.random()*8)*BEAT/2;const m=pick(PENTA);bv(t+st,'sine',mtof(m),BEAT*1.8,.035,.01);bv(t+st,'sine',mtof(m)*4,BEAT*.4,.006,.005)}}
+ for(let i=0;i<6;i++)bn(t+Math.random()*BEAT*4,.01,3000+Math.random()*3000,.012*Math.random(),'bandpass',3);
+}
+
+/* ====================== GYRO / MOTION ====================== */
+const GY={on:false,base:null,got:false,ox:640,oy:520,last:null,act:false,quiet:0};
+function devDir(a,b,g){const r=Math.PI/180;a*=r;b*=r;g*=r;const sa=Math.sin(a),ca=Math.cos(a),sb=Math.sin(b),cb=Math.cos(b),sg=Math.sin(g),cg=Math.cos(g);
+ const vx=-sg*ca-cg*sb*sa,vy=-sg*sa+cg*sb*ca,vz=-cg*cb;return{yaw:Math.atan2(vx,vy)*180/Math.PI,pitch:Math.asin(clamp(vz,-1,1))*180/Math.PI}}
+function onOri(e){if(e.alpha==null&&e.beta==null)return;GY.got=true;const d=devDir(e.alpha||0,e.beta||0,e.gamma||0);GY.last=d;if(!GY.on)return;
+ if(!GY.base){GY.base=d;GY.ox=LOOK.x;GY.oy=LOOK.y}
+ let dy=d.yaw-GY.base.yaw;if(dy>180)dy-=360;if(dy<-180)dy+=360;const dp=d.pitch-GY.base.pitch;
+ LOOK.x=clamp(GY.ox+dy*26,0,1280);LOOK.y=clamp(GY.oy-dp*16,40,680)}
+function gyroRecenter(){GY.base=null}
+function onMot(e){if(!GY.on||!G||S.phase!=='service'||G.paused)return;const a=e.acceleration&&e.acceleration.x!=null?e.acceleration:null;let m;
+ if(a)m=Math.hypot(a.x||0,a.y||0,a.z||0);else{const g=e.accelerationIncludingGravity;if(!g||g.x==null)return;m=Math.abs(Math.hypot(g.x,g.y,g.z)-9.8)}
+ const dt=(e.interval>1?e.interval/1000:e.interval)||.016;
+ if(H&&H.kind==='glass'&&H.glass.type==='shaker'&&G.shaker.hasIngs()){
+  if(m>9&&(!P.act||P.act.phone)){if(!P.act){P.act={kind:'shake',energy:0,v:0,phone:1};showGauge('スマホを振ってシェイク！ 緑で止める')}}
+  if(P.act&&P.act.phone){if(m>6){P.act.energy+=m*dt*230;P.act.v=P.act.energy/5200;GY.quiet=0;if(Math.random()<.25)sfx.shake();if(DF().assist&&P.act.v>=.8){P.act=null;$('#gaugeBox').style.display='none';finishGauge('shake',.8)}}
+   else{GY.quiet+=dt;if(GY.quiet>.6){const v=P.act.v;P.act=null;$('#gaugeBox').style.display='none';finishGauge('shake',v)}}}}}
+async function gyroEnable(on){if(!on){GY.on=false;SET.gyro=0;saveSet();toast('ジャイロをオフにしました');return}
+ let denied=false;
+ try{if(typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function'){const r=await DeviceOrientationEvent.requestPermission();if(r!=='granted')denied=true}}catch(e){}
+ try{if(typeof DeviceMotionEvent!=='undefined'&&typeof DeviceMotionEvent.requestPermission==='function'){await DeviceMotionEvent.requestPermission()}}catch(e){}
+ if(!gyroEnable.bound){addEventListener('deviceorientation',onOri);addEventListener('devicemotion',onMot);gyroEnable.bound=1}
+ GY.on=true;GY.base=null;SET.gyro=1;saveSet();touchMode=true;document.body.classList.add('touch');toast('📱 ジャイロON：スマホを傾けて見回し、シェイカーを持ってスマホを振るとシェイク');
+ setTimeout(()=>{if(!GY.got)toast(denied?'ジャイロの使用が許可されませんでした':'ジャイロが反応しません。ウェブサイト版（https）で開くと使えます')},1800)}
+function showSettings(){if(S&&S.phase==='report'){toast('閉店画面を閉じてから設定してね');return}const was=G&&G.paused;if(G&&S.phase==='service')G.paused=true;const prev=S.phase;
+ const tg=(k,l)=>`<div class="setrow"><span>${l}</span><button class="tg ${SET[k]?'on':''}" data-st="${k}">${SET[k]?'表示する':'表示しない'}</button></div>`;
+ openOv(`<div class="modal" style="width:600px"><h1>⚙ 設定</h1>
+ <div class="setrow"><span>🎵 BGMの音量</span><input type="range" min="0" max="100" value="${Math.round(SET.bgmVol*100)}" id="sBgm"><b id="sBgmV" style="width:44px;text-align:right">${Math.round(SET.bgmVol*100)}</b></div>
+ <div class="setrow"><span>🔔 効果音の音量</span><input type="range" min="0" max="100" value="${Math.round(SET.sfxVol*100)}" id="sSfx"><b id="sSfxV" style="width:44px;text-align:right">${Math.round(SET.sfxVol*100)}</b></div>
+ ${tg('arrow','⬇ 黄色い矢印「ここ！」')}${tg('labels','🏷 場所の名札（①〜⑨）')}${tg('hint','💬 画面下の「次は▶」')}
+ <div class="setrow"><span>🖥 画質</span>${[['auto','自動'],['high','高画質'],['low','軽量（スマホ向け）']].map(([k,l])=>`<button class="tg ${SET.quality===k?'on':''}" data-q="${k}">${l}</button>`).join('')}</div>
+ <div class="setrow"><span>📱 ジャイロ操作<br><small style="font-size:11px;color:#aaa">傾けて見回す・振ってシェイク</small></span><button class="tg ${GY.on?'on':''}" id="sGyro">${GY.on?'ON':'OFF'}</button><button class="tg" id="sGyroC">正面リセット</button></div>
+ <div class="setrow"><span>⛶ 全画面</span><button class="tg" id="sFull">全画面にする</button></div>
+ ${S?`<div class="setrow"><span>🎚 難易度</span>${diffSel()}</div>`:''}
+ <div style="display:flex;justify-content:flex-end;margin-top:14px"><button class="btn" id="sClose">閉じる</button></div></div>`);
+ $('#sBgm').oninput=e=>{SET.bgmVol=e.target.value/100;$('#sBgmV').textContent=e.target.value;if(S)S.bgm=SET.bgmVol>0?1:0;ac();bgmStart();bgmVol();saveSet()};
+ $('#sSfx').oninput=e=>{SET.sfxVol=e.target.value/100;$('#sSfxV').textContent=e.target.value;ac();bgmVol();saveSet()};$('#sSfx').onchange=()=>sfx.pop();
+ document.querySelectorAll('[data-st]').forEach(b=>b.onclick=()=>{const k=b.dataset.st;SET[k]=SET[k]?0:1;saveSet();showSettings();if(G)G.paused=true});
+ document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{SET.quality=b.dataset.q;saveSet();fit();showSettings()});
+ $('#sGyro').onclick=async()=>{await gyroEnable(!GY.on);showSettings();if(G&&S.phase==='service')G.paused=true};$('#sGyroC').onclick=()=>{gyroRecenter();toast('いまの向きを正面にしました')};
+ $('#sFull').onclick=()=>{try{const el=document.documentElement;(el.requestFullscreen||el.webkitRequestFullscreen).call(el).catch(()=>toast('この画面では全画面にできません'))}catch(e){toast('この画面では全画面にできません')}};
+ if(S)bindDiffSel(()=>{showSettings()});
+ $('#sClose').onclick=()=>{if(prev==='shop'){openShop();return}if(prev==='title'){showTitle();return}if(prev==='report'){closeOv();return}closeOv();if(G)G.paused=was&&false}}
+
+/* ====================== LABELS / ARROW ====================== */
+const LABELS=[
+ {n:'① グラス棚',sub:'グラスを取る',p:V(-1.18,1.12,-.3),k:'rack'},
+ {n:'② シェイカー',sub:'カクテル用',p:V(-.76,1.13,-.2),k:'shaker'},
+ {n:'③ バースプーン',sub:'混ぜる',p:V(-.76,1.3,-.42),k:'spoon'},
+ {n:'④ 氷',sub:'すくう',p:V(-.52,1.05,-.22),k:'ice'},
+ {n:'⑤ ボトル棚',sub:'奥：お酒 ／ 手前：割り材',p:V(.02,1.3,-.51),k:'bottle'},
+ {n:'⑥ 作業マット',sub:'ここで作る',p:V(.01,.93,-.08),k:'mat'},
+ {n:'⑦ フルーツ',sub:'飾り',p:V(.55,1.0,-.25),k:'garnish'},
+ {n:'⑧ ビールタップ',sub:'ハンドルを手前に引く',p:V(1.04,1.48,-.54),k:'tap'},
+ {n:'⑨ シンク',sub:'洗う・捨てる',p:V(1.52,1.0,-.27),k:'sink'},
+];
+function renderLabels(hl){const box=$('#labels');if(!SET.labels&&!G.tutorial){if(box.innerHTML)box.innerHTML='';return}
+ const hk=(hl||'').split(':')[0];let h='';
+ for(const L of LABELS){const p=toScreen(L.p);if(!p.vis||p.x<-40||p.x>1320)continue;const on=hk===L.k||(hk==='glass'&&L.k==='mat');h+=`<div class="slab ${on?'on':''}" style="left:${p.x.toFixed(0)}px;top:${p.y.toFixed(0)}px">${L.n}<small>${L.sub}</small></div>`}
+ if(h!==renderLabels.l){box.innerHTML=h;renderLabels.l=h}}
+const _b=new THREE.Box3();
+function renderArrow(hl,txt){const ar=$('#arrow');if((!SET.arrow&&!G.tutorial)||!hl||P.act){ar.style.display='none';return}
+ const t=hlTargets(hl);if(!t.length){ar.style.display='none';return}
+ _b.setFromObject(t[0]);const c=_b.getCenter(new THREE.Vector3());c.y=_b.max.y+.015;const p=toScreen(c);
+ let lab=hl.startsWith('serve')||hl==='callers'?'ここをクリック':hl.startsWith('tap')?'押して手前に引く':hl==='sink'&&!(H&&H.kind==='glass')?'押してこする':hl==='glass'&&H&&H.kind==='spoon'?'押してぐるぐる':hl==='glass'&&H&&H.kind==='bottle'?'ここで長押し':hl==='shaker'&&H&&H.glass===G.shaker?'押したまま振る':'ここ！';
+ ar.classList.remove('side');let arrowCh='⬇';let x=p.x,y=p.y;
+ if(!p.vis){ar.style.display='none';return}
+ if(x<40){x=70;y=clamp(y,150,600);arrowCh='⬅';lab=touchMode?'◀ボタンで左を見る':'左を見て（マウスを左端へ）';ar.classList.add('side')}
+ else if(x>1240){x=1180;y=clamp(y,150,600);arrowCh='➡';lab=touchMode?'▶ボタンで右を見る':'右を見て（マウスを右端へ）';ar.classList.add('side')}
+ else if(y<60){y=110;arrowCh='⬆';lab=touchMode?'⬆客席ボタン':'上を見て（マウスを上へ）'}
+ else if(y>700){y=640;arrowCh='⬇';lab=touchMode?'⬇手元ボタン':'下を見て（マウスを下へ）'}
+ ar.style.display='block';ar.style.left=x+'px';ar.style.top=(y-4)+'px';const hh=`<div class="al">${lab}</div><div class="ar">${arrowCh}</div>`;if(ar.innerHTML!==hh)ar.innerHTML=hh}
+
+/* ====================== TUTORIAL ====================== */
+const TUT=[
+ {t:'ようこそ！ ここはあなたのバー。画面は<b>あなたの目線</b>です。<br>マウスを<b>上</b>に動かすと客席、<b>下</b>に動かすと手元の作業台。<b>左右の端</b>に寄せると首を振れます。ちょっと動かしてみよう。',btn:'見回せた！'},
+ {t:'水色の<b>札</b>が場所の名前です（①グラス棚 〜 ⑨シンク）。<br>覚えなくてOK！ やることは毎回<b>黄色い矢印⬇</b>と、この枠の<b>「次は」</b>が教えてくれます。<br>持っている物は<b>右クリック</b>でいつでも戻せます。',btn:'わかった'},
+ {t:'お客さんが来ました！ 頭の上の<b>「🙋注文！」</b>のお客さんをクリックして注文を聞こう。',enter(){tutSpawn('pale')},done:()=>G.customers.some(c=>c.status==='ordered'),hl:'callers'},
+ {t:'注文は<b>ペールエール</b>（ビール）。右上の<b>伝票</b>に手順が出ます。<br>ビールはグラスを持ったまま<b>タップのハンドルを押して手前（下）へ引く</b>と注げます。強く引くほど泡が増えるよ。',done:()=>G.stats.served>=1,dyn:1},
+ {t:'ナイス！🍺 お客さんが飲んでいます。飲み終わると<b>お会計とグラス</b>がカウンターに残ります。少し待ってね…',done:()=>G.seats.some(s=>s.money>0)},
+ {t:'カウンターの<b>💴お会計</b>をクリックして回収しよう。空きグラスは自動でシンクへ。<br>（片付けないと、その席に次のお客さんが座れません）',done:()=>!G.seats.some(s=>s.money>0||s.glasses.length),hl:'tables'},
+ {t:'次のお客さん！ クリックして注文を聞こう。',enter(){tutSpawn('highball')},done:()=>G.customers.some(c=>c.status==='ordered'),hl:'callers'},
+ {t:'注文は<b>ハイボール</b>。氷・ボトル・ステア（混ぜる）・レモンを使います。<br>ボトルは<b>持ってグラスの上で長押し</b>。ステアは<b>スプーンを持ってグラスの上でぐるぐる</b>。',done:()=>G.stats.served>=2,dyn:1},
+ {t:'最後に洗い物！ 汚れたグラスがシンクにあります。<br><b>シンクを押したまま、マウスを左右にこする</b>と洗えます。',done:()=>G.dirty.length===0,hl:'sink'},
+ {t:'🎉 <b>チュートリアル完了！</b><br>本番では次々にお客さんが来ます。迷ったら<b>矢印</b>と<b>右上の伝票</b>を見てね。<br>難易度はいつでも一時停止メニューから変えられます。',btn:'営業スタート！',end:1},
+];
+function tutSpawn(order){G.forceOrder=order;G.forceType='office';const seat=G.seats.find(s=>s.i===1&&seatFree(s))||G.seats.find(seatFree);if(!seat)return;const save=G.seats.map(s=>s.i);spawnCustomer(true);const c=G.customers[G.customers.length-1];if(c&&c.seat!==seat.i){G.seats[c.seat].cust=null;c.seat=seat.i;seat.cust=c;c.target=V(SEATX[seat.i],0,-1.36)}}
+function startTutorial(after){S.phase='service';newDay();G.tutorial={st:-1,after};closeOv();tutGo(0)}
+function tutGo(i){G.tutorial.st=i;const s=TUT[i];if(s&&s.enter)s.enter();tutRender.last=null;tutRender()}
+function tutUpdate(){const s=TUT[G.tutorial.st];if(s&&s.done&&s.done())tutGo(G.tutorial.st+1)}
+function tutRender(){const s=TUT[G.tutorial.st];const el=$('#tut');if(!s){el.style.display='none';return}
+ const nh=s.dyn||s.hl==='callers'||s.hl==='tables'||s.hl==='sink'?nextHint().t:'';
+ const html=`<div class="th"><span>📘 チュートリアル ${G.tutorial.st+1} / ${TUT.length}</span><span style="color:#aaa;cursor:pointer" id="tutSkip">スキップ ✕</span></div><div class="tt">${s.t}</div>${nh&&!s.btn?`<div class="nx"><b>次は▶</b> ${nh}</div>`:''}${s.btn?`<div class="row"><button class="btn sm" id="tutBtn">${s.btn}</button></div>`:''}`;
+ el.style.display='block';if(html===tutRender.last)return;tutRender.last=html;el.innerHTML=html;
+ const b=$('#tutBtn');if(b)b.onclick=()=>{sfx.pop();if(s.end){tutFinish();return}tutGo(G.tutorial.st+1)};
+ $('#tutSkip').onclick=()=>tutFinish()}
+function tutFinish(){const after=G.tutorial&&G.tutorial.after;S.tutDone=1;$('#tut').style.display='none';G.tutorial=null;
+ const s0=load();if(after==='shop'&&s0){S=s0;S.tutDone=1;applyDiff();newDay();openShop('stock');return}
+ S.day=Math.max(1,S.day);startService()}
+
+/* ====================== DIFFICULTY UI ====================== */
+function diffCards(cur){return `<div class="dgrid">${Object.keys(DIFF).map(k=>{const d=DIFF[k];return `<div class="dcard ${cur===k?'on':''}" data-diff="${k}"><div style="font-size:34px">${d.icon}</div><b>${d.name}</b>${d.desc}</div>`}).join('')}</div>`}
+function diffSel(){return `<div class="dsel">難易度：${Object.keys(DIFF).map(k=>`<button data-dset="${k}" class="${S.diff===k?'on':''}">${DIFF[k].name}</button>`).join('')}</div>`}
+function bindDiffSel(after){document.querySelectorAll('[data-dset]').forEach(b=>b.onclick=()=>{S.diff=b.dataset.dset;applyDiff();save();sfx.pop();toast('難易度：'+DF().name);after&&after()})}
+function newGameFlow(){openOv(`<div class="modal" style="width:860px"><h1>難易度をえらぶ</h1><p style="font-size:13px;color:#f5e6c8bb">あとからいつでも変えられます。はじめての人は「かんたん」がおすすめ！</p>${diffCards('easy')}<div style="display:flex;justify-content:space-between;margin-top:14px"><button class="btn sec" id="dBack">戻る</button></div></div>`);
+ $('#dBack').onclick=showTitle;
+ document.querySelectorAll('[data-diff]').forEach(c=>c.onclick=()=>{ac();S=freshSave();syncOriginals();S.diff=c.dataset.diff;applyDiff();save();sfx.pop();
+  openOv(`<div class="modal" style="width:560px;text-align:center"><h1>チュートリアルをやりますか？</h1><p style="line-height:1.8">お客さん2人を相手に、<b style="color:#ffd77a">ビール</b>と<b style="color:#ffd77a">ハイボール</b>の作り方、<br>お会計と洗い物を1つずつ練習します（約3分・時間制限なし）。</p><div class="tbtns"><button class="btn" id="tY">やる（おすすめ）</button><button class="btn sec" id="tN">スキップして営業開始</button></div></div>`);
+  $('#tY').onclick=()=>startTutorial('day1');$('#tN').onclick=()=>startService()})}
+/* ====================== BOOT ====================== */
+buildRoom();buildStation();
+S=load()||freshSave();S.phase='title';syncOriginals();applyDiff();newDay();
+$('#loading').remove();
+showTitle();
+requestAnimationFrame(frame);
+
+</script>
+</body>
+</html>
