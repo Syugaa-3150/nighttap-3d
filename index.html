@@ -1128,6 +1128,7 @@ function evUpdate(dt){chalCheck();const f=G.time/G.dayLen;
  if(G.quarrel){G.quarrel.t-=dt;if(G.quarrel.t<=0){const {a,b}=G.quarrel;for(const c of [a,b]){c.quarrel=0;c.mood='angry';c.talkBonus=.8;c.dirty=1}G.quarrel=null;S.rep=clamp(S.rep-.04,.5,5);toast('💢 ケンカが続いて、お店の空気が悪くなった…')}}}
 function calmQuarrel(c){if(!G.quarrel)return false;const {a,b}=G.quarrel;if(c!==a&&c!==b)return false;G.quarrel=null;for(const x of [a,b]){x.quarrel=0;x.mood='happy';x.talkBonus=1.15;x.dirty=1}say(a,'…悪かったな',2.5);setTimeout(()=>say(b,'こっちこそ。乾杯しよう',2.5),1000);addXP(3);G.goodTalk=(G.goodTalk||0)+1;sfx.good();floatAt(c.m.g.position.clone().add(V(0,2,0)),'🤝 仲直り成功！ 2人のチップUP','#7cff9a',16);return true}
 const CONVO=[['お一人ですか？','ええ、ここ居心地よくて'],['それ何飲んでるんですか？','ハイボール。おすすめですよ'],['今日は混んでますね','金曜ですからねえ'],['この曲いいですね','わかる、つい聞き入っちゃう'],['乾杯しません？','いいですね、乾杯！'],['よく来るんですか？','週に一回くらいかな'],['バーテンダーさん、手際いいよね','ほんと、見てて楽しい']];
+function autoBus(dt){for(const st of G.seats){if(st.glasses.length&&st.cust&&st.cust.status!=='leave'){st.busT=(st.busT||0)+dt;if(st.busT>6){st.busT=0;for(const gl of st.glasses){G.dirty.push(gl.type);gl.dispose()}st.glasses=[];layoutSeat(st);floatAt(V(SEATX[st.i],1.25,-.8),'空きグラスを下げた→シンクへ','#c8faf6',13);sfx.clink()}}else st.busT=0}}
 function patMul0(){return 1+decorFx('pat')}
 function patMul(c){return patMul0()*(S.up.juke?1.3:1)*(c&&c.ty&&CT[c.ty]?CT[c.ty].pat:1)}
 function phaseMul(){const f=G.time/G.dayLen;return f<.15?1.5:f<.3?1.05:f<.7?.72:f<.85?1.1:1.7}
@@ -1230,14 +1231,14 @@ function updateCust(c,dt){if(c.m.star){c.m.star.rotation.y+=dt*2;c.m.star.positi
  if(c.status==='enter'){if(c.t<1.1){const k=c.t/1.1;g.position.lerpVectors(OUTSIDE,DOOR,k);g.rotation.y=Math.PI/2;walkAnim(c,true,dt)}else{const k=clamp((c.t-1.1)/2.2,0,1);g.position.lerpVectors(DOOR,c.target,k);const face=Math.atan2(c.target.x-DOOR.x,c.target.z-DOOR.z);g.rotation.y=k<.85?face:face*(1-(k-.85)/.15);walkAnim(c,k<1,dt)}g.position.y=0
   if(c.t>2.5&&c.reg&&!c.greeted){c.greeted=1;const st=S.regs[c.reg]||{};const ln=[...(VL.reg[c.reg]||['また来たよー']),...((st.aff||0)>=3?VL.regClose:[])];const t=pick(ln);say(c,t,2.4);speakC(c,t,true)}
   if(c.t>3.3){walkAnim(c,false,dt);c.m.legs&&c.m.legs.forEach(l=>l.rotation.x=0);if(c.reg)setTimeout(()=>callOut(c),1600);else callOut(c);c.status='waiting';c.pat=c.patMax=34*DF().patWait*patMul(c);c.t=0;c.dirty=1;g.rotation.y=0}}
- else if(c.status==='relax'){c.relaxT-=dt;g.position.y=Math.sin(c.t*2+c.ph)*.004;if(c.relaxT<=0){callOut(c);c.status='waiting';c.pat=c.patMax=34*DF().patWait*patMul(c);c.mood='neutral';c.dirty=1}}
+ else if(c.status==='relax'){c.relaxT-=dt;g.position.y=Math.sin(c.t*2+c.ph)*.004;if(c.relaxT<=0){callOut(c);c.again=1;say(c,pick(['おかわりお願い！','もう一杯いいかな？','次、頼んでもいい？']),2.2);c.status='waiting';c.pat=c.patMax=34*DF().patWait*patMul(c);c.mood='neutral';c.dirty=1}}
  else if(c.status==='waiting'||c.status==='ordered'){if(!G.tutorial)c.pat-=dt;if(DF().noAngry)c.pat=Math.max(c.pat,c.patMax*.12);{const LP=(LIGHTSET[S.light]||{}).pat;if(LP&&!G.tutorial)c.pat+=dt*(LP-1)*.9}if(c.status==='ordered'){c.orderT+=dt;if(c.ty==='drunk'&&!c.changed&&c.orderT>9&&Math.random()<dt*.12){const o2=chooseOrder(c);if(o2&&o2!==c.order){c.changed=1;c.order=o2;makeEff(c);c.pat=Math.min(c.patMax,c.pat+20);say(c,`やっぱ${RECIPES[o2].name}にして〜`,3);sfx.pop();floatAt(c.m.g.position.clone().add(V(0,1.95,0)),'注文変更！','#ffb070',18);D.ticket=1}}}g.position.y=Math.sin(c.t*2+c.ph)*.004;
   if(c.pat<=0){say(c,'もういいよ！',2);G.stats.angry++;G.combo=0;S.rep=clamp(S.rep-.12,.5,5);floatAt(g.position.clone().add(V(0,1.9,0)),'怒って帰った… 評判↓','#ff7a7a',16);sfx.bad();leave(c,'angry')}
   else if(c.pat/c.patMax<.3&&c.mood!=='angry'){c.mood='angry';c.dirty=1}}
  else if(c.status==='drinking'){c.drinkT-=dt;if(!c.say&&!G.tutorial&&Math.random()<dt*(c.pers==='chatty'?.06:.015)){const t=pick(c.reg&&S.regs[c.reg]?[REGS.find(r=>r.id===c.reg).lines[clamp(S.regs[c.reg].aff,0,5)].slice(0,26)+'…',...(pers(c).small||[])]:(pers(c).small||['……']));say(c,t,3.2);if(Math.random()<.3)speakC(c,human(c,t))}g.rotation.z=Math.sin(c.t*1.3+c.ph)*.02;
   if(c.served){c.served.shownFill=Math.max(.04,c.served.fill0*(c.drinkT/c.drinkMax));
    const sip=(c.t%4)<.9;const hp=V(SEATX[c.seat]+.05,1.125,-.78);if(sip){const k=Math.sin((c.t%4)/.9*Math.PI);c.served.g.position.set(hp.x,hp.y+k*.38,hp.z-k*.42);c.served.g.rotation.x=-k*.9}else{c.served.g.position.copy(hp);c.served.g.rotation.x=0}}
-  if(c.drinkT<=0){c.drinks++;const seat=G.seats[c.seat];const gl=c.served;c.served=null;gl.dirtyGlass=true;gl.shownFill=.05;seat.glasses.push(gl);layoutSeat(seat);
+  if(c.drinkT<=0){c.drinks++;const seat=G.seats[c.seat];const gl=c.served;c.served=null;if(gl){gl.dirtyGlass=true;gl.shownFill=.05;seat.glasses.push(gl);layoutSeat(seat)}
    if(!G.tutorial&&!G.closing&&c.drinks<3&&Math.random()<.55&&G.time<G.dayLen*.9){c.status='relax';c.relaxT=DF().brk*rnd(.8,1.3);c.mood='happy';c.dirty=1;g.rotation.z=0}
    else{const t=pick(c.reg?VL.leaveReg:c.en?['Thank you!','See you!']:pers(c).leave);say(c,t,1.8);speakC(c,t);leave(c,c.mood==='happy'?'happy':'neutral')}}}
  else if(c.status==='leave'){walkAnim(c,true,dt);if(c.t<2){const k=c.t/2;g.position.lerpVectors(c.from,DOOR,k);g.rotation.y=Math.atan2(DOOR.x-c.from.x,DOOR.z-c.from.z)}else{const k=clamp((c.t-2)/1.1,0,1);g.position.lerpVectors(DOOR,OUTSIDE,k);g.rotation.y=-Math.PI/2}g.position.y=0;
@@ -1298,7 +1299,10 @@ function evaluate(gl,rid){
  if(DF().noAngry)s=100-(100-s)*.5;return{score:clamp(Math.round(s),0,100),notes:n}}
 function serve(c,gl){
  if(G.net==='guest')return guestServe(c,gl);
- const r=RC(c);const ev=G.netEv||evaluate(gl,r);if(gl.wet&&DX().wetPen){ev.score=Math.max(0,ev.score-DX().wetPen);ev.notes.push('グラスが濡れている（拭こう）')}const pr=c.pat/c.patMax;
+ const r=RC(c);const ev=G.netEv||evaluate(gl,r);
+ if(gl.loc&&gl.loc.kind==='slot'&&gl.loc.slot.glass===gl)gl.loc.slot.glass=null;if(H&&H.glass===gl)H=null;gl.loc={kind:'served'};c.served=gl;c.status='drinking';c.drinkT=c.drinkMax=rnd(12,18);c.t=0;gl.g.position.set(SEATX[c.seat]+.05,1.125,-.78);gl.g.rotation.set(0,0,0);if(G.active===c.id)G.active=null;c.dirty=1;D.ticket=1;
+ try{serveRest(c,gl,r,ev)}catch(e){console.error(e)}pickNextActive()}
+function serveRest(c,gl,r,ev){if(gl.wet&&DX().wetPen){ev.score=Math.max(0,ev.score-DX().wetPen);ev.notes.push('グラスが濡れている（拭こう）')}const pr=c.pat/c.patMax;
  const ct=CT[c.ty]||CT.office;const tricks=[...(gl.c.tricks||[])];if(c.orderT<=20&&ev.score>=70)tricks.push('神速サーブ');
  onBeat();if((G.beatStreak||0)>=4&&isPeak()){tricks.push('リズム職人');G.beatStreak=0}
  if(ev.score>=90){G.combo=(G.combo||0)+1}else G.combo=0;G.hl.maxCombo=Math.max(G.hl.maxCombo,G.combo||0);
@@ -1320,12 +1324,12 @@ function serve(c,gl){
  if(c.ty==='critic')floatAt(c.m.g.position.clone().add(V(0,2.05,0)),ev.score>=90?'評論家が絶賛！ 評判大幅UP':ev.score>=70?'評論家：悪くない':'評論家に酷評された…',ev.score>=70?'#7cff9a':'#ff7a7a',17);
  if(c.reg&&ev.score>=70){const st=S.regs[c.reg];if(st&&st.aff<5){st.aff++;setTimeout(()=>talk(c.reg,st.aff),1200)}}
  if(ev.score>=90){G.stats.perfect++;S.totals.perfect++;if(r.method==='tap')S.totals.beerPerfect++}
- H=null;gl.loc={kind:'served'};gl.fill0=Math.min(1,gl.fill());gl.shownFill=gl.fill0;c.served=gl;gl.g.position.set(SEATX[c.seat]+.05,1.125,-.78);gl.g.rotation.set(0,0,0);
- c.status='drinking';c.drinkT=c.drinkMax=rnd(12,18);c.t=0;c.mood=ev.score>=70?'happy':ev.score>=50?'neutral':'sad';
+ gl.fill0=Math.min(1,gl.fill());gl.shownFill=gl.fill0;
+ c.mood=ev.score>=70?'happy':ev.score>=50?'neutral':'sad';
  {const k=ev.score>=90?'p':ev.score>=70?'g':ev.score>=50?'m':'b';let t=pick(Math.random()<.65?pers(c).react[k]:VL.react[k]);if(c.reg&&ev.score>=90&&Math.random()<.6)t=pick(VL.reactReg);if(c.en)t=pick(k==='p'||k==='g'?['Amazing!','So good!','Perfect!']:['Hmm...','Not quite...']);say(c,t,2);setTimeout(()=>speakC(c,t),500);k==='p'?sfx.good():k==='b'?sfx.bad():sfx.ok()}
  floatAt(c.m.g.position.clone().add(V(0,1.3,.3)),`${yen(price)}${tip?' +チップ'+yen(tip):''}`,'#ffd34a',18);
  if(ev.score>=90)for(let i=0;i<14;i++)emit(gl.g.position.clone().add(V(0,.15,0)),'#ffe27a',1,.5);
- G.lastEval={name:r.name,score:ev.score,notes:ev.notes,tip,tricks,combo:G.combo||0};G.evalT=3.8;showEval();pickNextActive();c.dirty=1;checkAch()}
+ G.lastEval={name:r.name,score:ev.score,notes:ev.notes,tip,tricks,combo:G.combo||0};G.evalT=3.8;showEval();c.dirty=1;checkAch()}
 function showEval(){const e=G.lastEval,p=$('#evalPop');const st=e.score>=90?'★★★':e.score>=70?'★★☆':e.score>=50?'★☆☆':'☆☆☆';const col=e.score>=90?'#7cff9a':e.score>=70?'#ffd77a':e.score>=50?'#ffb070':'#ff7a7a';
  p.innerHTML=`<div style="font-size:13px;font-weight:800">${e.name}</div><div class="sc" style="color:${col}">${st} ${e.score}点</div>${e.tricks&&e.tricks.length?`<div style="color:#ff9ae0;font-weight:900">✨ ${e.tricks.join(' ・ ')}</div>`:''}${e.combo>=2?`<div style="color:#ffe14a;font-weight:900">COMBO ×${e.combo}</div>`:''}${e.tip?`<div style="color:#ffd34a;font-weight:800">チップ ${yen(e.tip)}</div>`:''}<div class="nt">${e.notes.length?e.notes.slice(0,3).join('<br>'):'完璧な一杯！'}</div>`;p.style.display='block'}
 
@@ -1593,7 +1597,7 @@ function trySlide(A,v){const gl=H&&H.glass;if(!gl)return;let best=null,bd=1e9;fo
  G.slides.push({gl,from,to,t:0,dur:.6,c:best,fail:false});noise(.5,700,.05,.8)}
 function updSlides(dt){for(const S0 of [...G.slides]){S0.t+=dt;const k=clamp(S0.t/S0.dur,0,1);const e=1-Math.pow(1-k,2);S0.gl.g.position.lerpVectors(S0.from,S0.to,e);S0.gl.g.position.y+=Math.sin(k*Math.PI)*.12;S0.gl.g.rotation.y+=dt*(S0.fail?12:2);
  if(k>=1){G.slides.splice(G.slides.indexOf(S0),1);if(S0.fail){crash(S0.gl.g.position.clone());if(DX().brk&&S.glasses[S0.gl.type]>1){S.glasses[S0.gl.type]--;msg(`グラスが割れた…（${GL[S0.gl.type].name} 在庫-1）`)}S0.gl.dispose()}
-  else{if(S0.c.status==='ordered'){S0.gl.c.tricks=[...(S0.gl.c.tricks||[]),'スライドサーブ'];serve(S0.c,S0.gl)}else{S0.gl.dispose()}}}}}
+  else{if(S0.c.status==='ordered'){S0.gl.c.tricks=[...(S0.gl.c.tricks||[]),'スライドサーブ'];serve(S0.c,S0.gl)}else{G.dirty.push(S0.gl.type);S0.gl.dispose();msg('お客さんが注文中ではなかったので、グラスを下げました')}}}}}
 function crash(p){for(let i=0;i<22;i++)emit(p,'#e8f4ff',1,.6);noise(.35,4200,.18,.6);tone(2800,.15,'triangle',.06);tone(1900,.2,'triangle',.05,.04)}
 // --- puddles
 const PUDDLES=[];const PUDM=new THREE.MeshStandardMaterial({color:0xc8a860,transparent:true,opacity:.5,roughness:.05,metalness:.2,envMapIntensity:2});
@@ -1672,7 +1676,8 @@ function update(dt){
  if(G.net==='guest'){}else if(G.tutorial){tutUpdate()}else{G.time+=dt;if(DX().airDry){G.dryT=(G.dryT||0)+dt;if(G.dryT>DX().airDry){G.dryT=0;if(wetCount())polishOne()}}}
  if(!G.closing&&!G.tutorial&&G.net!=='guest'){const f=G.time/G.dayLen;if(f>.3&&G.phaseShown<1){G.phaseShown=1;toast('🔔 ピークタイム！ お客さんが増えてきた');if(DX().cutStart<99){const pc=GARN.filter(citrus).reduce((a,k)=>a+(G.cut[k]||0),0);if(pc>=8){G.prepBoost=1;setTimeout(()=>toast('🔪 仕込みバッチリ！ ピーク中のチップ +15%'),1600)}}tone(784,.3,'triangle',.06);tone(988,.4,'triangle',.06,.12)}if(f>.7&&G.phaseShown<2){G.phaseShown=2;toast('🌙 ひと段落。ラストオーダーまであと少し')}
  G.spawnT-=dt;if(G.spawnT<=0){if(G.time<G.dayLen*.9)spawnCustomer();G.spawnT=spawnInterval()}if(G.time>=G.dayLen)startClosing()}
- for(const c of [...G.customers]){if(G.net==='guest'&&c.status!=='enter'&&c.status!=='leave'){c.t+=dt;if(c.sayT>0){c.sayT-=dt;if(c.sayT<=0){c.say=null;c.dirty=1}}continue}updateCust(c,dt)}
+ for(const c of [...G.customers]){if(G.net==='guest'&&c.status!=='enter'&&c.status!=='leave'){c.t+=dt;if(c.sayT>0){c.sayT-=dt;if(c.sayT<=0){c.say=null;c.dirty=1}}continue}try{updateCust(c,dt)}catch(e){console.error(e);if(c.status==='drinking'&&!c.served)c.drinkT=0}}
+ autoBus(dt);
  const A=P.act;let pouring=false;
  // taps
  ST.taps.forEach((tp,i)=>{let target=0;if(A&&A.kind==='tap'&&A.i===i)target=clamp((P.y-A.y0)/110,0,1);tp.pull+=(target-tp.pull)*Math.min(1,dt*14);tp.piv.rotation.x=tp.pull*.85;
@@ -1825,7 +1830,8 @@ function renderBubbles(){for(const c of G.customers){const b=c.bub;const p=toScr
   if(!p.vis||c.status==='enter'&&c.t<2||c.status==='leave'&&(!c.say||c.t>2)){b.style.display='none';continue}
   let html='',cls='bub';
   if(c.say){cls+=' say';html=c.say}
-  else if(c.status==='waiting'){cls+=' call';html=`<span class="sn" style="background:${SEATCOL[c.seat]}">${c.seat+1}</span>${c.reg?'⭐'+REGS.find(r=>r.id===c.reg).name:CT[c.ty].icon} 注文！`}
+  else if(c.status==='waiting'){cls+=' call';html=`<span class="sn" style="background:${SEATCOL[c.seat]}">${c.seat+1}</span>${c.reg?'⭐'+REGS.find(r=>r.id===c.reg).name:CT[c.ty].icon} ${c.again?'🍺 おかわり！':'注文！'}`}
+  else if(c.status==='relax'&&!c.reg){html='☕ ひと休み中';cls+=' regtag'}
   else if(c.status==='ordered'){html=`<span class="sn" style="background:${SEATCOL[c.seat]}">${c.seat+1}</span>${c.reg?'⭐':CT[c.ty].icon} ${orderLabel(c)}`;if(G.active===c.id){cls+=' act';html='<div class="actl">▼ いま作っている注文</div>'+html}}
   else if(c.reg){html=`⭐${REGS.find(r=>r.id===c.reg).name}`;cls+=' regtag'}
   else{b.style.display='none';continue}
