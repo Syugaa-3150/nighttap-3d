@@ -186,7 +186,7 @@ button{font-family:inherit}
 #viewPad button small{display:block;font-size:10px}
 #viewPad button:active{background:#6a4426}
 #viewPad [data-look=up]{grid-column:2;grid-row:1}#viewPad [data-look=left]{grid-column:1;grid-row:2}#viewPad [data-look=center]{grid-column:2;grid-row:2}#viewPad [data-look=right]{grid-column:3;grid-row:2}#viewPad [data-look=down]{grid-column:2;grid-row:3}
-body.touch #viewPad{display:grid}
+body.touch.vpad #viewPad{display:grid}
 body.touch #hintBar{bottom:12px;max-width:640px;font-size:13px;white-space:normal}
 body.touch #tip{display:none!important}
 #portrait{position:fixed;inset:0;background:#0e0806;color:#ffd77a;font-size:26px;font-weight:900;display:none;align-items:center;justify-content:center;text-align:center;line-height:1.8;z-index:99}
@@ -348,14 +348,16 @@ body.touch #evalPop{bottom:190px}
 #autoBtn:hover{filter:brightness(1.1)}
 #nextLine{pointer-events:auto}
 #loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#ffd77a;background:#0e0806}
-body.touch #tut{transform:scale(1.32)!important;transform-origin:top left;width:340px!important;max-height:252px;overflow:auto}
-body.touch #ticket{left:45%!important;transform:translateX(-50%) scale(1.28)!important;transform-origin:bottom center;width:600px!important}
-body.touch #hand{transform:scale(1.35);transform-origin:bottom left;bottom:212px}
-body.touch #tiltW{transform:scale(1.3);transform-origin:top right;top:76px;pointer-events:auto}
-body.touch #talkBox{transform:translateX(-50%) scale(1.35);transform-origin:bottom center;bottom:230px}
+body.touch .modal{font-size:16px}body.touch .setrow{font-size:15.5px}body.touch .tg{font-size:15px;padding:8px 12px}body.touch .modal input[type=range]{height:30px}body.touch .btn{font-size:17px;padding:12px 22px}
+body.touch{--ts:1.3}body.touch.ui-s{--ts:1.12}body.touch.ui-l{--ts:1.5}
+body.touch #tut{transform:scale(var(--ts))!important;transform-origin:top left;width:340px!important;max-height:252px;overflow:auto}
+body.touch #ticket{left:45%!important;transform:translateX(-50%) scale(calc(var(--ts) - .02))!important;transform-origin:bottom center;width:600px!important}
+body.touch #hand{transform:scale(var(--ts));transform-origin:bottom left;bottom:212px}
+body.touch #tiltW{transform:scale(var(--ts));transform-origin:top right;top:76px;pointer-events:auto}
+body.touch #talkBox{transform:translateX(-50%) scale(var(--ts));transform-origin:bottom center;bottom:230px}
 body.touch #tidyBar{transform:translateX(-50%) scale(1.25);transform-origin:top center}
 body.touch #viewPad{transform:scale(1.25);transform-origin:bottom right}
-body.touch #evalPop{transform:scale(1.3)!important;transform-origin:bottom right;bottom:250px!important}
+body.touch #evalPop{transform:scale(var(--ts))!important;transform-origin:bottom right;bottom:250px!important}
 body.touch .slab{font-size:15px}
 body.touch #ticket button,body.touch #autoBtn{min-height:34px}
 </style>
@@ -516,8 +518,10 @@ const DIFF={
 function DX(){return DF().x}
 function DF(){return DIFF[(S&&S.diff)||'normal']}
 function applyDiff(){FOAM[0]=DF().foam[0];FOAM[1]=DF().foam[1]}
+function vib(ms){try{if(SET.vib&&touchMode&&navigator.vibrate)navigator.vibrate(ms)}catch(e){}}
+function applyBodySet(){const b=document.body;b.classList.toggle('vpad',!!SET.vpad);b.classList.toggle('ui-s',SET.uiScale==='s');b.classList.toggle('ui-l',SET.uiScale==='l')}
 const SETKEY='nighttap3d_settings';
-const SET=(()=>{const d={bgmVol:.55,sfxVol:.8,voiceVol:.9,envVol:.5,arrow:1,labels:1,hint:1,quality:'auto',gyro:0,voice:1,sens:1,viewMode:'fps',nameMode:'easy',labelMode:'smart'};try{const t=JSON.parse(localStorage.getItem(SETKEY)||'{}');return{...d,...t}}catch(e){return d}})();
+const SET=(()=>{const d={bgmVol:.55,sfxVol:.8,voiceVol:.9,envVol:.5,arrow:1,labels:1,hint:1,quality:'auto',gyro:0,voice:1,sens:1,viewMode:'fps',nameMode:'easy',labelMode:'smart',tsens:1,invY:0,gsens:1,vpad:0,uiScale:'m',vib:1,fps30:0,mobSetup:0};try{const t=JSON.parse(localStorage.getItem(SETKEY)||'{}');return{...d,...t}}catch(e){return d}})();
 function saveSet(){try{localStorage.setItem(SETKEY,JSON.stringify(SET))}catch(e){}}
 const IS_TOUCH=(()=>{try{return matchMedia('(pointer:coarse)').matches||('ontouchstart' in window&&navigator.maxTouchPoints>0)}catch(e){return false}})();
 let touchMode=IS_TOUCH;
@@ -549,7 +553,7 @@ let lastSpeak=0;function speakC(c,text,hi=false){if(muted||!SET.voice||!('speech
 let voices=null;function speak(text,pitch=1,lang='ja-JP'){if(muted||!SET.voice||!('speechSynthesis' in window))return;try{const u=new SpeechSynthesisUtterance(text);u.lang=lang;u.pitch=clamp(pitch,.3,2);u.rate=1.08;u.volume=clamp(SET.sfxVol,0,1);
  if(!voices)voices=speechSynthesis.getVoices();const v=(voices||[]).find(v=>v.lang&&v.lang.startsWith(lang.slice(0,2)));if(v)u.voice=v;speechSynthesis.speak(u)}catch(e){}}
 const sfx={clink(){tone(2600,.18,'sine',.08);tone(3900,.12,'sine',.04,.02)},coin(){tone(1320,.08,'square',.05);tone(1980,.18,'square',.05,.07)},bell(){tone(1046,.5,'triangle',.08);tone(1568,.6,'triangle',.06,.12)},
- good(){[523,659,784,1046].forEach((f,i)=>tone(f,.25,'triangle',.08,i*.07))},ok(){tone(660,.15,'triangle',.08);tone(880,.2,'triangle',.08,.08)},bad(){tone(180,.25,'sawtooth',.05);tone(150,.3,'sawtooth',.05,.1)},
+ good(){vib(25);[523,659,784,1046].forEach((f,i)=>tone(f,.25,'triangle',.08,i*.07))},ok(){tone(660,.15,'triangle',.08);tone(880,.2,'triangle',.08,.08)},bad(){tone(180,.25,'sawtooth',.05);tone(150,.3,'sawtooth',.05,.1)},
  ice(){for(let i=0;i<5;i++)tone(rnd(2200,3600),.06,'sine',.05,i*.045)},shake(){noise(.06,rnd(3000,5200),.13,2)},splash(){noise(.35,900,.12,.7)},pop(){tone(520,.08,'sine',.08);tone(780,.1,'sine',.06,.05)},scrub(){noise(.08,2400,.05,1.5)},stir(){tone(rnd(3200,4200),.05,'sine',.025)}};
 function loopSet(name,on,freq=900,vol=.08){if(muted)on=false;const a=on?ac():AC;if(!a)return;let L=loops[name];
  if(on&&!L){const s=a.createBufferSource();s.buffer=nbuf();s.loop=true;const f=a.createBiquadFilter();f.type='bandpass';f.frequency.value=freq;f.Q.value=.8;const g=a.createGain();g.gain.value=0;s.connect(f).connect(g).connect(out());s.start();L=loops[name]={s,g,f}}
@@ -1375,6 +1379,9 @@ function stagePos(e){const r=cv.getBoundingClientRect();return[(e.clientX-r.left
 cv.addEventListener('contextmenu',e=>e.preventDefault());
 
 cv.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'&&touchMode&&!IS_TOUCH){touchMode=false;document.body.classList.remove('touch')}
+ if(touchMode&&P.down&&e.pointerType!=='mouse'&&(P.pid===undefined||e.pointerId===P.pid)){const A=P.act;const lookAll=!A||A.kind==='pendBottle',lookH=A&&A.kind==='pendSlide';
+  if(lookAll||lookH){const [x2,y2]=stagePos(e);const dx=x2-P.lx,dy=y2-P.ly;P.lx=x2;P.ly=y2;const k=.0026*(SET.tsens||1);CAMT.yaw+=dx*k;if(lookAll)CAMT.pitch+=dy*k*(SET.invY?-1:1);camClamp();if(Math.abs(dx)+Math.abs(dy)>2)P.looked=1;
+   if(!A)return}}
  if(RB.down&&e.pointerType==='mouse'){let dx;if(FPS.on){const r=cv.getBoundingClientRect();dx=(e.movementX||0)*1280/r.width}else{const nx=stagePos(e)[0];dx=nx-RB.x;RB.x=nx}if(rbTilt(dx))return}
  if(FPS.on){const mx=e.movementX||0,my=e.movementY||0;
   if(P.down&&P.act){const r=cv.getBoundingClientRect();const sc=1280/r.width;const ox=P.x,oy=P.y;P.x=clamp(P.x+mx*sc,0,1280);P.y=clamp(P.y+my*sc,0,720);P.dx=P.x-ox;P.dy=P.y-oy;onDrag(Math.hypot(P.dx,P.dy))}
@@ -1386,7 +1393,7 @@ cv.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'&&!touchMode){to
  const [x,y]=FPS.on?[P.x,P.y]:stagePos(e);P.x=x;P.y=y;if(!G||S.phase!=='service'||G.paused)return;ac();
  try{cv.setPointerCapture(e.pointerId)}catch(_){}
  if(e.button===2)return;if(e.button!==0)return;
- P.down=true;P.pid=e.pointerId;P.sx=x;P.sy=y;P.moved=0;onDown()});
+ P.down=true;P.pid=e.pointerId;P.sx=x;P.sy=y;P.lx=x;P.ly=y;P.looked=0;P.moved=0;onDown()});
 addEventListener('pointerup',e=>{if(!P.down||(P.pid!==undefined&&e.pointerId!==P.pid))return;P.down=false;onUp();if(FPS.on){P.x=640;P.y=360}});
 const RB={down:0,moved:0,x:0};
 function tiltOK(){return G&&S.phase==='service'&&!G.paused&&(P.act&&P.act.kind==='tap'||SLOTS.some(s=>s.kind==='tap'&&s.glass))}
@@ -1588,7 +1595,7 @@ function onBeat(){if(!isPeak())return;const b=beatPhase();if(!b)return;const d=M
 /* ====================== UPDATE ====================== */
 function update(dt){
  if(!G.tutorial&&G.customers.length)G.tidy=Math.max(0,(G.tidy??100)-dt*.25);
- {const tb=$('#tidyBar');const v=Math.round(G.tidy??100);const hh=`🧼 カウンターの清潔度 ${v}%<i><b style="width:${v}%;background:${v>70?'#7cff9a':v>40?'#ffd77a':'#ff7a7a'}"></b></i>${(G.roundIce||0)?`　🧊丸氷×${G.roundIce}`:''}${(G.shineStock||0)?`　✨磨き×${G.shineStock}`:''}`;tb.style.display='block';if(tb.innerHTML!==hh)tb.innerHTML=hh}
+ {const tb=$('#tidyBar');const v=Math.round(G.tidy??100);const hh=`🧼 カウンターの清潔度 ${v}%<i><b style="width:${v}%;background:${v>70?'#7cff9a':v>40?'#ffd77a':'#ff7a7a'}"></b></i>${(G.roundIce||0)?`　🧊丸氷×${G.roundIce}`:''}${(G.shineStock||0)?`　✨磨き×${G.shineStock}`:''}`;tb.style.display=(G.paused||$('#ov').classList.contains('show'))?'none':'block';if(tb.innerHTML!==hh)tb.innerHTML=hh}
  if(G.tutorial){tutUpdate()}else{G.time+=dt;if(DX().airDry){G.dryT=(G.dryT||0)+dt;if(G.dryT>DX().airDry){G.dryT=0;if(wetCount())polishOne()}}}
  if(!G.closing&&!G.tutorial){const f=G.time/G.dayLen;if(f>.3&&G.phaseShown<1){G.phaseShown=1;toast('🔔 ピークタイム！ お客さんが増えてきた');if(DX().cutStart<99){const pc=GARN.filter(citrus).reduce((a,k)=>a+(G.cut[k]||0),0);if(pc>=8){G.prepBoost=1;setTimeout(()=>toast('🔪 仕込みバッチリ！ ピーク中のチップ +15%'),1600)}}tone(784,.3,'triangle',.06);tone(988,.4,'triangle',.06,.12)}if(f>.7&&G.phaseShown<2){G.phaseShown=2;toast('🌙 ひと段落。ラストオーダーまであと少し')}
  G.spawnT-=dt;if(G.spawnT<=0){if(G.time<G.dayLen*.9)spawnCustomer();G.spawnT=spawnInterval()}if(G.time>=G.dayLen)startClosing()}
@@ -1669,8 +1676,11 @@ document.addEventListener('pointerlockerror',fpsFail);
 function fpsLock(){setTimeout(()=>{if(!FPS.on&&!document.pointerLockElement)fpsFail()},900);try{const p=cv.requestPointerLock({unadjustedMovement:true});if(p&&p.catch)p.catch(()=>{try{cv.requestPointerLock()}catch(_){}})}catch(_){try{cv.requestPointerLock()}catch(__){}}}
 function fpsUnlock(){if(document.pointerLockElement)try{document.exitPointerLock()}catch(_){}}
 document.addEventListener('pointerlockchange',()=>{const on=document.pointerLockElement===cv;if(on&&!FPS.on){FPS.yaw=camYaw;FPS.pitch=camPitch;P.x=640;P.y=360}FPS.on=on;if(on)FPS.ever=1;document.body.classList.toggle('fpsOn',on);if(!on&&P.down){P.down=false;onUp()}});
+const CAMT={yaw:0,pitch:-.55,gy:0,gp:0};
+function camClamp(){CAMT.yaw=clamp(CAMT.yaw,-1.05,1.05);CAMT.pitch=clamp(CAMT.pitch,-1.15,.12)}
 function updateCamera(dt,t){
  if(FPS.on){camYaw=FPS.yaw;camPitch=FPS.pitch}
+ else if(touchMode){const ty=clamp(CAMT.yaw+CAMT.gy,-1.1,1.1),tp=clamp(CAMT.pitch+CAMT.gp,-1.2,.15);const k=1-Math.exp(-dt*16);camYaw+=(ty-camYaw)*k;camPitch+=(tp-camPitch)*k}
  else if(!(fpsWanted()&&G&&S.phase==='service')){const src=touchMode?LOOK:P;const nx=src.x/1280*2-1,ny=src.y/720;
  const dz=.36;let yt=0;if(Math.abs(nx)>dz)yt=-Math.sign(nx)*sstep(clamp((Math.abs(nx)-dz)/(1-dz),0,1))*.5;
  const pt=-(.16+.56*clamp((ny-.08)/.84,0,1));
@@ -1795,7 +1805,7 @@ for(const g2 of GLASSOBJS){if(g2.wob>0){g2.wob=Math.max(0,g2.wob-FDT*1.6);const 
 /* ====================== LOOP ====================== */
 let last=performance.now(),T=0;
 let FDT=.016;
-function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;T+=dt;FDT=dt;
+function frame(now){if(SET.fps30&&now-last<30){requestAnimationFrame(frame);return}const dt=Math.min(.05,(now-last)/1000);last=now;T+=dt;FDT=dt;
  if(!(S&&S.phase==='service'&&G&&!G.paused))loopSet('amb',false);
  if(S&&S.phase==='service'&&G&&!G.paused){update(dt);computeHand();hover=P.act?null:pickAt();if(hover)hover.root=actRoot(hover.act)}else hover=null;
  updateCamera(dt,T);if(G){updateHandVisual(T);rackRefresh();sinkRefresh();bottleLevels(dt)}
@@ -1853,9 +1863,9 @@ function openShop(tab){shopTab=tab||shopTab;S.phase='shop';
  const ab=$('#autoBuy');if(ab)ab.onclick=()=>{const a=autoPlan();if(S.money<a.cost)return;for(const k in a.plan){S.money-=a.plan[k]*ING[k].price;S.stock[k]+=a.plan[k]*ING[k].unit}sfx.coin();save();openShop()};
  $('#openBtn').onclick=()=>{const miss=neededIngs().filter(k=>S.stock[k]<=0);if(miss.length&&!confirmOpen){confirmOpen=true;$('#openBtn').textContent='在庫切れあり。それでも開店 ▶';return}confirmOpen=false;startService()};
  bindDiffSel(()=>openShop());refreshLocks()}
-function openOv(h){fpsUnlock();const o=$('#ov');o.innerHTML=h;o.classList.add('show')}
+function openOv(h){fpsUnlock();{const tb=document.getElementById('tidyBar');if(tb)tb.style.display='none'}const o=$('#ov');o.innerHTML=h;o.classList.add('show')}
 function closeOv(){$('#ov').classList.remove('show');$('#ov').innerHTML=''}
-function showTitle(){const sv=load();
+function showTitle(){if((IS_TOUCH||touchMode)&&!SET.mobSetup){mobileSetup();return}const sv=load();
  openOv(`<div class="modal title"><img src="${LOGO_URL}" alt="Bar 憩" style="width:340px;height:auto;display:block;margin:-6px auto -18px"><div class="neon2" style="color:#e2aa50;text-shadow:none;letter-spacing:.3em">BARTENDER POV SIMULATOR</div>
  <p style="line-height:1.8;font-size:14px">ここは路地裏の小さなバー「憩（いこい）」。あなたはここのバーテンダー。目線はあなた自身の目。<br>タップを引いて泡を作り、シェイカーを振り、グラスを洗い、お会計をして…<br><b style="color:#ffd77a">目指せ、1日50杯！</b></p>
  <div class="tbtns">${sv?`<button class="btn" id="tContinue">つづきから（DAY ${sv.day}・${DIFF[sv.diff||'normal'].name}）</button>`:''}<button class="btn ${sv?'sec':''}" id="tNew">はじめから</button><button class="btn sec" id="tTut">📘 チュートリアル</button><button class="btn sec" id="tHelp">操作方法</button></div>
@@ -1900,7 +1910,7 @@ $('#btnMute').onclick=()=>{muted=!muted;$('#btnMute').textContent=muted?'🔇':'
 $('#btnPause').onclick=togglePause;
 $('#btnSet').onclick=()=>showSettings();
 $('#btnMood').onclick=()=>showMood();
-document.querySelectorAll('[data-look]').forEach(b=>b.addEventListener('pointerdown',e=>{e.preventDefault();ac();const k=b.dataset.look;if(k==='up')LOOK.y=60;else if(k==='down')LOOK.y=560;else if(k==='left')LOOK.x=0;else if(k==='right')LOOK.x=1280;else{LOOK.x=640;LOOK.y=520}if(GY.on)gyroRecenter()}));
+document.querySelectorAll('[data-look]').forEach(b=>b.addEventListener('pointerdown',e=>{e.preventDefault();ac();const k=b.dataset.look;if(k==='up')CAMT.pitch=-.12;else if(k==='down')CAMT.pitch=-.62;else if(k==='left')CAMT.yaw+=.45;else if(k==='right')CAMT.yaw-=.45;else{CAMT.yaw=0;CAMT.pitch=-.55}camClamp();if(GY.on)gyroRecenter()}));
 if(IS_TOUCH)document.body.classList.add('touch');
 
 
@@ -2094,10 +2104,10 @@ const GY={on:false,base:null,got:false,ox:640,oy:520,last:null,act:false,quiet:0
 function devDir(a,b,g){const r=Math.PI/180;a*=r;b*=r;g*=r;const sa=Math.sin(a),ca=Math.cos(a),sb=Math.sin(b),cb=Math.cos(b),sg=Math.sin(g),cg=Math.cos(g);
  const vx=-sg*ca-cg*sb*sa,vy=-sg*sa+cg*sb*ca,vz=-cg*cb;return{yaw:Math.atan2(vx,vy)*180/Math.PI,pitch:Math.asin(clamp(vz,-1,1))*180/Math.PI}}
 function onOri(e){if(e.alpha==null&&e.beta==null)return;GY.got=true;const d=devDir(e.alpha||0,e.beta||0,e.gamma||0);GY.last=d;if(!GY.on)return;
- if(!GY.base){GY.base=d;GY.ox=LOOK.x;GY.oy=LOOK.y}
+ if(!GY.base){GY.base=d;CAMT.gy=0;CAMT.gp=0}
  let dy=d.yaw-GY.base.yaw;if(dy>180)dy-=360;if(dy<-180)dy+=360;const dp=d.pitch-GY.base.pitch;
- LOOK.x=clamp(GY.ox+dy*26,0,1280);LOOK.y=clamp(GY.oy-dp*16,40,680)}
-function gyroRecenter(){GY.base=null}
+ const gs=(SET.gsens||1)*Math.PI/180;CAMT.gy=clamp(-dy*gs,-1.2,1.2);CAMT.gp=clamp(dp*gs,-1,1)}
+function gyroRecenter(){GY.base=null;CAMT.gy=0;CAMT.gp=0}
 function onMot(e){if(!GY.on||!G||S.phase!=='service'||G.paused)return;const a=e.acceleration&&e.acceleration.x!=null?e.acceleration:null;let m;
  if(a)m=Math.hypot(a.x||0,a.y||0,a.z||0);else{const g=e.accelerationIncludingGravity;if(!g||g.x==null)return;m=Math.abs(Math.hypot(g.x,g.y,g.z)-9.8)}
  const dt=(e.interval>1?e.interval/1000:e.interval)||.016;
@@ -2105,16 +2115,35 @@ function onMot(e){if(!GY.on||!G||S.phase!=='service'||G.paused)return;const a=e.
   if(m>9&&(!P.act||P.act.phone)){if(!P.act){P.act={kind:'shake',energy:0,v:0,phone:1};showGauge('スマホを振ってシェイク！ 緑で止める')}}
   if(P.act&&P.act.phone){if(m>6){P.act.energy+=m*dt*230;P.act.v=P.act.energy/5200;GY.quiet=0;if(Math.random()<.25)sfx.shake();if(DF().assist&&P.act.v>=.8){P.act=null;$('#gaugeBox').style.display='none';finishGauge('shake',.8)}}
    else{GY.quiet+=dt;if(GY.quiet>.6){const v=P.act.v;P.act=null;$('#gaugeBox').style.display='none';finishGauge('shake',v)}}}}}
-async function gyroEnable(on){if(!on){GY.on=false;SET.gyro=0;saveSet();toast('ジャイロをオフにしました');return}
+async function gyroEnable(on){if(!on){GY.on=false;CAMT.gy=0;CAMT.gp=0;SET.gyro=0;saveSet();toast('ジャイロをオフにしました');return}
  let denied=false;
  try{if(typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function'){const r=await DeviceOrientationEvent.requestPermission();if(r!=='granted')denied=true}}catch(e){}
  try{if(typeof DeviceMotionEvent!=='undefined'&&typeof DeviceMotionEvent.requestPermission==='function'){await DeviceMotionEvent.requestPermission()}}catch(e){}
  if(!gyroEnable.bound){addEventListener('deviceorientation',onOri);addEventListener('devicemotion',onMot);gyroEnable.bound=1}
- GY.on=true;GY.base=null;SET.gyro=1;saveSet();touchMode=true;document.body.classList.add('touch');toast('📱 ジャイロON：スマホを傾けて見回し、シェイカーを持ってスマホを振るとシェイク');
+ GY.on=true;GY.base=null;CAMT.gy=0;CAMT.gp=0;SET.gyro=1;saveSet();touchMode=true;document.body.classList.add('touch');toast('📱 ジャイロON：スマホを傾けて見回し、シェイカーを持ってスマホを振るとシェイク');
  setTimeout(()=>{if(!GY.got)toast(denied?'ジャイロの使用が許可されませんでした':'ジャイロが反応しません。ウェブサイト版（https）で開くと使えます')},1800)}
+function mobileSetup(){openOv(`<div class="modal" style="width:620px;text-align:center"><h1>📱 スマホの準備</h1>
+ <p style="line-height:1.8;font-size:15px">見回し方を選んでね（あとで ⚙設定 から変えられます）</p>
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0">
+ <div class="card" id="msDrag" style="cursor:pointer;flex-direction:column;padding:14px"><div style="font-size:40px">👆</div><b>指でドラッグ</b><small>何もない所をなぞって見回す</small></div>
+ <div class="card" id="msGyro" style="cursor:pointer;flex-direction:column;padding:14px"><div style="font-size:40px">🌀</div><b>ジャイロ＋ドラッグ</b><small>スマホを傾けても見回せる（おすすめ）</small></div></div>
+ <div class="setrow" style="justify-content:center;gap:8px"><span>🔤 文字の大きさ</span>${[['s','小'],['m','中'],['l','大']].map(([k,l])=>`<button class="tg ${SET.uiScale===k?'on':''}" data-ms="${k}">${l}</button>`).join('')}</div>
+ <p style="font-size:12px;color:#f5e6c8aa;margin-top:8px">横向き・全画面にすると遊びやすいです</p></div>`);
+ touchMode=true;document.body.classList.add('touch');
+ document.querySelectorAll('[data-ms]').forEach(b=>b.onclick=()=>{SET.uiScale=b.dataset.ms;saveSet();applyBodySet();mobileSetup()});
+ const done=()=>{SET.mobSetup=1;saveSet();try{const el=document.documentElement;const f=el.requestFullscreen||el.webkitRequestFullscreen;if(f){const pr=f.call(el);if(pr&&pr.catch)pr.catch(()=>{})}}catch(e){}showTitle()};
+ $('#msDrag').onclick=()=>{if(GY.on)gyroEnable(false);done()};
+ $('#msGyro').onclick=async()=>{await gyroEnable(true);done()}}
 function showSettings(){const was=G&&G.paused;if(G&&S.phase==='service')G.paused=true;const prev=S.phase;
  const tg=(k,l)=>`<div class="setrow"><span>${l}</span><button class="tg ${SET[k]?'on':''}" data-st="${k}">${SET[k]?'表示する':'表示しない'}</button></div>`;
- openOv(`<div class="modal" style="width:600px"><h1>⚙ 設定</h1>
+ openOv(`<div class="modal" style="width:600px"><h1>⚙ 設定</h1>${(touchMode||IS_TOUCH)?`<div style="margin:10px 0 4px;color:#ffd77a;font-weight:900">📱 スマホ操作</div>
+ <div class="setrow"><span>👆 ドラッグで見回す感度</span><input type="range" min="30" max="250" step="5" value="${Math.round((SET.tsens||1)*100)}" id="sTs"><b id="sTsV" style="width:44px;text-align:right">${(SET.tsens||1).toFixed(2)}</b></div>
+ <div class="setrow"><span>↕ 上下の向き</span><button class="tg ${SET.invY?'':'on'}" data-iy="0">ふつう</button><button class="tg ${SET.invY?'on':''}" data-iy="1">反転</button></div>
+ <div class="setrow"><span>🔤 文字・パネルの大きさ</span>${[['s','小'],['m','中'],['l','大']].map(([k,l])=>`<button class="tg ${SET.uiScale===k?'on':''}" data-ui="${k}">${l}</button>`).join('')}</div>
+ <div class="setrow"><span>🎮 見回しボタン（⬆⬇◀▶）</span><button class="tg ${SET.vpad?'on':''}" id="sVp">${SET.vpad?'表示する':'表示しない'}</button></div>
+ <div class="setrow"><span>📳 振動（成功したとき）</span><button class="tg ${SET.vib?'on':''}" id="sVib">${SET.vib?'ON':'OFF'}</button></div>
+ <div class="setrow"><span>🔋 省電力（30fps）</span><button class="tg ${SET.fps30?'on':''}" id="sF30">${SET.fps30?'ON':'OFF'}</button></div>
+ <div class="setrow"><span>🌀 ジャイロの感度</span><input type="range" min="40" max="250" step="5" value="${Math.round((SET.gsens||1)*100)}" id="sGs"><b id="sGsV" style="width:44px;text-align:right">${(SET.gsens||1).toFixed(2)}</b></div>`:''}
  <div class="setrow"><span>🎵 BGMの音量</span><input type="range" min="0" max="100" value="${Math.round(SET.bgmVol*100)}" id="sBgm"><b id="sBgmV" style="width:44px;text-align:right">${Math.round(SET.bgmVol*100)}</b></div>
  <div class="setrow"><span>🗣 お客さんの声の音量</span><input type="range" min="0" max="100" value="${Math.round(SET.voiceVol*100)}" id="sVoice"><b id="sVoiceV" style="width:44px;text-align:right">${Math.round(SET.voiceVol*100)}</b></div>
  <div class="setrow"><span>🍻 店内のざわめき</span><input type="range" min="0" max="100" value="${Math.round(SET.envVol*100)}" id="sEnv"><b id="sEnvV" style="width:44px;text-align:right">${Math.round(SET.envVol*100)}</b></div>
@@ -2123,9 +2152,10 @@ function showSettings(){const was=G&&G.paused;if(G&&S.phase==='service')G.paused
  <div class="setrow"><span>🏷 場所の名札</span>${[['smart','次に使う所だけ'],['all','全部'],['off','表示しない']].map(([k,l])=>`<button class="tg ${SET.labelMode===k?'on':''}" data-lm="${k}">${l}</button>`).join('')}</div>
  <div class="setrow"><span>🍸 商品名の表示<br><small style="font-size:11px;color:#aaa">例：ウイスキーの炭酸割り／ハイボール</small></span>${[['easy','わかりやすい名前'],['orig','元の名前'],['both','両方']].map(([k,l])=>`<button class="tg ${SET.nameMode===k?'on':''}" data-nm="${k}">${l}</button>`).join('')}</div>${tg('hint','💬 画面下の「次は▶」')}
  <div class="setrow"><span>🖥 画質</span>${[['auto','自動'],['high','高画質'],['low','軽量（スマホ向け）']].map(([k,l])=>`<button class="tg ${SET.quality===k?'on':''}" data-q="${k}">${l}</button>`).join('')}</div>
- <div class="setrow"><span>🎯 視点モード<br><small style="font-size:11px;color:#aaa">PC（マウス）用</small></span>${[['fps','FPS（マウスロック）'],['cursor','カーソル（画面端で首振り）']].map(([k,l])=>`<button class="tg ${SET.viewMode===k?'on':''}" data-vm="${k}">${l}</button>`).join('')}</div>
+ ${touchMode?'':`<div class="setrow"><span>🎯 視点モード<br><small style="font-size:11px;color:#aaa">PC（マウス）用</small></span>${[['fps','FPS（マウスロック）'],['cursor','カーソル（画面端で首振り）']].map(([k,l])=>`<button class="tg ${SET.viewMode===k?'on':''}" data-vm="${k}">${l}</button>`).join('')}</div>
  <div class="setrow"><span>🖱 視点の感度<br><small style="font-size:11px;color:#aaa">FPS：回転の速さ／カーソル：追従の速さ</small></span><input type="range" min="10" max="300" step="5" value="${Math.round((SET.sens||1)*100)}" id="sSens"><b id="sSensV" style="width:44px;text-align:right">${(SET.sens||1).toFixed(2)}</b></div>
- <div class="setrow"><span>📱 ジャイロ操作<br><small style="font-size:11px;color:#aaa">傾けて見回す・振ってシェイク</small></span><button class="tg ${GY.on?'on':''}" id="sGyro">${GY.on?'ON':'OFF'}</button><button class="tg" id="sGyroC">正面リセット</button></div>
+ 
+ `}<div class="setrow"><span>📱 ジャイロ操作<br><small style="font-size:11px;color:#aaa">傾けて見回す・振ってシェイク</small></span><button class="tg ${GY.on?'on':''}" id="sGyro">${GY.on?'ON':'OFF'}</button><button class="tg" id="sGyroC">正面リセット</button></div>
  <div class="setrow"><span>⛶ 全画面</span><button class="tg" id="sFull">全画面にする</button></div>
  ${S?`<div class="setrow"><span>🎚 難易度</span>${diffSel()}</div>`:''}
  <div style="display:flex;justify-content:flex-end;margin-top:14px"><button class="btn" id="sClose">閉じる</button></div></div>`);
@@ -2134,10 +2164,14 @@ function showSettings(){const was=G&&G.paused;if(G&&S.phase==='service')G.paused
  $('#sEnv').oninput=e=>{SET.envVol=e.target.value/100;$('#sEnvV').textContent=e.target.value;saveSet()};
  $('#sSfx').oninput=e=>{SET.sfxVol=e.target.value/100;$('#sSfxV').textContent=e.target.value;ac();bgmVol();saveSet()};$('#sSfx').onchange=()=>sfx.pop();
  document.querySelectorAll('[data-st]').forEach(b=>b.onclick=()=>{const k=b.dataset.st;SET[k]=SET[k]?0:1;saveSet();showSettings();if(G)G.paused=true});
+ const reS=()=>{saveSet();applyBodySet();showSettings();if(G&&S.phase==='service')G.paused=true};
+ if($('#sTs')){$('#sTs').oninput=e=>{SET.tsens=e.target.value/100;$('#sTsV').textContent=SET.tsens.toFixed(2);saveSet()};$('#sGs').oninput=e=>{SET.gsens=e.target.value/100;$('#sGsV').textContent=SET.gsens.toFixed(2);saveSet()};
+  document.querySelectorAll('[data-iy]').forEach(b=>b.onclick=()=>{SET.invY=+b.dataset.iy;reS()});document.querySelectorAll('[data-ui]').forEach(b=>b.onclick=()=>{SET.uiScale=b.dataset.ui;reS()});
+  $('#sVp').onclick=()=>{SET.vpad=SET.vpad?0:1;reS()};$('#sVib').onclick=()=>{SET.vib=SET.vib?0:1;if(SET.vib)vib(40);reS()};$('#sF30').onclick=()=>{SET.fps30=SET.fps30?0:1;reS()}}
  document.querySelectorAll('[data-lm]').forEach(b=>b.onclick=()=>{SET.labelMode=b.dataset.lm;saveSet();showSettings();if(G&&S.phase==='service')G.paused=true});
  document.querySelectorAll('[data-nm]').forEach(b=>b.onclick=()=>{SET.nameMode=b.dataset.nm;saveSet();applyNames();if(G)for(const c of G.customers){if(c.eff&&RECIPES[c.order]){c.eff.name=RECIPES[c.order].name;c.eff.sub=RECIPES[c.order].sub}c.dirty=1};lastTabs='';showSettings();if(G&&S.phase==='service')G.paused=true});
  document.querySelectorAll('[data-vm]').forEach(b=>b.onclick=()=>{SET.viewMode=b.dataset.vm;saveSet();showSettings();if(G&&S.phase==='service')G.paused=true});
- $('#sSens').oninput=e=>{SET.sens=e.target.value/100;$('#sSensV').textContent=SET.sens.toFixed(2);saveSet()};
+ if($('#sSens'))$('#sSens').oninput=e=>{SET.sens=e.target.value/100;$('#sSensV').textContent=SET.sens.toFixed(2);saveSet()};
  document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{SET.quality=b.dataset.q;saveSet();fit();showSettings()});
  $('#sGyro').onclick=async()=>{await gyroEnable(!GY.on);showSettings();if(G&&S.phase==='service')G.paused=true};$('#sGyroC').onclick=()=>{gyroRecenter();toast('いまの向きを正面にしました')};
  $('#sFull').onclick=()=>{try{const el=document.documentElement;(el.requestFullscreen||el.webkitRequestFullscreen).call(el).catch(()=>toast('この画面では全画面にできません'))}catch(e){toast('この画面では全画面にできません')}};
@@ -2182,10 +2216,10 @@ function renderArrow(hl,txt){const ar=$('#arrow');document.querySelectorAll('.sl
  let lab=hl.startsWith('serve')||hl==='callers'?'ここをクリック':hl.startsWith('tap')?'押して手前に引く':hl==='board'?(H&&H.kind==='knife'?'押して上から下へスッ':'クリック'):hl==='sink'&&H&&H.kind==='towel'?'押してぐるぐる':hl==='sink'&&!(H&&H.kind==='glass')?'押してこする':hl==='glass'&&H&&H.kind==='spoon'?'押してぐるぐる':hl==='glass'&&H&&H.kind==='bottle'?'ここで長押し':hl==='shaker'&&H&&H.glass===G.shaker?'押したまま振る':'ここ！';
  if(!p.vis){ar.style.display='none';return}
  let x=p.x,y=p.y,mode='up';
- if(x<40){x=70;y=clamp(y,150,500);mode='side';lab=touchMode?'◀ボタンで左を見る':fpsWanted()?'◀ 左を向いて':'左を見て（マウスを左端へ）'}
- else if(x>1240){x=1180;y=clamp(y,150,500);mode='side';lab=touchMode?'▶ボタンで右を見る':fpsWanted()?'右を向いて ▶':'右を見て（マウスを右端へ）'}
- else if(y<60){y=110;mode='upTop';lab=touchMode?'⬆客席ボタン':fpsWanted()?'上を向いて':'上を見て（マウスを上へ）'}
- else if(y>560&&ctr.y>560){y=500;mode='downTop';lab=touchMode?'⬇手元ボタン':fpsWanted()?'下を向いて':'下を見て（マウスを下へ）'}
+ if(x<40){x=70;y=clamp(y,150,500);mode='side';lab=touchMode?'👉 画面を右へドラッグ（左を見る）':fpsWanted()?'◀ 左を向いて':'左を見て（マウスを左端へ）'}
+ else if(x>1240){x=1180;y=clamp(y,150,500);mode='side';lab=touchMode?'画面を左へドラッグ（右を見る）👈':fpsWanted()?'右を向いて ▶':'右を見て（マウスを右端へ）'}
+ else if(y<60){y=110;mode='upTop';lab=touchMode?'👇 画面を下へドラッグ（客席）':fpsWanted()?'上を向いて':'上を見て（マウスを上へ）'}
+ else if(y>560&&ctr.y>560){y=500;mode='downTop';lab=touchMode?'👆 画面を上へドラッグ（手元）':fpsWanted()?'下を向いて':'下を見て（マウスを下へ）'}
  const W=Math.max(70,lab.length*13+26),Hh=74;
  const obs=[];for(const sel of ['#ticket','#top','#hand','#evalPop','#tut','#gaugeBox','#readout'])for(const e of document.querySelectorAll(sel)){if(e.offsetParent!==null||sel==='#top'){const r=stageRect(e);if(r)obs.push(r)}}
  document.querySelectorAll('.bub').forEach(e=>{if(e.style.display!=='none'){const r=stageRect(e);if(r)obs.push(r)}});
@@ -2204,7 +2238,7 @@ function renderArrow(hl,txt){const ar=$('#arrow');document.querySelectorAll('.sl
 /* ====================== TUTORIAL ====================== */
 const TUT=[
  {c:'はじめに',t:'ようこそ<b>「Bar 憩」</b>へ！ 今夜からあなたがこの店のバーテンダーです。<br>このチュートリアルは <b>12のチャプター</b>。各チャプターの <b>やること ✓</b> を全部こなすと次に進みます。<br>時間制限なし・失敗してもOK🍸',btn:'はじめる'},
- {c:'見回す',t:()=>fpsWanted()?'<b>画面をクリック</b>するとマウスで見回せます（FPSゲームと同じ）。中央の <b>＋照準</b> を物に合わせてクリック。<br><b>Esc</b>でカーソルに戻る ／ 感度は ⚙設定':touchMode?'右下の <b>⬆⬇◀▶</b> で見回せます':'マウスを<b>上</b>に動かすと客席、<b>下</b>で手元、<b>左右の端</b>で首を振ります',enter(){G.lookAcc=0},goals:[['客席と手元を見回す',()=>(G.lookAcc||0)>1.6]],skip:'次へ'},
+ {c:'見回す',t:()=>fpsWanted()?'<b>画面をクリック</b>するとマウスで見回せます（FPSゲームと同じ）。中央の <b>＋照準</b> を物に合わせてクリック。<br><b>Esc</b>でカーソルに戻る ／ 感度は ⚙設定':touchMode?'<b>何もない所を指でドラッグ</b>すると見回せます（⚙設定でジャイロ＝スマホを傾けて見回す もON可）':'マウスを<b>上</b>に動かすと客席、<b>下</b>で手元、<b>左右の端</b>で首を振ります',enter(){G.lookAcc=0},goals:[['客席と手元を見回す',()=>(G.lookAcc||0)>1.6]],skip:'次へ'},
  {c:'持つ・戻す',t:()=>touchMode?'物は<b>タップで持つ</b>、左下の<b>✋置く・戻す</b>ボタンで戻す。これが全部の基本です。':'物は<b>クリックで持つ</b>、<b>右クリック</b>（Qキー）で戻す。これが全部の基本です。',enter(){G.tutHeld=0},goals:[['①グラス棚からグラスを持つ',()=>G.tutHeld],[()=>touchMode?'✋置く・戻すボタンで戻す':'右クリックで戻す',()=>G.tutHeld&&!H]],hl:'rack:pint'},
  {c:'接客',t:'お客さんが来た！ 頭の上の <b>「🙋注文！」</b> をクリックして注文を聞こう。注文は画面下の<b>伝票</b>に手順つきで並びます。',enter(){tutSpawn('pale')},goals:[['お客さんをクリックして注文を聞く',()=>G.customers.some(c=>c.status==='ordered')]],hl:'callers',dyn:1},
  {c:'ビール',t:()=>'注文は<b>'+RECIPES.pale.name+'</b>🍺 タップで注ぎます。<br>注ぐ前に右上の<b>「グラスの角度」</b>パネルを見てね。'+(touchMode?'パネルの<b>スライダーを右へ</b>動かすとグラスが傾きます。':'<b>マウスの右ボタンを押したまま右へ</b>でグラスが傾きます。'),goals:[['パイントグラスを⑧タップの受け皿に置く',()=>SLOTS.some(s=>s.kind==='tap'&&s.glass)||G.stats.served>=1],[()=>touchMode?'角度スライダーを右へ動かして グラスを傾ける':'右ボタン＋右へ動かして グラスを傾ける',()=>(G.tilt||0)>.4||G.stats.served>=1],[()=>touchMode?'ハンドルを指で押さえて下へなぞって注ぐ':'ハンドルを押したまま下へ引いて注ぐ',()=>SLOTS.some(s=>s.kind==='tap'&&s.glass&&s.glass.fill()>.5)||G.stats.served>=1],[()=>touchMode?'半分を過ぎたら スライダーを左へ（まっすぐ）':'半分を過ぎたら左へ動かして まっすぐに戻す',()=>SLOTS.some(s=>s.kind==='tap'&&s.glass&&s.glass.fill()>.6&&(G.tilt||0)<.3)||G.stats.served>=1],[()=>touchMode?'お客さんをタップして提供':'お客さんをクリックして提供',()=>G.stats.served>=1]],dyn:1},
@@ -2242,7 +2276,7 @@ function newGameFlow(){openOv(`<div class="modal" style="width:860px"><h1>難易
   openOv(`<div class="modal" style="width:560px;text-align:center"><h1>チュートリアルをやりますか？</h1><p style="line-height:1.8">12のチャプターで、<b style="color:#ffd77a">ビール</b>と<b style="color:#ffd77a">ハイボール</b>づくり、カット・洗い物・グラス拭き、<br>そして<b style="color:#ffd77a">ひまな時間の過ごし方</b>（丸氷・雑談・雰囲気づくり）まで練習します（約5分・時間制限なし）。</p><div class="tbtns"><button class="btn" id="tY">やる（おすすめ）</button><button class="btn sec" id="tN">スキップして営業開始</button></div></div>`);
   $('#tY').onclick=()=>startTutorial('day1');$('#tN').onclick=()=>startService()})}
 /* ====================== BOOT ====================== */
-applyNames();buildLogoURL();buildRoom();buildStation();
+applyNames();applyBodySet();buildLogoURL();buildRoom();buildStation();
 S=load()||freshSave();S.phase='title';syncOriginals();applyDiff();newDay();
 $('#loading').remove();
 showTitle();
