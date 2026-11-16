@@ -361,6 +361,26 @@ body.touch #viewPad{transform:scale(1.25);transform-origin:bottom right}
 body.touch #evalPop{transform:scale(var(--ts))!important;transform-origin:bottom right;bottom:250px!important}
 body.touch .slab{font-size:15px}
 body.touch #ticket button,body.touch #autoBtn{min-height:34px}
+#ticket{width:1060px!important;padding:6px 10px!important}
+#tkL{width:150px}
+#tkL #orderTabs{max-height:58px}
+#tkt{display:flex!important;align-items:center;gap:10px}
+#tkt h2{flex:none;max-width:330px;margin:0!important}
+#tkt h2>span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:330px}
+#tkt h2 small{display:block;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#tkt .steps{flex:1;flex-wrap:nowrap!important;overflow-x:auto;scrollbar-width:thin;padding-bottom:2px}
+#tkt .step{white-space:nowrap;flex:none}
+#nextLine{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:3px 10px!important}
+body.touch #ticket{left:50%!important;width:1150px!important;transform:translateX(-50%) scale(1.08)!important}
+body.touch.vpad #ticket{left:44%!important;width:960px!important}
+body.touch #tkt .step{font-size:15px;line-height:1.8}
+body.touch #tkt h2{font-size:20px!important}
+body.touch #nextLine{font-size:16px}
+body.touch #hand{bottom:150px!important}
+body.touch #tut{max-height:360px!important}
+body.touch #evalPop{bottom:160px!important}
+body.touch #talkBox{bottom:160px!important}
+#vign{transition:background .8s}
 </style>
 </head>
 <body>
@@ -631,7 +651,8 @@ function buildBrandTex(){
  COASTERTEX=canvasTex(256,256,(x,w,h)=>{x.fillStyle='#e9dcc0';x.beginPath();x.arc(128,128,126,0,7);x.fill();x.strokeStyle='#7a4a20';x.lineWidth=5;x.beginPath();x.arc(128,128,116,0,7);x.stroke();drawLogo(x,w,h,{r:.26,cy:.42,ink:'#3a2414',ring:'rgba(160,100,40,.9)',glow:'rgba(0,0,0,0)',sub:'#7a4a20'})});
  SIGNTEX=canvasTex(1024,700,(x,w,h)=>{x.clearRect(0,0,w,h);drawLogo(x,w,h,{r:.27,cy:.4,blur:30})});
 }
-function halo(pos,size,color,op=.5){const m=new THREE.SpriteMaterial({map:HALOTEX,color,transparent:true,opacity:op,depthWrite:false,blending:THREE.AdditiveBlending,toneMapped:false});const sp=new THREE.Sprite(m);sp.position.copy(pos);sp.scale.set(size,size,1);sp.raycast=()=>{};scene.add(sp);return sp}
+const HALOS=[];
+function halo(pos,size,color,op=.5){const m=new THREE.SpriteMaterial({map:HALOTEX,color,transparent:true,opacity:op,depthWrite:false,blending:THREE.AdditiveBlending,toneMapped:false});const sp=new THREE.Sprite(m);sp.position.copy(pos);sp.scale.set(size,size,1);sp.raycast=()=>{};sp.userData.c0=new THREE.Color(color);sp.userData.o0=op;HALOS.push(sp);scene.add(sp);return sp}
 function buildBackWall(){
  const wall=new THREE.Mesh(new THREE.PlaneGeometry(9,3),new THREE.MeshStandardMaterial({map:PLASTERTEX,bumpMap:PLASTERTEX,bumpScale:2,roughness:.95}));wall.position.set(0,1.5,-4.2);scene.add(wall);
  // wainscot
@@ -1381,8 +1402,9 @@ function stagePos(e){const r=cv.getBoundingClientRect();return[(e.clientX-r.left
 cv.addEventListener('contextmenu',e=>e.preventDefault());
 
 cv.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'&&touchMode&&!IS_TOUCH){touchMode=false;document.body.classList.remove('touch')}
- if(touchMode&&P.down&&e.pointerType!=='mouse'&&(P.pid===undefined||e.pointerId===P.pid)){const A=P.act;const lookAll=!A||A.kind==='pendBottle',lookH=A&&A.kind==='pendSlide';
-  if(lookAll||lookH){const [x2,y2]=stagePos(e);const dx=x2-P.lx,dy=y2-P.ly;P.lx=x2;P.ly=y2;const k=.0026*(SET.tsens||1);CAMT.yaw+=dx*k;if(lookAll)CAMT.pitch-=dy*k*(SET.invY?-1:1);camClamp();if(Math.abs(dx)+Math.abs(dy)>2)P.looked=1;
+ if(touchMode&&P.down&&e.pointerType!=='mouse'&&(P.pid===undefined||e.pointerId===P.pid)){const A=P.act;const lookAll=!A||A.kind==='pendBottle',lookH=A&&A.kind==='pendSlide';const [x2,y2]=stagePos(e);const dx=x2-P.lx,dy=y2-P.ly;P.lx=x2;P.ly=y2;
+  if(A&&!lookAll&&!lookH)P.hadAct=1;if(!A&&P.hadAct)return;
+  if(lookAll||lookH){const k=.0026*(SET.tsens||1);CAMT.yaw+=dx*k;if(lookAll)CAMT.pitch-=dy*k*(SET.invY?-1:1);camClamp();if(Math.abs(dx)+Math.abs(dy)>2)P.looked=1;
    if(!A)return}}
  if(RB.down&&e.pointerType==='mouse'){let dx;if(FPS.on){const r=cv.getBoundingClientRect();dx=(e.movementX||0)*1280/r.width}else{const nx=stagePos(e)[0];dx=nx-RB.x;RB.x=nx}if(rbTilt(dx))return}
  if(FPS.on){const mx=e.movementX||0,my=e.movementY||0;
@@ -1396,7 +1418,7 @@ cv.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'&&!touchMode){to
  const [x,y]=FPS.on?[P.x,P.y]:stagePos(e);P.x=x;P.y=y;if(!G||S.phase!=='service'||G.paused)return;ac();
  try{cv.setPointerCapture(e.pointerId)}catch(_){}
  if(e.button===2)return;if(e.button!==0)return;
- P.down=true;P.pid=e.pointerId;P.sx=x;P.sy=y;P.lx=x;P.ly=y;P.looked=0;P.moved=0;onDown()});
+ P.down=true;P.pid=e.pointerId;P.sx=x;P.sy=y;P.lx=x;P.ly=y;P.looked=0;P.hadAct=0;P.moved=0;onDown()});
 addEventListener('pointerup',e=>{if(!P.down||(P.pid!==undefined&&e.pointerId!==P.pid))return;P.down=false;onUp();if(FPS.on){P.x=640;P.y=360}});
 const RB={down:0,moved:0,x:0};
 function tiltOK(){return G&&S.phase==='service'&&!G.paused&&(P.act&&P.act.kind==='tap'||SLOTS.some(s=>s.kind==='tap'&&s.glass))}
@@ -1809,7 +1831,7 @@ for(const g2 of GLASSOBJS){if(g2.wob>0){g2.wob=Math.max(0,g2.wob-FDT*1.6);const 
 /* ====================== LOOP ====================== */
 let last=performance.now(),T=0;
 let FDT=.016;
-function frame(now){if(SET.fps30&&now-last<30){requestAnimationFrame(frame);return}const dt=Math.min(.05,(now-last)/1000);last=now;T+=dt;FDT=dt;
+function frame(now){if(SET.fps30&&now-last<30){requestAnimationFrame(frame);return}const dt=Math.min(.05,(now-last)/1000);last=now;lightFlicker(now/1000);T+=dt;FDT=dt;
  if(!(S&&S.phase==='service'&&G&&!G.paused))loopSet('amb',false);
  if(S&&S.phase==='service'&&G&&!G.paused){update(dt);computeHand();hover=P.act?null:pickAt();if(hover)hover.root=actRoot(hover.act)}else hover=null;
  updateCamera(dt,T);if(G){updateHandVisual(T);rackRefresh();sinkRefresh();bottleLevels(dt)}
@@ -2067,8 +2089,17 @@ let BEAT=60/66;const PENTA=[72,74,76,79,81,84,86];
 function mtof(m){return 440*Math.pow(2,(m-69)/12)}
 function bgmVol(){if(SFXG&&AC)SFXG.gain.setTargetAtTime(SET.sfxVol,AC.currentTime,.05);if(!BGM.gain||!AC)return;BGM.gain.gain.setTargetAtTime((S&&S.bgm&&!muted)?.6*SET.bgmVol:0,AC.currentTime,.2)}
 const MUSIC={jazz:{id:'jazz',n:'🎷 ジャズ',t:[66,84],d:'落ち着いた大人の雰囲気。紳士・会社員が来やすい',w:{gent:1.7,office:1.3}},bossa:{id:'bossa',n:'🌴 ボサノバ',t:[78,94],d:'陽気でゆったり。観光客・ほろ酔いさんが来やすい',w:{tourist:1.9,drunk:1.4}},lofi:{id:'lofi',n:'🎧 ローファイ',t:[72,80],d:'まったりビート。学生・ビール通が来やすい',w:{student:1.9,beerfan:1.4}}};
-const LIGHTSET={warm:{n:'🕯 あたたか',d:'いつもの電球色。会社員が少し増える',pend:0xffc888,pi:5,spot:11,amb:0xffe0c0,w:{office:1.2}},blue:{n:'🌙 ムーディー',d:'青い夜の照明。評論家・セレブが来やすい（チップ高め・採点きびしめ）',pend:0x8aa8ff,pi:4.2,spot:9,amb:0xa0b8ff,w:{critic:1.6,vip:1.5}},candle:{n:'🔥 キャンドル',d:'ほの暗く静か。お客さんの待てる時間 +15%',pend:0xff9a50,pi:3,spot:7,amb:0xffb070,w:{gent:1.3},pat:1.15}};
-function applyLight(){const L=LIGHTSET[(S&&S.light)||'warm']||LIGHTSET.warm;for(const p of LIGHTS.pend){p.color.setHex(L.pend);p.intensity=L.pi}if(LIGHTS.spot)LIGHTS.spot.intensity=L.spot;if(LIGHTS.amb)LIGHTS.amb.color.setHex(L.amb)}
+const LIGHTSET={warm:{n:'🕯 あたたか',d:'いつもの電球色。会社員が少し増える',pend:0xffc888,pi:5,spot:11,spotC:0xffe6c8,amb:0xffe0c0,ai:.16,hs:0xffd9b0,hg:0x1a0c06,hi:.35,bg:0x0d0705,exp:1.15,halo:null,vig:'rgba(10,4,0,.42)',tint:'rgba(0,0,0,0)',w:{office:1.2}},
+ blue:{n:'🌙 ムーディー',d:'青い夜の照明。評論家・セレブが来やすい（チップ高め・採点きびしめ）',pend:0x4a6cff,pi:7,spot:8,spotC:0x9cc0ff,amb:0x5a78ff,ai:.32,hs:0x6a8cff,hg:0x04061a,hi:.5,bg:0x04071a,exp:1.0,halo:0x5a80ff,vig:'rgba(0,4,30,.6)',tint:'rgba(40,70,220,.13)',w:{critic:1.6,vip:1.5}},
+ candle:{n:'🔥 キャンドル',d:'ほの暗く静か。炎がゆらめく。お客さんの待てる時間 +15%',pend:0xff7a20,pi:2.6,spot:4.5,spotC:0xffa860,amb:0xff8040,ai:.08,hs:0xff9a50,hg:0x0a0300,hi:.18,bg:0x060201,exp:.9,halo:0xff7a20,vig:'rgba(8,2,0,.72)',tint:'rgba(255,110,20,.08)',flick:1,w:{gent:1.3},pat:1.15}};
+function applyLight(){const L=LIGHTSET[(S&&S.light)||'warm']||LIGHTSET.warm;for(const p of LIGHTS.pend){p.color.setHex(L.pend);p.intensity=L.pi;p.userData.base=L.pi}
+ if(LIGHTS.spot){LIGHTS.spot.intensity=L.spot;LIGHTS.spot.color.setHex(L.spotC);LIGHTS.spot.userData.base=L.spot}if(LIGHTS.amb){LIGHTS.amb.color.setHex(L.amb);LIGHTS.amb.intensity=L.ai}
+ if(LIGHTS.hemi){LIGHTS.hemi.color.setHex(L.hs);LIGHTS.hemi.groundColor.setHex(L.hg);LIGHTS.hemi.intensity=L.hi}
+ scene.background.setHex(L.bg);if(scene.fog)scene.fog.color.setHex(L.bg);renderer.toneMappingExposure=L.exp;
+ for(const h of HALOS){if(L.halo){h.material.color.setHex(L.halo)}else h.material.color.copy(h.userData.c0)}
+ const vg=document.getElementById('vign');if(vg)vg.style.background=`radial-gradient(ellipse at 50% 46%,rgba(0,0,0,0) 50%,${L.vig} 100%),${L.tint}`;LIGHTS.flick=!!L.flick}
+function lightFlash(){const f=document.createElement('div');f.style.cssText='position:absolute;inset:0;background:#000;opacity:.85;pointer-events:none;z-index:50;transition:opacity .9s';$('#stage').appendChild(f);requestAnimationFrame(()=>requestAnimationFrame(()=>{f.style.opacity=0}));setTimeout(()=>f.remove(),1000)}
+function lightFlicker(t){if(!LIGHTS.flick)return;LIGHTS.pend.forEach((p,i)=>{const b=p.userData.base||3;p.intensity=b*(.78+.14*Math.sin(t*7.3+i*1.7)+.08*Math.sin(t*17.1+i*3.1))});if(LIGHTS.spot)LIGHTS.spot.intensity=(LIGHTS.spot.userData.base||5)*(.9+.06*Math.sin(t*5.1)+.04*Math.sin(t*13.7))}
 function moodW(k){const a=MUSIC[(S&&S.music)||'jazz'],b=LIGHTSET[(S&&S.light)||'warm'];return ((a&&a.w[k])||1)*((b&&b.w[k])||1)}
 function showMood(){if(!S)return;const was=G&&G.paused;if(G&&S.phase==='service')G.paused=true;if(G)G.tutMood=1;
  const card=(grp,k,o,cur)=>`<div class="card ${cur===k?'done':''}" data-${grp}="${k}" style="cursor:pointer;flex-direction:column;align-items:flex-start"><b>${o.n}${cur===k?' ✓':''}</b><small style="color:#f5e6c8bb">${o.d}</small></div>`;
@@ -2077,7 +2108,7 @@ function showMood(){if(!S)return;const was=G&&G.paused;if(G&&S.phase==='service'
  <b>照明</b><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:6px 0 12px">${Object.keys(LIGHTSET).map(k=>card('li',k,LIGHTSET[k],S.light||'warm')).join('')}</div>
  <div style="display:flex;justify-content:flex-end"><button class="btn" id="mClose">閉じる</button></div></div>`);
  document.querySelectorAll('[data-mu]').forEach(b=>b.onclick=()=>{S.music=b.dataset.mu;save();sfx.pop();showMood()});
- document.querySelectorAll('[data-li]').forEach(b=>b.onclick=()=>{S.light=b.dataset.li;applyLight();save();sfx.pop();showMood()});
+ document.querySelectorAll('[data-li]').forEach(b=>b.onclick=()=>{S.light=b.dataset.li;applyLight();save();sfx.pop();showMood();lightFlash()});
  $('#mClose').onclick=()=>{closeOv();if(G)G.paused=was}}
 function schedBar2(t,bar,id){const ch=PROG[bar%PROG.length];const root=ch[0]-12;
  if(id==='bossa'){ch.slice(1).forEach((m,i)=>{ep(t+BEAT*.5+i*.01,m,BEAT*.9,.035);ep(t+BEAT*2+i*.01,m,BEAT*.9,.03);ep(t+BEAT*3.5+i*.01,m,BEAT*.5,.025)});
