@@ -258,8 +258,9 @@ body.touch #ticket{width:640px!important}
 #tiltW .tw-t{font-size:17px;font-weight:900;margin:2px 0}
 #tiltW .tw-m{font-size:12px;line-height:1.5;background:#ffffff12;border-radius:10px;padding:5px 6px;margin-top:4px}
 #tiltW .tw-m b{color:#ffd77a}
-#talkBox{position:absolute;left:50%;bottom:150px;transform:translateX(-50%);width:560px;background:rgba(18,12,8,.95);border:1px solid #e8c27a;border-radius:16px;padding:12px 14px;display:none;z-index:6;color:#f5e6c8;box-shadow:0 10px 30px #000c}
+#talkBox{pointer-events:auto;position:absolute;left:50%;bottom:150px;transform:translateX(-50%);width:560px;background:rgba(18,12,8,.95);border:1px solid #e8c27a;border-radius:16px;padding:12px 14px;display:none;z-index:6;color:#f5e6c8;box-shadow:0 10px 30px #000c}
 #talkBox .q{font-size:15px;font-weight:800;margin-bottom:8px}#talkBox .q small{color:#e8c27a;font-weight:700;margin-right:6px}
+#talkBox .tx{position:absolute;right:10px;top:8px;width:auto!important;display:inline-block!important;padding:2px 10px!important;margin:0!important;font-size:13px!important}
 #talkBox button{display:block;width:100%;text-align:left;margin:5px 0;background:#ffffff10;border:1px solid #ffffff30;color:#fff;border-radius:10px;padding:8px 10px;font-size:14px;cursor:pointer;font-family:inherit}
 #talkBox button:hover{background:#e8c27a33;border-color:#e8c27a}
 #tidyBar{position:absolute;left:50%;transform:translateX(-50%);top:60px;background:rgba(18,12,8,.75);border:1px solid #ffffff22;border-radius:10px;padding:3px 10px;font-size:12px;color:#f5e6c8;pointer-events:none;display:none;z-index:2}
@@ -768,8 +769,9 @@ const TALKS=[
 ];
 let TALK=null;
 function openTalk(c){if(!c||c.talked)return;c.talked=1;const T0=pick(TALKS);const opts=[...T0.a].sort(()=>Math.random()-.5);TALK={c,opts};fpsUnlock();
- const el=$('#talkBox');el.innerHTML=`<div class="q"><small>💬 ${c.seat+1}番席のお客さん</small>「${T0.q}」</div>${opts.map((o,i)=>`<button data-tk="${i}">${i+1}. ${o[0]}</button>`).join('')}${touchMode?'':'<div style="font-size:11px;color:#aaa;margin-top:4px">数字キー 1〜3 でも選べます</div>'}`;el.style.display='block';
- el.querySelectorAll('[data-tk]').forEach(b=>b.onclick=e=>{e.stopPropagation();answerTalk(+b.dataset.tk)});say(c,T0.q.slice(0,16),2.5)}
+ const el=$('#talkBox');TALK.t0=performance.now();el.innerHTML=`<button class="tx" id="talkX">✕ 閉じる</button><div class="q"><small>💬 ${c.seat+1}番席のお客さん</small>「${T0.q}」</div>${opts.map((o,i)=>`<button data-tk="${i}">${i+1}. ${o[0]}</button>`).join('')}${touchMode?'':'<div style="font-size:11px;color:#aaa;margin-top:4px">数字キー 1〜3 でも選べます</div>'}`;el.style.display='block';
+ el.querySelectorAll('[data-tk]').forEach(b=>{b.onclick=e=>{e.stopPropagation();answerTalk(+b.dataset.tk)};b.onpointerdown=e=>e.stopPropagation()});$('#talkX').onclick=e=>{e.stopPropagation();closeTalk()};$('#talkX').onpointerdown=e=>e.stopPropagation();say(c,T0.q.slice(0,16),2.5)}
+function closeTalk(){if(!TALK)return;const c=TALK.c;TALK=null;$('#talkBox').style.display='none';if(c)c.talked=0}
 function answerTalk(i){if(!TALK)return;const {c,opts}=TALK;const o=opts[i];TALK=null;$('#talkBox').style.display='none';if(!o||!G.customers.includes(c))return;
  if(o[1]===2){c.talkBonus=1.2;c.mood='happy';c.dirty=1;say(c,pick(['ははっ、ありがとう！','いいね、気に入った！','君と話すと元気が出るよ']),2);sfx.good();addXP(2);S.rep=Math.min(5,S.rep+.02);if(c.reg&&S.regs[c.reg])S.regs[c.reg].aff=(S.regs[c.reg].aff||0)+1;floatAt(c.m.g.position.clone().add(V(0,1.9,0)),'💬 会話がはずんだ！ チップUP','#ffd77a',16);if(G.idleN!==undefined)G.idleN++;G.tutTalk=1}
  else if(o[1]===1){say(c,pick(['そうだね','うん','まあね']),1.6);c.talkBonus=1.05;G.tutTalk=1}
@@ -1380,7 +1382,7 @@ cv.addEventListener('contextmenu',e=>e.preventDefault());
 
 cv.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'&&touchMode&&!IS_TOUCH){touchMode=false;document.body.classList.remove('touch')}
  if(touchMode&&P.down&&e.pointerType!=='mouse'&&(P.pid===undefined||e.pointerId===P.pid)){const A=P.act;const lookAll=!A||A.kind==='pendBottle',lookH=A&&A.kind==='pendSlide';
-  if(lookAll||lookH){const [x2,y2]=stagePos(e);const dx=x2-P.lx,dy=y2-P.ly;P.lx=x2;P.ly=y2;const k=.0026*(SET.tsens||1);CAMT.yaw+=dx*k;if(lookAll)CAMT.pitch+=dy*k*(SET.invY?-1:1);camClamp();if(Math.abs(dx)+Math.abs(dy)>2)P.looked=1;
+  if(lookAll||lookH){const [x2,y2]=stagePos(e);const dx=x2-P.lx,dy=y2-P.ly;P.lx=x2;P.ly=y2;const k=.0026*(SET.tsens||1);CAMT.yaw+=dx*k;if(lookAll)CAMT.pitch-=dy*k*(SET.invY?-1:1);camClamp();if(Math.abs(dx)+Math.abs(dy)>2)P.looked=1;
    if(!A)return}}
  if(RB.down&&e.pointerType==='mouse'){let dx;if(FPS.on){const r=cv.getBoundingClientRect();dx=(e.movementX||0)*1280/r.width}else{const nx=stagePos(e)[0];dx=nx-RB.x;RB.x=nx}if(rbTilt(dx))return}
  if(FPS.on){const mx=e.movementX||0,my=e.movementY||0;
@@ -1389,6 +1391,7 @@ cv.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'&&touchMode&&!IS
   return}
  const [x,y]=stagePos(e);P.dx=x-P.x;P.dy=y-P.y;P.x=x;P.y=y;onDrag(Math.hypot(P.dx,P.dy))});
 cv.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'&&!touchMode){touchMode=true;document.body.classList.add('touch')}
+ if(TALK){closeTalk();return}
  if(e.pointerType==='mouse'&&e.button===0&&fpsWanted()&&!FPS.on&&G&&S.phase==='service'&&!G.paused&&!$('#ov').classList.contains('show')){fpsLock();return}
  const [x,y]=FPS.on?[P.x,P.y]:stagePos(e);P.x=x;P.y=y;if(!G||S.phase!=='service'||G.paused)return;ac();
  try{cv.setPointerCapture(e.pointerId)}catch(_){}
@@ -1594,6 +1597,7 @@ function isPeak(){return G&&!G.tutorial&&G.time/G.dayLen>.3&&G.time/G.dayLen<.7}
 function onBeat(){if(!isPeak())return;const b=beatPhase();if(!b)return;const d=Math.min(b.ph,1-b.ph)*b.beat;if(d<DX().beat){G.beatStreak=(G.beatStreak||0)+1;const el=$('#beat');el.classList.add('hit');setTimeout(()=>el.classList.remove('hit'),180);if(G.beatStreak>=2)floatAt(handPt.clone().add(V(0,.2,0)),'♪ ON BEAT ×'+G.beatStreak,'#9ae6ff',14)}else G.beatStreak=0}
 /* ====================== UPDATE ====================== */
 function update(dt){
+ if(TALK&&(!G.customers.includes(TALK.c)||TALK.c.status==='leave'||performance.now()-TALK.t0>20000))closeTalk();
  if(!G.tutorial&&G.customers.length)G.tidy=Math.max(0,(G.tidy??100)-dt*.25);
  {const tb=$('#tidyBar');const v=Math.round(G.tidy??100);const hh=`🧼 カウンターの清潔度 ${v}%<i><b style="width:${v}%;background:${v>70?'#7cff9a':v>40?'#ffd77a':'#ff7a7a'}"></b></i>${(G.roundIce||0)?`　🧊丸氷×${G.roundIce}`:''}${(G.shineStock||0)?`　✨磨き×${G.shineStock}`:''}`;tb.style.display=(G.paused||$('#ov').classList.contains('show'))?'none':'block';if(tb.innerHTML!==hh)tb.innerHTML=hh}
  if(G.tutorial){tutUpdate()}else{G.time+=dt;if(DX().airDry){G.dryT=(G.dryT||0)+dt;if(G.dryT>DX().airDry){G.dryT=0;if(wetCount())polishOne()}}}
@@ -2220,8 +2224,8 @@ function renderArrow(hl,txt){const ar=$('#arrow');document.querySelectorAll('.sl
  let x=p.x,y=p.y,mode='up';
  if(x<40){x=70;y=clamp(y,150,500);mode='side';lab=touchMode?'👉 画面を右へドラッグ（左を見る）':fpsWanted()?'◀ 左を向いて':'左を見て（マウスを左端へ）'}
  else if(x>1240){x=1180;y=clamp(y,150,500);mode='side';lab=touchMode?'画面を左へドラッグ（右を見る）👈':fpsWanted()?'右を向いて ▶':'右を見て（マウスを右端へ）'}
- else if(y<60){y=110;mode='upTop';lab=touchMode?'👇 画面を下へドラッグ（客席）':fpsWanted()?'上を向いて':'上を見て（マウスを上へ）'}
- else if(y>560&&ctr.y>560){y=500;mode='downTop';lab=touchMode?'👆 画面を上へドラッグ（手元）':fpsWanted()?'下を向いて':'下を見て（マウスを下へ）'}
+ else if(y<60){y=110;mode='upTop';lab=touchMode?'👆 画面を上へドラッグ（客席）':fpsWanted()?'上を向いて':'上を見て（マウスを上へ）'}
+ else if(y>560&&ctr.y>560){y=500;mode='downTop';lab=touchMode?'👇 画面を下へドラッグ（手元）':fpsWanted()?'下を向いて':'下を見て（マウスを下へ）'}
  const W=Math.max(70,lab.length*13+26),Hh=74;
  const obs=[];for(const sel of ['#ticket','#top','#hand','#evalPop','#tut','#gaugeBox','#readout'])for(const e of document.querySelectorAll(sel)){if(e.offsetParent!==null||sel==='#top'){const r=stageRect(e);if(r)obs.push(r)}}
  document.querySelectorAll('.bub').forEach(e=>{if(e.style.display!=='none'){const r=stageRect(e);if(r)obs.push(r)}});
