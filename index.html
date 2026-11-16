@@ -1253,6 +1253,7 @@ function stagePos(e){const r=cv.getBoundingClientRect();return[(e.clientX-r.left
 cv.addEventListener('contextmenu',e=>e.preventDefault());
 
 cv.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'&&touchMode&&!IS_TOUCH){touchMode=false;document.body.classList.remove('touch')}
+ if(RB.down&&e.pointerType==='mouse'){let dx;if(FPS.on){const r=cv.getBoundingClientRect();dx=(e.movementX||0)*1280/r.width}else{const nx=stagePos(e)[0];dx=nx-RB.x;RB.x=nx}if(rbTilt(dx))return}
  if(FPS.on){const mx=e.movementX||0,my=e.movementY||0;
   if(P.down&&P.act){const r=cv.getBoundingClientRect();const sc=1280/r.width;const ox=P.x,oy=P.y;P.x=clamp(P.x+mx*sc,0,1280);P.y=clamp(P.y+my*sc,0,720);P.dx=P.x-ox;P.dy=P.y-oy;onDrag(Math.hypot(P.dx,P.dy))}
   else if(!(G&&G.paused)){const k=.0018*(SET.sens||1);FPS.yaw=clamp(FPS.yaw-mx*k,-.95,.95);FPS.pitch=clamp(FPS.pitch-my*k,-1.2,.15);P.x=640;P.y=360;P.dx=0;P.dy=0}
@@ -1262,10 +1263,14 @@ cv.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'&&!touchMode){to
  if(e.pointerType==='mouse'&&e.button===0&&fpsWanted()&&!FPS.on&&G&&S.phase==='service'&&!G.paused&&!$('#ov').classList.contains('show')){fpsLock();return}
  const [x,y]=FPS.on?[P.x,P.y]:stagePos(e);P.x=x;P.y=y;if(!G||S.phase!=='service'||G.paused)return;ac();
  try{cv.setPointerCapture(e.pointerId)}catch(_){}
- if(e.button===2){returnHand();return}if(e.button!==0)return;
+ if(e.button===2)return;if(e.button!==0)return;
  P.down=true;P.sx=x;P.sy=y;P.moved=0;onDown()});
 addEventListener('pointerup',()=>{if(!P.down)return;P.down=false;onUp();if(FPS.on){P.x=640;P.y=360}});
-cv.addEventListener('wheel',e=>{if(!G||S.phase!=='service'||G.paused)return;const A=P.act;if(!(A&&A.kind==='tap')&&!SLOTS.some(s=>s.kind==='tap'&&s.glass))return;e.preventDefault();G.tilt=clamp((G.tilt||0)-e.deltaY*.0012,0,1);if(A&&A.kind==='tap')A.manual=1},{passive:false});
+const RB={down:0,moved:0,x:0};
+function tiltOK(){return G&&S.phase==='service'&&!G.paused&&(P.act&&P.act.kind==='tap'||SLOTS.some(s=>s.kind==='tap'&&s.glass))}
+function rbTilt(dx){if(!tiltOK())return false;RB.moved+=Math.abs(dx);G.tilt=clamp((G.tilt||0)+dx/120,0,1);if(P.act&&P.act.kind==='tap')P.act.manual=1;return true}
+cv.addEventListener('mousedown',e=>{if(e.button!==2)return;RB.down=1;RB.moved=0;RB.x=stagePos(e)[0]});
+addEventListener('mouseup',e=>{if(e.button!==2||!RB.down)return;RB.down=0;if(RB.moved<6&&G&&S.phase==='service'&&!G.paused)returnHand()});
 addEventListener('blur',()=>{if(P.down){P.down=false;onUp()}});
 $('#hand').addEventListener('pointerdown',e=>{if(e.target.closest('#retBtn')){e.stopPropagation();if(G&&S.phase==='service'&&!G.paused)returnHand()}});
 addEventListener('keydown',e=>{if(!G||S.phase!=='service'||e.repeat)return;const k=(e.key||'').toLowerCase();
@@ -1432,7 +1437,7 @@ function doCut(A){const B=G.board,k=B&&B.k;if(!k)return;const dy=P.y-A.y0,dx=A.m
 function makeKnife(){const g=new THREE.Group();const bl=new THREE.Mesh(new THREE.BoxGeometry(.003,.03,.12),M.chrome);bl.position.set(0,.0,-.02);g.add(bl);const hd=new THREE.Mesh(new THREE.BoxGeometry(.014,.018,.06),std({color:0x2a1a10,roughness:.6}));hd.position.set(0,.004,.065);g.add(hd);return g}
 function makeTowelHand(){const g=new THREE.Group();const cl=std({color:0xf2efe6,roughness:1});const a=new THREE.Mesh(new THREE.BoxGeometry(.09,.02,.07),cl);g.add(a);const b=new THREE.Mesh(new THREE.BoxGeometry(.09,.004,.01),std({color:0x3a6ea8,roughness:1}));b.position.set(0,.012,.02);g.add(b);const d=new THREE.Mesh(new THREE.BoxGeometry(.05,.06,.02),cl);d.position.set(.02,-.03,.03);d.rotation.z=.4;g.add(d);return g}
 function tiltTxt(gl){const tl=G.tilt||0;const deg=Math.round(tl*.55*57.3);const want=gl.fill()<.55;const ok=want?tl>.55:tl<.3;const auto=DX().autoTilt&&!(P.act&&P.act.manual);
- return `🍺 傾き <b style="color:${ok?'#7cff9a':'#ffd77a'}">${deg}°</b> ${want?'前半は<b>傾けて</b>泡をおさえる':'後半は<b>まっすぐ</b>起こして泡を作る'}<div class="meter"><em style="left:${want?55:0}%;width:${want?45:30}%"></em><i style="width:${tl*100}%;background:${ok?'#7cff9a':'#ffd77a'}"></i></div>${auto?'（自動）右ドラッグで手動に':'右ドラッグ／ホイール↑＝傾ける ・ 左＝起こす'}`}
+ return `🍺 傾き <b style="color:${ok?'#7cff9a':'#ffd77a'}">${deg}°</b> ${want?'前半は<b>傾けて</b>泡をおさえる':'後半は<b>まっすぐ</b>起こして泡を作る'}<div class="meter"><em style="left:${want?55:0}%;width:${want?45:30}%"></em><i style="width:${tl*100}%;background:${ok?'#7cff9a':'#ffd77a'}"></i></div>${auto?'（自動）右ボタン＋左右で手動に':'右ボタンを押したまま →右で傾ける・←左で起こす'}`}
 // --- wet / shiny glasses
 function takeRackGlass(t){const shiny=G.clean[t]-(G.wet[t]||0);const gl=new Glass(t);if(shiny>0){gl.shiny=!!DX().wetPen||DF().name!=='かんたん';}else{gl.wet=true;G.wet[t]--}G.clean[t]--;return gl}
 function polishOne(){for(const t in G.wet){if(G.wet[t]>0){G.wet[t]--;return t}}return null}
@@ -1728,7 +1733,7 @@ function showHelp(thenStart,fromTitle){const was=G&&G.paused;if(G&&S.phase==='se
  <div class="hcard"><b>✨ 決め技（ランクで解放）</b><span class="mz">ジャストポア</span>一回の長押しで目標量ぴったり ／ <span class="mz">ハイポア</span>注ぎながら上へドラッグして高い位置から ／ <span class="mz">ローリングシェイク</span>円を描いて振る ／ <span class="mz">神速サーブ</span>注文から20秒以内。チップと評判UP！</div>
  <div class="hcard"><b>🍾 フレア</b>ボトルを持って、何もない所で<span class="mz">押したまま円を2周</span>描くと宙に投げる。落ちてくる所で<span class="mz">クリック</span>してキャッチ！ 次の一杯がチップUP。</div>
  <div class="hcard"><b>🥃 スライド提供</b>完成したグラスを持って、お客さんの方へ<span class="mz">上にシュッと弾く</span>とカウンターを滑って届く。強すぎると割れる（かんたんは割れない）。</div>
- <div class="hcard"><b>🍺 グラスの傾き</b>タップを引きながら<span class="mz">右へドラッグ／ホイール↑</span>で傾ける、左で起こす。<b>前半は傾けて</b>泡をおさえ、<b>後半はまっすぐ</b>で泡を作る。かんたんは自動（動かすと手動）。</div>
+ <div class="hcard"><b>🍺 グラスの傾き</b>タップを引きながら<span class="mz">マウスの右ボタンを押したまま右へ</span>で傾ける、左で起こす（左ボタンでハンドルを引きながらでもOK）。<b>前半は傾けて</b>泡をおさえ、<b>後半はまっすぐ</b>で泡を作る。かんたんは自動（動かすと手動）。</div>
  <div class="hcard"><b>🍋 カット</b>ふつう・むずかしいはスライスが切れたら自分で切る。フルーツをクリック→⑩まな板に乗る→包丁で<span class="mz">上から下へスッ</span>を2回。まっすぐ素早く＝「きれいなカット」。</div>
  <div class="hcard"><b>✨ 拭く・リズム・失敗</b>洗ったグラスは濡れて水切りカゴへ。⑪<span class="mz">🧺布</span>を持ってカゴの上で<span class="mz">ぐるぐる</span>＝拭く（ピカピカはチップUP／むずかしいは濡れたまま出すと減点）。ピークタイムは右上の丸に合わせて操作するとリズム職人。こぼすと濡れるので<span class="mz">こすって拭く</span>。</div>
  <div class="hcard"><b>🧽 片付け</b>お会計と空きグラスを<span class="mz">クリック</span>で回収。シンクを<span class="mz">押したまま左右にこする</span>と洗えます。</div>
@@ -2023,7 +2028,7 @@ const TUT=[
  {c:'視点',t:()=>fpsWanted()?'まずは見回してみよう。<b>画面をクリック</b>すると視点モードになり、マウスで<b>FPSゲームのように</b>見回せます。<br>画面中央の <b>＋（照準）</b> を物に合わせてクリックで操作。<b>Esc</b> でカーソルに戻ります（感度は ⚙設定）。<br>👉 上の客席と、下の手元をぐるっと見てみよう':touchMode?'右下の <b>⬆⬇◀▶</b> で見回せます（⚙設定でジャイロもOK）。<br>👉 客席と手元をぐるっと見てみよう':'マウスを<b>上</b>へ動かすと客席、<b>下</b>で手元、<b>左右の端</b>で首を振ります（⚙設定で FPS視点・感度も変更可）。<br>👉 ぐるっと見回してみよう',enter(){G.lookAcc=0},done:()=>(G.lookAcc||0)>1.6,skip:'次へ'},
  {c:'持つ・戻す',t:'物は<b>クリックで手に持ち</b>、<b>右クリック</b>（または <b>Q</b> キー）で元の場所に戻せます。<br>👉 ①グラス棚から<b>パイントグラス</b>を持って、右クリックで戻してみよう',enter(){G.tutHeld=0},done:()=>G.tutHeld&&!H,hl:'rack:pint'},
  {c:'接客',t:'お客さんが来ました！ 頭の上に <b>「🙋注文！」</b> が出ているお客さんをクリックして注文を聞こう。<br>注文は画面下の<b>伝票</b>に、作り方の手順つきで並びます。',enter(){tutSpawn('pale')},done:()=>G.customers.some(c=>c.status==='ordered'),hl:'callers',dyn:1},
- {c:'ビール',t:()=>'注文は<b>ペールエール</b>🍺<br>① グラスを持って ⑧タップの<b>ハンドルを押したまま下へ引く</b>と注げます<br>② 注ぎながら<b>右へドラッグ（ホイール↑）でグラスを傾ける</b>。<b>前半は傾けて</b>泡をおさえ、<b>後半はまっすぐ</b>起こして泡を作るのがコツ'+(DX().autoTilt?'<small>（かんたんは自動で傾きます。自分で動かすと手動に）</small>':'')+'<br>③ できたらお客さんをクリックで提供！',done:()=>G.stats.served>=1,dyn:1},
+ {c:'ビール',t:()=>'注文は<b>ペールエール</b>🍺<br>① グラスを持って ⑧タップの<b>ハンドルを押したまま下へ引く</b>と注げます<br>② 注ぎながら<b>マウスの右ボタンを押したまま右へ動かすとグラスが傾く</b>（左で起こす）。<b>前半は傾けて</b>泡をおさえ、<b>後半はまっすぐ</b>起こして泡を作るのがコツ'+(DX().autoTilt?'<small>（かんたんは自動で傾きます。自分で動かすと手動に）</small>':'')+'<br>③ できたらお客さんをクリックで提供！',done:()=>G.stats.served>=1,dyn:1},
  {c:'お会計',t:'ナイス！🍺 お客さんが飲んでいます。飲み終わると<b>💴お会計と空きグラス</b>がカウンターに残るので、少し待とう…',done:()=>G.seats.some(s=>s.money>0)},
  {c:'お会計',t:'カウンターの<b>💴お会計</b>をクリックして回収！ 空きグラスは自動でシンクへ。<br>（片付けないと、その席に次のお客さんが座れません）',done:()=>!G.seats.some(s=>s.money>0||s.glasses.length),hl:'tables',dyn:1},
  {c:'カット',t:'次のお客さん！ クリックして注文を聞こう。',enter(){G.tutCut=1;G.cut.g_lemon=0;tutSpawn('highball')},done:()=>G.customers.some(c=>c.status==='ordered'),hl:'callers',dyn:1},
