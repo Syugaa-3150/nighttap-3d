@@ -1839,7 +1839,7 @@ function fpsUnlock(){if(document.pointerLockElement)try{document.exitPointerLock
 document.addEventListener('pointerlockchange',()=>{const on=document.pointerLockElement===cv;if(on&&!FPS.on){FPS.yaw=camYaw;FPS.pitch=camPitch;P.x=640;P.y=360}FPS.on=on;if(on){FPS.ever=1;FPS.lockT=performance.now();FPS.avg=0}document.body.classList.toggle('fpsOn',on);if(!on&&P.down){P.down=false;onUp()}});
 const CAMT={yaw:0,pitch:-.55,gy:0,gp:0};const CUR={yaw:null,pitch:null};
 /* cursor mode: a few fixed viewpoints. Move the mouse to a screen edge and hold briefly (or use wheel / WASD) -> smooth glide to the next viewpoint. The middle of the screen never moves the view. */
-const CVW={row:1,col:1,zone:null,zt:0,cool:0,pitch(){return this.row===0?-.22:-.6},yaw(){return (this.row===0?[.34,0,-.34]:[.46,0,-.46])[this.col]}};
+const CVW={row:1,col:1,zone:null,zt:0,cool:0,pitch(){return this.row===0?-.22:(this.col===1?-.6:-.52)},yaw(){return (this.row===0?[.34,0,-.34]:[.4,0,-.4])[this.col]}};
 function cvSet(row,col){const r=clamp(row,0,1),c=clamp(col,0,2);if(r!==CVW.row||c!==CVW.col){CVW.row=r;CVW.col=c;CVW.cool=.5}}
 function curViewTick(dt){CVW.cool=Math.max(0,CVW.cool-dt);if(!G||!S||S.phase!=='service'||G.paused){$('#edgeHint').style.display='none';return}const nx=P.x/1280,ny=P.y/720;const inCanvas=!P.offCanvas;
  let z=null;if(inCanvas&&!(P.act&&P.down)){if(ny<.15)z='up';else if(ny>.8)z='down';else if(nx<.05)z='left';else if(nx>.95)z='right'}
@@ -1865,7 +1865,7 @@ let glowing=[];
 function glowRoot(r,col,int){r.traverse(o=>{if(o.isMesh&&o.material){const ms=Array.isArray(o.material)?o.material:[o.material];ms.forEach((m,i)=>{if(!m.emissive)return;if(!o.userData.own){o.material=Array.isArray(o.material)?o.material.map(x=>x.clone()):o.material.clone();o.userData.own=1}const mm=Array.isArray(o.material)?o.material[i]:o.material;if(mm.userData.e0===undefined){mm.userData.e0=mm.emissive.getHex();mm.userData.i0=mm.emissiveIntensity}mm.emissive.setHex(col);mm.emissiveIntensity=int;glowing.push(mm)})}})}
 function clearGlow(){for(const m of glowing){m.emissive.setHex(m.userData.e0);m.emissiveIntensity=m.userData.i0}glowing=[]}
 function hlTargets(hl){const out=[];if(!hl||!G)return out;const [a,b]=hl.split(':');
- if(a==='bottle')out.push(ST.bottles[b]);else if(a==='tap'){const tp=ST.taps.find(x=>x.k===b);if(tp)out.push(tp.piv)}else if(a==='garnish')out.push(ST.garn[b]);else if(a==='rack')out.push(ST.rack[b].g);else if(a==='ice')out.push(ST.ice);else if(a==='spoon')out.push(ST.spoon);else if(a==='board')out.push(ST.board.g);else if(a==='cloche')out.push(ST.cloche.g);else if(a==='roundice')out.push(ST.ri.g);else if(a==='towel')out.push(ST.towel);else if(a==='sink')out.push(ST.sink.g);
+ if(a==='bottle')out.push(ST.bottles[b]);else if(a==='tap'){const tp=ST.taps.find(x=>x.k===b);if(tp)out.push(tp.piv)}else if(a==='garnish')out.push(ST.garn[b]);else if(a==='rack'){const R2=ST.rack[b];const m=R2&&R2.metas.find(x=>x.visible);out.push(m||R2.g)}else if(a==='ice')out.push(ST.ice);else if(a==='spoon')out.push(ST.spoon);else if(a==='board')out.push(ST.board.g);else if(a==='cloche')out.push(ST.cloche.g);else if(a==='roundice')out.push(ST.ri.g);else if(a==='towel')out.push(ST.towel);else if(a==='sink')out.push(ST.sink.g);
  else if(a==='shaker'){if(G.shaker.loc.kind==='slot')out.push(G.shaker.g)}
  else if(a==='mat')SLOTS.filter(s=>s.kind==='mat'&&!s.glass).forEach(s=>out.push(s.mesh));
  else if(a==='drip'){}
