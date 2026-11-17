@@ -415,6 +415,10 @@ body.touch #tut{max-height:250px!important}
 #top .chip{white-space:nowrap;overflow:hidden}
 #tgtRing{position:absolute;border:3px solid #ffe14a;border-radius:50%;pointer-events:none;display:none;z-index:3;box-shadow:0 0 14px #ffe14a88,inset 0 0 10px #ffe14a55;animation:tgp 1.1s ease-in-out infinite}
 @keyframes tgp{0%,100%{transform:scale(1);opacity:.95}50%{transform:scale(1.12);opacity:.55}}
+#edgeHint{position:absolute;display:none;pointer-events:none;z-index:4;background:rgba(14,11,9,.8);border:1px solid var(--gold,#d9b06a);color:#ffe9b8;border-radius:12px;padding:5px 14px 8px;font-size:14px;font-weight:800;overflow:hidden}
+#edgeHint i{position:absolute;left:0;bottom:0;height:3px;background:#ffd77a}
+#edgeHint.e-up{left:50%;top:60px;transform:translateX(-50%)}#edgeHint.e-down{left:50%;bottom:150px;transform:translateX(-50%)}
+#edgeHint.e-left{left:14px;top:46%}#edgeHint.e-right{right:14px;top:46%}
 </style>
 </head>
 <body>
@@ -448,7 +452,7 @@ body.touch #tut{max-height:250px!important}
   <div id="gaugeBox"><div class="glab" id="glab"></div><div class="gt"><div class="nd" id="needle"></div></div></div>
   <div id="hand"></div><div id="viewPad"><button data-look="up">⬆<small>客席</small></button><button data-look="left">◀</button><button data-look="center">●</button><button data-look="right">▶</button><button data-look="down">⬇<small>手元</small></button></div>
   <div id="hintBar"><b>次は▶</b><span id="hintTxt"></span></div>
-  <div id="arrow"><div class="ar">⬇</div><div class="al"></div></div><div id="tut"></div><div id="combo"></div><div id="beat"></div><div id="cutPanel"></div><div id="catchRing"></div><div id="hring"></div><div id="talk"></div><div id="rankUp"></div><div id="tip"></div><div id="vign"></div><div id="partner"></div><div id="photoUI"><span>📷 写真モード：ドラッグで向きを変える</span><button class="btn" id="phShot">📸 撮る</button><button class="btn sec" id="phBack">✕ もどる</button></div><div id="evBar"></div><div id="talkBox"></div><div id="tidyBar"></div><div id="tiltW"></div><div id="tgtRing"></div><div id="ringG"><i></i></div><div id="xhair"></div><div id="vcur"></div><div id="fpsHint">🎯 <b>画面をクリック</b>で視点モード（マウスで見回す）<br><small>照準＋を合わせてクリック ／ Esc：カーソルに戻す ／ Q：戻す ／ 1〜9：伝票 ／ P：一時停止</small></div>
+  <div id="arrow"><div class="ar">⬇</div><div class="al"></div></div><div id="tut"></div><div id="combo"></div><div id="beat"></div><div id="cutPanel"></div><div id="catchRing"></div><div id="hring"></div><div id="talk"></div><div id="rankUp"></div><div id="tip"></div><div id="vign"></div><div id="partner"></div><div id="photoUI"><span>📷 写真モード：ドラッグで向きを変える</span><button class="btn" id="phShot">📸 撮る</button><button class="btn sec" id="phBack">✕ もどる</button></div><div id="evBar"></div><div id="talkBox"></div><div id="tidyBar"></div><div id="tiltW"></div><div id="edgeHint"></div><div id="tgtRing"></div><div id="ringG"><i></i></div><div id="xhair"></div><div id="vcur"></div><div id="fpsHint">🎯 <b>画面をクリック</b>で視点モード（マウスで見回す）<br><small>照準＋を合わせてクリック ／ Esc：カーソルに戻す ／ Q：戻す ／ 1〜9：伝票 ／ P：一時停止</small></div>
   <div id="msg"></div>
   <div id="fx"></div>
   <div id="toast"></div>
@@ -1834,15 +1838,24 @@ function fpsLock(){setTimeout(()=>{if(!FPS.on&&!document.pointerLockElement)fpsF
 function fpsUnlock(){if(document.pointerLockElement)try{document.exitPointerLock()}catch(_){}}
 document.addEventListener('pointerlockchange',()=>{const on=document.pointerLockElement===cv;if(on&&!FPS.on){FPS.yaw=camYaw;FPS.pitch=camPitch;P.x=640;P.y=360}FPS.on=on;if(on){FPS.ever=1;FPS.lockT=performance.now();FPS.avg=0}document.body.classList.toggle('fpsOn',on);if(!on&&P.down){P.down=false;onUp()}});
 const CAMT={yaw:0,pitch:-.55,gy:0,gp:0};const CUR={yaw:null,pitch:null};
+/* cursor mode: a few fixed viewpoints. Move the mouse to a screen edge and hold briefly (or use wheel / WASD) -> smooth glide to the next viewpoint. The middle of the screen never moves the view. */
+const CVW={row:1,col:1,zone:null,zt:0,cool:0,pitch(){return this.row===0?-.22:-.6},yaw(){return (this.row===0?[.34,0,-.34]:[.46,0,-.46])[this.col]}};
+function cvSet(row,col){const r=clamp(row,0,1),c=clamp(col,0,2);if(r!==CVW.row||c!==CVW.col){CVW.row=r;CVW.col=c;CVW.cool=.5}}
+function curViewTick(dt){CVW.cool=Math.max(0,CVW.cool-dt);if(!G||!S||S.phase!=='service'||G.paused){$('#edgeHint').style.display='none';return}const nx=P.x/1280,ny=P.y/720;const inCanvas=!P.offCanvas;
+ let z=null;if(inCanvas&&!(P.act&&P.down)){if(ny<.15)z='up';else if(ny>.8)z='down';else if(nx<.05)z='left';else if(nx>.95)z='right'}
+ if(z==='up'&&CVW.row===0||z==='down'&&CVW.row===1||z==='left'&&CVW.col===0||z==='right'&&CVW.col===2)z=null;
+ if(z!==CVW.zone){CVW.zone=z;CVW.zt=0}else if(z)CVW.zt+=dt;
+ const need=.38;const eh=$('#edgeHint');if(z&&CVW.cool<=0){const pr=clamp(CVW.zt/need,0,1);eh.style.display='block';eh.className='e-'+z;eh.innerHTML=`${({up:'▲ 客席を見る',down:'▼ 手元を見る',left:'◀ 左を見る',right:'右を見る ▶'})[z]}<i style="width:${pr*100}%"></i>`;
+  if(CVW.zt>=need){if(z==='up')cvSet(0,CVW.col);else if(z==='down')cvSet(1,CVW.col);else if(z==='left')cvSet(CVW.row,CVW.col-1);else cvSet(CVW.row,CVW.col+1);CVW.zt=0;CVW.zone=null}}else eh.style.display='none'}
+cv.addEventListener('wheel',e=>{if(SET.viewMode==='fps'&&!touchMode)return;if(touchMode||!G||S.phase!=='service'||G.paused)return;e.preventDefault();if(e.deltaY<0)cvSet(0,CVW.col);else if(e.deltaY>0)cvSet(1,CVW.col)},{passive:false});
+cv.addEventListener('pointerleave',()=>{P.offCanvas=true});cv.addEventListener('pointerenter',()=>{P.offCanvas=false});
+addEventListener('keydown',e=>{if(fpsWanted()||touchMode||!G||S.phase!=='service'||G.paused||e.repeat)return;const k=(e.key||'').toLowerCase();if(k==='w'||k==='arrowup')cvSet(0,CVW.col);else if(k==='s'||k==='arrowdown')cvSet(1,CVW.col);else if(k==='a'||k==='arrowleft')cvSet(CVW.row,CVW.col-1);else if(k==='d'||k==='arrowright')cvSet(CVW.row,CVW.col+1);else return;e.preventDefault()});
 function camClamp(){CAMT.yaw=clamp(CAMT.yaw,-1.05,1.05);CAMT.pitch=clamp(CAMT.pitch,-1.15,.12)}
 function updateCamera(dt,t){
  if(PHO.on){camYaw+=(PHO.yaw-camYaw)*Math.min(1,dt*12);camPitch+=(PHO.pitch-camPitch)*Math.min(1,dt*12)}
  else if(FPS.on){camYaw=FPS.yaw;camPitch=FPS.pitch}
  else if(touchMode){if(VP.dir){const sp=1.25*(SET.btnSpeed||1)*dt;if(VP.dir==='left')CAMT.yaw+=sp;else if(VP.dir==='right')CAMT.yaw-=sp;else if(VP.dir==='up')CAMT.pitch+=sp*.8;else if(VP.dir==='down')CAMT.pitch-=sp*.8;camClamp()}const ty=clamp(CAMT.yaw+CAMT.gy,-1.1,1.1),tp=clamp(CAMT.pitch+CAMT.gp,-1.2,.15);const k=1-Math.exp(-dt*16);camYaw+=(ty-camYaw)*k;camPitch+=(tp-camPitch)*k}
- else if(!(fpsWanted()&&G&&S.phase==='service')&&!(P.act&&P.down)){const nx=P.x/1280*2-1,ny=P.y/720;if(CUR.yaw===null){CUR.yaw=camYaw;CUR.pitch=camPitch}
- const ex=Math.sign(nx)*clamp((Math.abs(nx)-.74)/.26,0,1);const ey=ny<.2?-clamp((.2-ny)/.13,0,1):ny>.84?clamp((ny-.84)/.1,0,1):0;const sp=(SET.sens||1);
- CUR.yaw=clamp(CUR.yaw-ex*dt*1.3*sp,-.62,.62);CUR.pitch=clamp(CUR.pitch-ey*dt*1.1*sp,-.8,-.1);
- const k=1-Math.exp(-dt*7);camYaw+=(CUR.yaw-camYaw)*k;camPitch+=(CUR.pitch-camPitch)*k}
+ else if(!(fpsWanted()&&G&&S.phase==='service')&&!(P.act&&P.down)){curViewTick(dt);const k=1-Math.exp(-dt*6*(SET.sens||1));camYaw+=(CVW.yaw()-camYaw)*k;camPitch+=(CVW.pitch()-camPitch)*k}
  if(G){G.lookAcc=(G.lookAcc||0)+Math.abs(camYaw-(updateCamera.py??camYaw))+Math.abs(camPitch-(updateCamera.pp??camPitch))}updateCamera.py=camYaw;updateCamera.pp=camPitch;
  let sh=0;if(P.act&&P.act.kind==='shake'&&SET.camShake!==0)sh=.0012;
  camera.position.set(CAM0.x+Math.sin(t*.7)*.004+rnd(-sh,sh),CAM0.y+Math.sin(t*1.3)*.003+rnd(-sh,sh),CAM0.z);camera.rotation.set(camPitch,camYaw,0)}
@@ -2066,7 +2079,7 @@ function showTitle(){if((IS_TOUCH||touchMode)&&!SET.mobSetup){mobileSetup();retu
  $('#tHelp').onclick=()=>showHelp(false,true)}
 function showHelp(thenStart,fromTitle){const was=G&&G.paused;if(G&&S.phase==='service')G.paused=true;
  openOv(`<div class="modal help"><h1>🍸 操作方法（マウスだけ）</h1><div class="hgrid">
- <div class="hcard"><b>👀 見回す</b><span class="mz">FPS視点</span>（標準）：画面をクリックでマウスロック → マウスで見回し、中央の<span class="mz">＋照準</span>でクリック。Escで解除。⚙設定で<span class="mz">感度</span>と<span class="mz">カーソル視点</span>（上＝客席・下＝手元・端で首振り）に切替。キー：Q戻す／1〜9伝票／Pポーズ。<br>📱スマホは右下の<span class="mz">⬆⬇◀▶</span>ボタンで見回し。タップ＝クリック、指でなぞる＝ドラッグ、右クリックの代わりに左下の<span class="mz">✋置く・戻す</span>。⚙設定で<span class="mz">ジャイロ</span>をONにすると、傾けて見回し、シェイカーを持ってスマホを振るとシェイク！</div>
+ <div class="hcard"><b>👀 見回す</b><span class="mz">FPS視点</span>（標準）：画面をクリックでマウスロック → マウスで見回し、中央の<span class="mz">＋照準</span>でクリック。Escで解除。⚙設定で<span class="mz">感度</span>と<span class="mz">カーソル視点</span>（画面の上端・ホイール↑＝客席、下端・ホイール↓＝手元、左右の端＝横）に切替。キー：Q戻す／1〜9伝票／Pポーズ。<br>📱スマホは右下の<span class="mz">⬆⬇◀▶</span>ボタンで見回し。タップ＝クリック、指でなぞる＝ドラッグ、右クリックの代わりに左下の<span class="mz">✋置く・戻す</span>。⚙設定で<span class="mz">ジャイロ</span>をONにすると、傾けて見回し、シェイカーを持ってスマホを振るとシェイク！</div>
  <div class="hcard"><b>✋ 持つ・置く</b>物を<span class="mz">クリック</span>で手に持つ。別の道具をクリックすると<b>自動で持ち替え</b>（グラスはマットに自動で置かれる）。<span class="mz">右クリック</span>で戻す。</div>
  <div class="hcard"><b>🍺 タップで注ぐ</b>グラスを持ったまま（または受け皿に置いて）ハンドルを<span class="mz">押したまま手前（下）へドラッグ</span>。強く引くほど勢いと泡が増えます。泡2〜3割が理想。</div>
  <div class="hcard"><b>🥃 ボトルで注ぐ</b>ボトルを持ってグラスの上で<span class="mz">長押し</span>。押したまま<span class="mz">下にドラッグ</span>すると傾きが増えて速く注げます。目標mlで離す。</div>
@@ -2558,7 +2571,7 @@ function showSettings(){const was=G&&G.paused;if(G&&S.phase==='service')G.paused
  <div class="setrow"><span>🏷 場所の名札</span>${[['smart','次に使う所だけ'],['all','全部'],['off','表示しない']].map(([k,l])=>`<button class="tg ${SET.labelMode===k?'on':''}" data-lm="${k}">${l}</button>`).join('')}</div>
  <div class="setrow"><span>🍸 商品名の表示<br><small style="font-size:11px;color:#aaa">例：ウイスキーの炭酸割り／ハイボール</small></span>${[['easy','わかりやすい名前'],['orig','元の名前'],['both','両方']].map(([k,l])=>`<button class="tg ${SET.nameMode===k?'on':''}" data-nm="${k}">${l}</button>`).join('')}</div>${tg('hint','💬 画面下の「次は▶」')}
  <div class="setrow"><span>🖥 画質</span>${[['auto','自動'],['high','高画質'],['low','軽量（スマホ向け）']].map(([k,l])=>`<button class="tg ${SET.quality===k?'on':''}" data-q="${k}">${l}</button>`).join('')}</div>
- ${touchMode?'':`<div class="setrow"><span>🎯 視点モード<br><small style="font-size:11px;color:#aaa">PC（マウス）用</small></span>${[['fps','FPS（マウスロック）'],['cursor','カーソル（画面端で首振り）']].map(([k,l])=>`<button class="tg ${SET.viewMode===k?'on':''}" data-vm="${k}">${l}</button>`).join('')}</div>
+ ${touchMode?'':`<div class="setrow"><span>🎯 視点モード<br><small style="font-size:11px;color:#aaa">PC（マウス）用</small></span>${[['fps','FPS（マウスロック）'],['cursor','カーソル（画面端・ホイールで切替）']].map(([k,l])=>`<button class="tg ${SET.viewMode===k?'on':''}" data-vm="${k}">${l}</button>`).join('')}</div>
  <div class="setrow"><span>🖱 視点の感度<br><small style="font-size:11px;color:#aaa">FPS：回転の速さ／カーソル：追従の速さ</small></span><input type="range" min="10" max="300" step="5" value="${Math.round((SET.sens||1)*100)}" id="sSens"><b id="sSensV" style="width:44px;text-align:right">${(SET.sens||1).toFixed(2)}</b></div>
  
  `}${(touchMode||IS_TOUCH)?'':`<div class="setrow"><span>📱 ジャイロ操作<br><small style="font-size:11px;color:#aaa">傾けて見回す・振ってシェイク</small></span><button class="tg ${GY.on?'on':''}" id="sGyro">${GY.on?'ON':'OFF'}</button><button class="tg" id="sGyroC">正面リセット</button></div>`}
@@ -2633,10 +2646,10 @@ function renderArrow(hl,txt){const ar=$('#arrow');const tr=$('#tgtRing');tr.styl
  if(!p.vis){ar.style.display='none';return}
  if(!ownBub&&p.x>40&&p.x<1240&&p.y>60){const a1=toScreen(V(_b.min.x,_b.min.y,_b.min.z)),a2=toScreen(V(_b.max.x,_b.max.y,_b.max.z)),a3=toScreen(V(_b.min.x,_b.max.y,_b.max.z)),a4=toScreen(V(_b.max.x,_b.min.y,_b.min.z));const xs=[a1.x,a2.x,a3.x,a4.x],ys=[a1.y,a2.y,a3.y,a4.y];const w=clamp(Math.max(...xs)-Math.min(...xs),34,220),h=clamp(Math.max(...ys)-Math.min(...ys),34,220);const d=Math.max(w,h)+16;tr.style.display='block';tr.style.width=d+'px';tr.style.height=d+'px';tr.style.left=(ctr.x-d/2)+'px';tr.style.top=(ctr.y-d/2)+'px'}
  let x=p.x,y=p.y,mode='up';
- if(x<40){x=70;y=clamp(y,150,500);mode='side';lab=touchMode?'👈 画面を左へドラッグ（左を見る）':fpsWanted()?'◀ 左を向いて':'左を見て（マウスを左端へ）'}
- else if(x>1240){x=1180;y=clamp(y,150,500);mode='side';lab=touchMode?'画面を右へドラッグ（右を見る）👉':fpsWanted()?'右を向いて ▶':'右を見て（マウスを右端へ）'}
- else if(y<60){y=110;mode='upTop';lab=touchMode?'👆 画面を上へドラッグ（客席）':fpsWanted()?'上を向いて':'マウスを画面の上の端へ（客席）'}
- else if(y>560&&ctr.y>560){y=500;mode='downTop';lab=touchMode?'👇 画面を下へドラッグ（手元）':fpsWanted()?'下を向いて':'マウスを画面の下の端へ（手元）'}
+ if(x<40){x=70;y=clamp(y,150,500);mode='side';lab=touchMode?'👈 画面を左へドラッグ（左を見る）':fpsWanted()?'◀ 左を向いて':'◀ 画面の左端へ（またはAキー）'}
+ else if(x>1240){x=1180;y=clamp(y,150,500);mode='side';lab=touchMode?'画面を右へドラッグ（右を見る）👉':fpsWanted()?'右を向いて ▶':'画面の右端へ（またはDキー） ▶'}
+ else if(y<60){y=110;mode='upTop';lab=touchMode?'👆 画面を上へドラッグ（客席）':fpsWanted()?'上を向いて':'ホイール↑ か 画面の上の端へ（客席）'}
+ else if(y>560&&ctr.y>560){y=500;mode='downTop';lab=touchMode?'👇 画面を下へドラッグ（手元）':fpsWanted()?'下を向いて':'ホイール↓ か 画面の下の端へ（手元）'}
  const W=Math.max(70,lab.length*13+26),Hh=74;
  const obs=[];for(const sel of ['#ticket','#top','#hand','#evalPop','#tut','#gaugeBox','#readout'])for(const e of document.querySelectorAll(sel)){if(e.offsetParent!==null||sel==='#top'){const r=stageRect(e);if(r)obs.push(r)}}
  document.querySelectorAll('.bub').forEach(e=>{if(e.style.display!=='none'&&e!==ownBub){const r=stageRect(e);if(r)obs.push(r)}});
@@ -2656,7 +2669,7 @@ function renderArrow(hl,txt){const ar=$('#arrow');const tr=$('#tgtRing');tr.styl
 const LESSONS=[{n:'レッスン1　きほんの接客',icon:'🍺',d:'見回す・持つ・ビールを注ぐ・お会計'},{n:'レッスン2　カクテルと片付け',icon:'🍋',d:'フルーツを切る・カクテル・洗う・拭く'},{n:'レッスン3　ひまな時間とお楽しみ',icon:'🧊',d:'丸氷・雑談・雰囲気・お題と図鑑'}];
 const TUT=[
  {les:0,c:'ようこそ',ic:'🍸',t:'<b>「Bar 憩」</b>へようこそ！ 今夜からあなたがこの店のバーテンダー。<br>チュートリアルは <b>3つのレッスン</b>。各ステップの <b>✅やること</b> を全部こなすと次へ進みます。<br>時間制限なし・失敗してもOK！',btn:'レッスン1をはじめる'},
- {les:0,c:'見回す',ic:'👀',t:()=>fpsWanted()?'<b>画面をクリック</b> → マウスで見回す（FPSと同じ）。中央の<b>＋照準</b>を物に合わせてクリック。<b>Esc</b>でカーソルに戻る':touchMode?'何もない所を<b>指でなぞる</b>と見回せます（⚙設定でボタン・ジャイロも選べる）':'マウスを画面の<b>上・下・左右の端</b>に寄せると、その方向を向きます（真ん中では動かないので作業に集中できる）',enter(){G.lookAcc=0},goals:[['客席と手元を見回す',()=>(G.lookAcc||0)>1.6]],skip:'次へ'},
+ {les:0,c:'見回す',ic:'👀',t:()=>fpsWanted()?'<b>画面をクリック</b> → マウスで見回す（FPSと同じ）。中央の<b>＋照準</b>を物に合わせてクリック。<b>Esc</b>でカーソルに戻る':touchMode?'何もない所を<b>指でなぞる</b>と見回せます（⚙設定でボタン・ジャイロも選べる）':'マウスを画面の<b>上の端</b>に少し置くと客席、<b>下の端</b>で手元、<b>左右の端</b>で横を向きます（<b>ホイール</b>・<b>W/S/A/D</b>キーでもOK）。真ん中では視点は動きません',enter(){G.lookAcc=0},goals:[['客席と手元を見回す',()=>(G.lookAcc||0)>1.6]],skip:'次へ'},
  {les:0,c:'持つ・戻す',ic:'✋',t:()=>touchMode?'<b>タップで持つ</b>、左下の<b>✋置く・戻す</b>で戻す。':'<b>クリックで持つ</b>、<b>右クリック</b>（Qキー）で戻す。',enter(){G.tutHeld=0},goals:[['①グラス棚からグラスを持つ',()=>G.tutHeld],[()=>touchMode?'✋ボタンで戻す':'右クリックで戻す',()=>G.tutHeld&&!H]],hl:'rack:pint'},
  {les:0,c:'ビールを出す',ic:'🍺',t:()=>'お客さんが来た！ 注文を聞いて<b>'+RECIPES.pale.name+'</b>を注ごう。<br>右上の「グラスの角度」パネル：'+(touchMode?'<b>スライダー右</b>で傾ける。':'<b>右ボタン＋右へ</b>で傾ける。')+'<b>前半は傾けて、後半はまっすぐ</b>がコツ。',enter(){tutSpawn('pale')},goals:[['「🙋注文！」のお客さんをクリック',()=>G.customers.some(c=>c.status==='ordered')||G.stats.served>=1],['パイントグラスを⑧タップに置く',()=>SLOTS.some(s=>s.kind==='tap'&&s.glass)||G.stats.served>=1],['グラスを傾ける',()=>(G.tilt||0)>.4||G.stats.served>=1],[()=>touchMode?'ハンドルを指で下へなぞって注ぐ':'ハンドルを押したまま下へ引いて注ぐ',()=>SLOTS.some(s=>s.kind==='tap'&&s.glass&&s.glass.fill()>.5)||G.stats.served>=1],['お客さんをクリックして提供',()=>G.stats.served>=1]],dyn:1},
  {les:0,c:'お会計',ic:'💴',t:'飲み終わると<b>💴お会計と空きグラス</b>が残ります。回収しないと次のお客さんが座れません。',goals:[['飲み終わるのを待つ',()=>G.seats.some(s=>s.money>0)||(G.stats.served>=1&&!G.customers.some(c=>c.status==='drinking'))],['💴お会計をクリック',()=>!G.seats.some(s=>s.money>0||s.glasses.length)&&G.stats.served>=1&&!G.customers.some(c=>c.status==='drinking')]],hl:'tables',dyn:1},
