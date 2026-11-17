@@ -1930,7 +1930,7 @@ function renderBubbles(){for(const c of G.customers){const b=c.bub;const p=toScr
   else if(c.reg){html=`⭐${REGS.find(r=>r.id===c.reg).name}`;cls+=' regtag'}
   else{b.style.display='none';continue}
   if(c.status==='waiting'||c.status==='ordered'){const pp=clamp(c.pat/c.patMax,0,1);html+=`<div class="pb"><i style="width:${pp*100}%;background:${pp>.5?'#7cd67c':pp>.25?'#f0c040':'#ff5a5a'}"></i></div>`}
-  b.style.display='block';if(b.className!==cls)b.className=cls;if(b.innerHTML!==html)b.innerHTML=html;b.style.left=p.x+'px';b.style.top=Math.max(p.y,150)+'px';
+  b.style.display='block';if(b.className!==cls)b.className=cls;if(b.innerHTML!==html)b.innerHTML=html;b.style.left=p.x+'px';b.style.top=Math.max(p.y,192)+'px';
   if(c.dirty){drawFace(c.m.ftex,c.mood,c.L);c.dirty=0}}
  // money labels
  let mh='';for(const s of G.seats){if(s.money>0){const p=toScreen(V(SEATX[s.i]+.13,1.16,-.72));if(p.vis)mh+=`<div class="mlab" style="left:${p.x}px;top:${p.y}px">💴${yen(s.money)}</div>`}}
@@ -2655,8 +2655,9 @@ function renderArrow(hl,txt){const ar=$('#arrow');const tr=$('#tgtRing');tr.styl
  const obs=[];for(const sel of ['#ticket','#top','#hand','#evalPop','#tut','#gaugeBox','#readout'])for(const e of document.querySelectorAll(sel)){if(e.offsetParent!==null||sel==='#top'){const r=stageRect(e);if(r)obs.push(r)}}
  document.querySelectorAll('.bub').forEach(e=>{if(e.style.display!=='none'&&e!==ownBub){const r=stageRect(e);if(r)obs.push(r)}});
  const cands=mode==='up'?[['up',x,y],['left',ctr.x-14-(_b.max.x-_b.min.x)*0,ctr.y],['right',ctr.x+14,ctr.y],['down',x,toScreen(V(c.x,_b.min.y,c.z)).y+6]]:[[mode==='side'?'side':'up',x,y]];
+ if(ownBub&&mode==='up'){const br=stageRect(ownBub);cands.length=0;cands.push(['up',(br.l+br.r)/2,Math.max(br.t-4,48+Hh)])}
  const rectOf=(m,X,Y)=>m==='up'||m==='side'||m==='upTop'||m==='downTop'?{l:X-W/2,r:X+W/2,t:Y-Hh,b:Y}:m==='left'?{l:X-W-40,r:X,t:Y-Hh/2,b:Y+Hh/2}:m==='right'?{l:X,r:X+W+40,t:Y-Hh/2,b:Y+Hh/2}:{l:X-W/2,r:X+W/2,t:Y,b:Y+Hh};
- let pickC=cands[0];for(const cd of cands){const rr=rectOf(cd[0],cd[1],cd[2]);if(rr.l<0||rr.r>1280||rr.t<48)continue;if(!obs.some(o=>hit(o,rr))){pickC=cd;break}}
+ const ob2=ownBub?[...obs,stageRect(ownBub)]:obs;let pickC=cands[0];for(const cd of cands){const rr=rectOf(cd[0],cd[1],cd[2]);if(rr.l<0||rr.r>1280||rr.t<48)continue;if(!ob2.some(o=>hit(o,rr))){pickC=cd;break}}
  const [m,X,Y]=pickC;const rr=rectOf(m,X,Y);
  document.querySelectorAll('.slab').forEach(e=>{const r=stageRect(e);if(r&&hit(r,rr))e.classList.add('dim')});
  const ch=m==='left'?'➡':m==='right'?'⬅':m==='down'||m==='upTop'?'⬆':m==='side'?(X<640?'⬅':'➡'):'⬇';
