@@ -1524,18 +1524,19 @@ cv.addEventListener('pointermove',e=>{if(PHO.on){if(PHO.drag){const [x,y]=stageP
    if(!A)return}}
  if(RB.down&&e.pointerType==='mouse'){let dx;if(FPS.on){const r=cv.getBoundingClientRect();dx=(e.movementX||0)*1280/r.width}else{const nx=stagePos(e)[0];dx=nx-RB.x;RB.x=nx}if(rbTilt(dx))return}
  if(FPS.on){let mx=e.movementX||0,my=e.movementY||0;const now=performance.now();if(now-(FPS.lockT||0)<120)return;const mag=Math.hypot(mx,my);if(mag>220||(FPS.avg&&mag>Math.max(90,FPS.avg*10))){FPS.skip=(FPS.skip||0)+1;if(FPS.skip<3)return}FPS.skip=0;FPS.avg=(FPS.avg||mag)*.85+mag*.15;mx=clamp(mx,-140,140);my=clamp(my,-140,140);
+  if(P.down&&P.act)P.hadAct=1;if(P.down&&!P.act&&P.hadAct)return;
   if(P.down&&P.act){const r=cv.getBoundingClientRect();const sc=1280/r.width;const ox=P.x,oy=P.y;P.x=clamp(P.x+mx*sc,0,1280);P.y=clamp(P.y+my*sc,0,720);P.dx=P.x-ox;P.dy=P.y-oy;onDrag(Math.hypot(P.dx,P.dy))}
   else if(!(G&&G.paused)){const k=.0018*(SET.sens||1);FPS.yaw=clamp(FPS.yaw-mx*k,-.95,.95);FPS.pitch=clamp(FPS.pitch-my*k,-1.2,.15);P.x=640;P.y=360;P.dx=0;P.dy=0}
   return}
- const [x,y]=stagePos(e);P.dx=x-P.x;P.dy=y-P.y;P.x=x;P.y=y;onDrag(Math.hypot(P.dx,P.dy))});
+ const [x,y]=stagePos(e);if(P.down&&P.act)P.hadAct=1;if(P.holdView&&Math.hypot(x-P.relX,y-P.relY)>60)P.holdView=false;P.dx=x-P.x;P.dy=y-P.y;P.x=x;P.y=y;onDrag(Math.hypot(P.dx,P.dy))});
 cv.addEventListener('pointerdown',e=>{if(PHO.on){const [x,y]=stagePos(e);PHO.drag=true;PHO.lx=x;PHO.ly=y;return}if(e.pointerType==='touch'&&!touchMode){touchMode=true;document.body.classList.add('touch')}
  if(TALK)closeTalk();
  if(e.pointerType==='mouse'&&e.button===0&&fpsWanted()&&!FPS.on&&G&&S.phase==='service'&&!G.paused&&!$('#ov').classList.contains('show')){fpsLock();return}
  const [x,y]=FPS.on?[P.x,P.y]:stagePos(e);P.x=x;P.y=y;if(!G||S.phase!=='service'||G.paused)return;ac();
  try{cv.setPointerCapture(e.pointerId)}catch(_){}
  if(e.button===2)return;if(e.button!==0)return;
- P.down=true;P.pid=e.pointerId;P.sx=x;P.sy=y;P.lx=x;P.ly=y;P.looked=0;P.hadAct=0;P.moved=0;onDown()});
-addEventListener('pointerup',e=>{PHO.drag=false;if(P.act)P.relT=performance.now();if(!P.down||(P.pid!==undefined&&e.pointerId!==P.pid))return;P.down=false;onUp();if(FPS.on){P.x=640;P.y=360}});
+ P.down=true;P.pid=e.pointerId;P.sx=x;P.sy=y;P.lx=x;P.ly=y;P.looked=0;P.hadAct=0;P.holdView=false;P.moved=0;onDown();if(P.act)P.hadAct=1});
+addEventListener('pointerup',e=>{PHO.drag=false;if(P.act)P.relT=performance.now();if(P.down&&(P.act||P.hadAct)&&!FPS.on){P.holdView=true;P.relX=P.x;P.relY=P.y}if(!P.down||(P.pid!==undefined&&e.pointerId!==P.pid))return;P.down=false;onUp();if(FPS.on){P.x=640;P.y=360}});
 const RB={down:0,moved:0,x:0};
 function tiltOK(){return G&&S.phase==='service'&&!G.paused&&(P.act&&P.act.kind==='tap'||SLOTS.some(s=>s.kind==='tap'&&s.glass))}
 function rbTilt(dx){if(!tiltOK())return false;RB.moved+=Math.abs(dx);G.tilt=clamp((G.tilt||0)+dx/120,0,1);if(P.act&&P.act.kind==='tap')P.act.manual=1;return true}
@@ -1842,7 +1843,7 @@ const CAMT={yaw:0,pitch:-.55,gy:0,gp:0};const CUR={yaw:null,pitch:null};
 const CVW={row:1,col:1,zone:null,zt:0,cool:0,pitch(){return this.row===0?-.22:(this.col===1?-.6:-.52)},yaw(){return (this.row===0?[.34,0,-.34]:[.4,0,-.4])[this.col]}};
 function cvSet(row,col){const r=clamp(row,0,1),c=clamp(col,0,2);if(r!==CVW.row||c!==CVW.col){CVW.row=r;CVW.col=c;CVW.cool=.5}}
 function curViewTick(dt){CVW.cool=Math.max(0,CVW.cool-dt);if(!G||!S||S.phase!=='service'||G.paused){$('#edgeHint').style.display='none';return}const nx=P.x/1280,ny=P.y/720;const inCanvas=!P.offCanvas;
- let z=null;if(inCanvas&&!(P.act&&P.down)){if(ny<.15)z='up';else if(ny>.8)z='down';else if(nx<.05)z='left';else if(nx>.95)z='right'}
+ let z=null;if(inCanvas&&!(P.down&&(P.act||P.hadAct))&&!P.holdView){if(ny<.15)z='up';else if(ny>.8)z='down';else if(nx<.05)z='left';else if(nx>.95)z='right'}
  if(z==='up'&&CVW.row===0||z==='down'&&CVW.row===1||z==='left'&&CVW.col===0||z==='right'&&CVW.col===2)z=null;
  if(z!==CVW.zone){CVW.zone=z;CVW.zt=0}else if(z)CVW.zt+=dt;
  const need=.38;const eh=$('#edgeHint');if(z&&CVW.cool<=0){const pr=clamp(CVW.zt/need,0,1);eh.style.display='block';eh.className='e-'+z;eh.innerHTML=`${({up:'▲ 客席を見る',down:'▼ 手元を見る',left:'◀ 左を見る',right:'右を見る ▶'})[z]}<i style="width:${pr*100}%"></i>`;
@@ -1855,7 +1856,7 @@ function updateCamera(dt,t){
  if(PHO.on){camYaw+=(PHO.yaw-camYaw)*Math.min(1,dt*12);camPitch+=(PHO.pitch-camPitch)*Math.min(1,dt*12)}
  else if(FPS.on){camYaw=FPS.yaw;camPitch=FPS.pitch}
  else if(touchMode){if(VP.dir){const sp=1.25*(SET.btnSpeed||1)*dt;if(VP.dir==='left')CAMT.yaw+=sp;else if(VP.dir==='right')CAMT.yaw-=sp;else if(VP.dir==='up')CAMT.pitch+=sp*.8;else if(VP.dir==='down')CAMT.pitch-=sp*.8;camClamp()}const ty=clamp(CAMT.yaw+CAMT.gy,-1.1,1.1),tp=clamp(CAMT.pitch+CAMT.gp,-1.2,.15);const k=1-Math.exp(-dt*16);camYaw+=(ty-camYaw)*k;camPitch+=(tp-camPitch)*k}
- else if(!(fpsWanted()&&G&&S.phase==='service')&&!(P.act&&P.down)){if(SET.viewMode==='follow'){$('#edgeHint').style.display='none';const nx=P.x/1280*2-1,ny=P.y/720;const dz=.36;let yt=0;if(Math.abs(nx)>dz)yt=-Math.sign(nx)*sstep(clamp((Math.abs(nx)-dz)/(1-dz),0,1))*.5;const pt=-(.16+.56*clamp((ny-.08)/.84,0,1));const soft=performance.now()-(P.relT||0)<700;const k=1-Math.exp(-dt*(soft?2.5:8)*(SET.sens||1));camYaw+=(yt-camYaw)*k;camPitch+=(pt-camPitch)*k}
+ else if(!(fpsWanted()&&G&&S.phase==='service')&&!(P.down&&(P.act||P.hadAct))&&!P.holdView){if(SET.viewMode==='follow'){$('#edgeHint').style.display='none';const nx=P.x/1280*2-1,ny=P.y/720;const dz=.36;let yt=0;if(Math.abs(nx)>dz)yt=-Math.sign(nx)*sstep(clamp((Math.abs(nx)-dz)/(1-dz),0,1))*.5;const pt=-(.16+.56*clamp((ny-.08)/.84,0,1));const soft=performance.now()-(P.relT||0)<700;const k=1-Math.exp(-dt*(soft?2.5:8)*(SET.sens||1));camYaw+=(yt-camYaw)*k;camPitch+=(pt-camPitch)*k}
  else{curViewTick(dt);const k=1-Math.exp(-dt*6*(SET.sens||1));camYaw+=(CVW.yaw()-camYaw)*k;camPitch+=(CVW.pitch()-camPitch)*k}}
  if(G){G.lookAcc=(G.lookAcc||0)+Math.abs(camYaw-(updateCamera.py??camYaw))+Math.abs(camPitch-(updateCamera.pp??camPitch))}updateCamera.py=camYaw;updateCamera.pp=camPitch;
  let sh=0;if(P.act&&P.act.kind==='shake'&&SET.camShake!==0)sh=.0012;
@@ -2639,7 +2640,7 @@ const _b=new THREE.Box3();
 function stageRect(el){const r=el.getBoundingClientRect();if(!r.width)return null;const sr=$('#stage').getBoundingClientRect();const k=sr.width/1280;return{l:(r.left-sr.left)/k,t:(r.top-sr.top)/k,r:(r.right-sr.left)/k,b:(r.bottom-sr.top)/k}}
 function hit(a,b){return a.l<b.r&&a.r>b.l&&a.t<b.b&&a.b>b.t}
 function renderArrow(hl,txt){const ar=$('#arrow');const tr=$('#tgtRing');tr.style.display='none';document.querySelectorAll('.slab.dim').forEach(e=>e.classList.remove('dim'));
- if((!SET.arrow&&!G.tutorial)||!hl||P.act){ar.style.display='none';return}
+ if((!SET.arrow&&!G.tutorial)||!hl||P.act||(S.diff==='hard'&&!G.tutorial)){ar.style.display='none';return}
  const t=hlTargets(hl);if(!t.length){ar.style.display='none';return}
  visBox(t[0],_b);const c=_b.getCenter(new THREE.Vector3());let ctr=toScreen(c.clone());c.y=_b.max.y+.015;let p=toScreen(c);let ownBub=null;
  {const cu=t[0].userData&&t[0].userData.act&&t[0].userData.act.c;if(cu&&cu.bub&&cu.bub.style.display!=='none'&&(hl==='callers'||hl.startsWith('serve'))){const br=stageRect(cu.bub);if(br){ownBub=cu.bub;p={x:(br.l+br.r)/2,y:br.t-2,vis:true};ctr={x:(br.l+br.r)/2,y:(br.t+br.b)/2,vis:true}}}}
@@ -2655,7 +2656,7 @@ function renderArrow(hl,txt){const ar=$('#arrow');const tr=$('#tgtRing');tr.styl
  const obs=[];for(const sel of ['#ticket','#top','#hand','#evalPop','#tut','#gaugeBox','#readout'])for(const e of document.querySelectorAll(sel)){if(e.offsetParent!==null||sel==='#top'){const r=stageRect(e);if(r)obs.push(r)}}
  document.querySelectorAll('.bub').forEach(e=>{if(e.style.display!=='none'&&e!==ownBub){const r=stageRect(e);if(r)obs.push(r)}});
  const cands=mode==='up'?[['up',x,y],['left',ctr.x-14-(_b.max.x-_b.min.x)*0,ctr.y],['right',ctr.x+14,ctr.y],['down',x,toScreen(V(c.x,_b.min.y,c.z)).y+6]]:[[mode==='side'?'side':'up',x,y]];
- if(ownBub&&mode==='up'){const br=stageRect(ownBub);cands.length=0;cands.push(['up',(br.l+br.r)/2,Math.max(br.t-4,48+Hh)])}
+ if(ownBub&&mode==='up'){const br=stageRect(ownBub);cands.length=0;cands.push(['up',(br.l+br.r)/2,Math.max(br.t+24,48+Hh)])}
  const rectOf=(m,X,Y)=>m==='up'||m==='side'||m==='upTop'||m==='downTop'?{l:X-W/2,r:X+W/2,t:Y-Hh,b:Y}:m==='left'?{l:X-W-40,r:X,t:Y-Hh/2,b:Y+Hh/2}:m==='right'?{l:X,r:X+W+40,t:Y-Hh/2,b:Y+Hh/2}:{l:X-W/2,r:X+W/2,t:Y,b:Y+Hh};
  const ob2=ownBub?[...obs,stageRect(ownBub)]:obs;let pickC=cands[0];for(const cd of cands){const rr=rectOf(cd[0],cd[1],cd[2]);if(rr.l<0||rr.r>1280||rr.t<48)continue;if(!ob2.some(o=>hit(o,rr))){pickC=cd;break}}
  const [m,X,Y]=pickC;const rr=rectOf(m,X,Y);
