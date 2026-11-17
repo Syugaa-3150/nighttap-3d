@@ -404,6 +404,17 @@ body.touch #talkBox{bottom:160px!important;right:8px}
 .modal h1,#tkt h2,.th b{font-family:'Shippori Mincho','Hiragino Mincho ProN','Yu Mincho',serif;letter-spacing:.04em}
 .bub{box-shadow:0 6px 18px rgba(0,0,0,.45)!important}
 #tidyBar,#evBar,#partner{backdrop-filter:blur(6px);border-color:rgba(232,194,122,.25)!important;background:rgba(14,11,9,.7)!important}
+#tut{width:300px!important;max-height:300px;overflow:auto;font-size:13px;transition:opacity .25s}
+#tut .tt{font-size:12.5px;line-height:1.6}#tut .tgoals{font-size:12.5px}
+#tut.working{opacity:.28}#tut.working:hover{opacity:1}
+body.touch #tut{max-height:250px!important}
+#tkInfo{margin-top:auto;font-size:11px;line-height:1.45;color:var(--mut,#bfb3a2);padding-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#tkInfo b{color:#ffd77a;font-weight:800}
+#tidyBar,#evBar{display:none!important}
+#top .ic,#top button{white-space:nowrap;min-width:38px;overflow:hidden}
+#top .chip{white-space:nowrap;overflow:hidden}
+#tgtRing{position:absolute;border:3px solid #ffe14a;border-radius:50%;pointer-events:none;display:none;z-index:3;box-shadow:0 0 14px #ffe14a88,inset 0 0 10px #ffe14a55;animation:tgp 1.1s ease-in-out infinite}
+@keyframes tgp{0%,100%{transform:scale(1);opacity:.95}50%{transform:scale(1.12);opacity:.55}}
 </style>
 </head>
 <body>
@@ -428,16 +439,16 @@ body.touch #talkBox{bottom:160px!important;right:8px}
    <div class="sp"></div>
    <button class="ic" id="btnBook" title="レシピ帳">📖</button>
    <button class="ic" id="btnHelp" title="操作方法">❓</button>
-   <button class="ic" id="btnMood" title="お店の雰囲気（音楽と照明）">🎵</button><button class="ic" id="btnSet" title="設定（音量・ガイド表示）">⚙ 設定</button><button class="ic" id="btnMute" title="音">🔊</button>
+   <button class="ic" id="btnMood" title="お店の雰囲気（音楽と照明）">🎵</button><button class="ic" id="btnSet" title="設定（音量・ガイド表示）">⚙</button><button class="ic" id="btnMute" title="音">🔊</button>
    <button class="ic" id="btnPause" title="一時停止">Ⅱ</button>
   </div>
-  <div id="ticket"><div id="tkL"><h3>🧾 伝票 <span id="ordCount"></span></h3><div id="orderTabs"></div></div><div id="tkR"><div id="tkt"></div><div id="nextLine"><b>次は▶</b><span id="nextTxt"></span><button id="autoBtn" title="次の手順を1つ自動でやります">🪄 おまかせ</button></div></div></div>
+  <div id="ticket"><div id="tkL"><h3>🧾 伝票 <span id="ordCount"></span></h3><div id="orderTabs"></div><div id="tkInfo"></div></div><div id="tkR"><div id="tkt"></div><div id="nextLine"><b>次は▶</b><span id="nextTxt"></span><button id="autoBtn" title="次の手順を1つ自動でやります">🪄 おまかせ</button></div></div></div>
   <div id="evalPop"></div>
   <div id="readout"></div>
   <div id="gaugeBox"><div class="glab" id="glab"></div><div class="gt"><div class="nd" id="needle"></div></div></div>
   <div id="hand"></div><div id="viewPad"><button data-look="up">⬆<small>客席</small></button><button data-look="left">◀</button><button data-look="center">●</button><button data-look="right">▶</button><button data-look="down">⬇<small>手元</small></button></div>
   <div id="hintBar"><b>次は▶</b><span id="hintTxt"></span></div>
-  <div id="arrow"><div class="ar">⬇</div><div class="al"></div></div><div id="tut"></div><div id="combo"></div><div id="beat"></div><div id="cutPanel"></div><div id="catchRing"></div><div id="hring"></div><div id="talk"></div><div id="rankUp"></div><div id="tip"></div><div id="vign"></div><div id="partner"></div><div id="photoUI"><span>📷 写真モード：ドラッグで向きを変える</span><button class="btn" id="phShot">📸 撮る</button><button class="btn sec" id="phBack">✕ もどる</button></div><div id="evBar"></div><div id="talkBox"></div><div id="tidyBar"></div><div id="tiltW"></div><div id="ringG"><i></i></div><div id="xhair"></div><div id="vcur"></div><div id="fpsHint">🎯 <b>画面をクリック</b>で視点モード（マウスで見回す）<br><small>照準＋を合わせてクリック ／ Esc：カーソルに戻す ／ Q：戻す ／ 1〜9：伝票 ／ P：一時停止</small></div>
+  <div id="arrow"><div class="ar">⬇</div><div class="al"></div></div><div id="tut"></div><div id="combo"></div><div id="beat"></div><div id="cutPanel"></div><div id="catchRing"></div><div id="hring"></div><div id="talk"></div><div id="rankUp"></div><div id="tip"></div><div id="vign"></div><div id="partner"></div><div id="photoUI"><span>📷 写真モード：ドラッグで向きを変える</span><button class="btn" id="phShot">📸 撮る</button><button class="btn sec" id="phBack">✕ もどる</button></div><div id="evBar"></div><div id="talkBox"></div><div id="tidyBar"></div><div id="tiltW"></div><div id="tgtRing"></div><div id="ringG"><i></i></div><div id="xhair"></div><div id="vcur"></div><div id="fpsHint">🎯 <b>画面をクリック</b>で視点モード（マウスで見回す）<br><small>照準＋を合わせてクリック ／ Esc：カーソルに戻す ／ Q：戻す ／ 1〜9：伝票 ／ P：一時停止</small></div>
   <div id="msg"></div>
   <div id="fx"></div>
   <div id="toast"></div>
@@ -595,6 +606,7 @@ const NSLOT=3;let SLOT=(()=>{try{return +localStorage.getItem('nighttap3d_slot')
 function skey(n){return n===1?'nighttap3d_v1':'nighttap3d_v1_s'+n}
 function setSlot(n){SLOT=n;try{localStorage.setItem('nighttap3d_slot',n)}catch(e){}}
 function save(){if(G&&G.net==='guest')return;try{if(S)S.savedAt=Date.now();localStorage.setItem(skey(SLOT),JSON.stringify(S))}catch(e){}}
+function saveColl(){if(!S||(G&&G.net==='guest'))return;try{const k=skey(SLOT);const t=localStorage.getItem(k);if(!t)return;const o=JSON.parse(t);for(const f of ['made','met','tricksSeen','photos','regs','ach','chalWins','contestBest','lessons','best'])if(S[f]!==undefined)o[f]=S[f];localStorage.setItem(k,JSON.stringify(o))}catch(e){}}
 function slotInfo(n){try{const t=localStorage.getItem(skey(n));return t?JSON.parse(t):null}catch(e){return null}}
 function delSlot(n){try{localStorage.removeItem(skey(n))}catch(e){}}
 function load(n){try{const t=localStorage.getItem(skey(n||SLOT));if(t){const s=JSON.parse(t),f=freshSave();for(const k in f)if(s[k]===undefined)s[k]=f[k];for(const k in f.stock)if(s.stock[k]===undefined)s.stock[k]=0;for(const k in f.totals)if(s.totals[k]===undefined)s.totals[k]=0;syncOriginals(s);return s}}catch(e){}return null}
@@ -654,7 +666,7 @@ const M={
  chrome:std({color:0xe6ecf0,metalness:1,roughness:.12,envMapIntensity:1.1}),
  rubber:std({color:0x111111,roughness:.95}),
  grate:std({color:0x222428,metalness:.6,roughness:.5}),
- glass:new THREE.MeshPhysicalMaterial({color:0xf4fbff,transparent:true,opacity:.17,roughness:.02,metalness:0,clearcoat:1,clearcoatRoughness:.02,ior:1.5,specularIntensity:1,envMapIntensity:2.8,depthWrite:false,side:THREE.DoubleSide}),
+ glass:new THREE.MeshPhysicalMaterial({color:0xf4fbff,transparent:true,opacity:.11,roughness:.02,metalness:0,clearcoat:1,clearcoatRoughness:.02,ior:1.5,specularIntensity:1,envMapIntensity:2.8,depthWrite:false,side:THREE.DoubleSide}),
  rim:new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.42,depthWrite:false}),
  copper:std({color:0xd07a48,metalness:.9,roughness:.25,envMapIntensity:1}),
  ice:new THREE.MeshStandardMaterial({color:0xeaf6ff,transparent:true,opacity:.55,roughness:.1,metalness:0,envMapIntensity:1.2}),
@@ -793,8 +805,10 @@ let BOARDTEX;
 /* ====================== WORKSTATION ====================== */
 const SLOTS=[];
 const TAPX=[.8,.96,1.12,1.28];
-function buildTapDividers(){const pm=new THREE.MeshPhysicalMaterial({color:0xcfe6ef,transparent:true,opacity:.35,roughness:.08,clearcoat:1,depthWrite:false});for(let i=0;i<=TAPX.length;i++){const x=i===0?TAPX[0]-.08:i===TAPX.length?TAPX[TAPX.length-1]+.08:(TAPX[i-1]+TAPX[i])/2;const d=new THREE.Mesh(new THREE.BoxGeometry(.004,.06,.13),pm);d.position.set(x,.94,-.42);d.renderOrder=3;d.raycast=()=>{};scene.add(d);const cap=new THREE.Mesh(new THREE.BoxGeometry(.008,.006,.13),M.chrome);cap.position.set(x,.973,-.42);cap.raycast=()=>{};scene.add(cap)}
- TAPX.forEach((x,i)=>{const t=canvasTex(64,64,(c,w,h)=>{c.fillStyle='#e8c27a';c.beginPath();c.arc(32,32,26,0,7);c.fill();c.fillStyle='#1a0f09';c.font='900 34px sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(String(i+1),32,34)});const m=new THREE.Mesh(new THREE.PlaneGeometry(.026,.026),new THREE.MeshBasicMaterial({map:t,transparent:true}));m.rotation.x=-Math.PI/2;m.position.set(x,.9135,-.355);m.raycast=()=>{};scene.add(m)})}
+function buildTapDividers(){const pm=std({color:0x2a2420,roughness:.35,metalness:.6});const cols=['#ffd77a','#7cd0ff','#9fe8a0','#ff9ae0'];
+ for(let i=0;i<=TAPX.length;i++){const x=i===0?TAPX[0]-.08:i===TAPX.length?TAPX[TAPX.length-1]+.08:(TAPX[i-1]+TAPX[i])/2;const d=box(.008,.075,.15,pm,x,.948,-.42);d.raycast=()=>{};const cap=box(.012,.008,.15,M.brass,x,.988,-.42);cap.raycast=()=>{}}
+ TAPX.forEach((x,i)=>{const tx=canvasTex(128,128,(c,w,h)=>{c.strokeStyle=cols[i];c.lineWidth=7;c.setLineDash([12,7]);c.beginPath();c.arc(64,64,52,0,7);c.stroke();c.fillStyle=cols[i]+'26';c.fill()});const ring=new THREE.Mesh(new THREE.PlaneGeometry(.11,.11),new THREE.MeshBasicMaterial({map:tx,transparent:true,depthWrite:false}));ring.rotation.x=-Math.PI/2;ring.position.set(x,.9122,-.42);ring.raycast=()=>{};scene.add(ring);
+  const t=canvasTex(96,96,(c,w,h)=>{c.fillStyle=cols[i];c.beginPath();c.arc(48,48,44,0,7);c.fill();c.fillStyle='#1a0f09';c.font='900 56px sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(String(i+1),48,52)});const m=new THREE.Mesh(new THREE.PlaneGeometry(.034,.034),new THREE.MeshBasicMaterial({map:t,transparent:true}));m.position.set(x,.935,-.343);m.raycast=()=>{};scene.add(m)})}
 const ST={bottles:{},taps:[],garn:{},rack:{},ice:null,spoon:null,sink:null,shakerHome:null};
 function labelTex(text,bg,fg='#2a1408',w=256,h=96,size=40){return canvasTex(w,h,(x)=>{x.fillStyle=bg;x.fillRect(0,0,w,h);x.fillStyle='#fff8';x.fillRect(0,6,w,4);x.fillRect(0,h-10,w,4);x.fillStyle=fg;x.font=`900 ${size}px "Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic UI","Meiryo","Noto Sans JP",sans-serif`;x.textAlign='center';x.textBaseline='middle';const fit=Math.min(1,(w/2-12)/x.measureText(text).width);x.save();x.translate(w*.25,h/2);x.scale(fit,1);x.fillText(text,0,0);x.restore();x.save();x.translate(w*.75,h/2);x.scale(fit,1);x.fillText(text,0,0);x.restore()})}
 function lathe(points,mat,seg=32){return new THREE.Mesh(new THREE.LatheGeometry(points.map(p=>new THREE.Vector2(p[0],p[1])),seg),mat)}
@@ -924,6 +938,8 @@ function buildStation(){
  const ring=cyl(.05,.05,.005,M.rubber,-.76,.9,-.2,24);const hs={id:'H',kind:'home',pos:V(-.76,.905,-.2),glass:null,mesh:ring};ring.userData.act={kind:'slot',slot:hs};PICK.push(ring);SLOTS.push(hs);
  // glass rack
  box(.72,.012,.22,M.rubber,-1.18,.905,-.2);
+ {const dm=std({color:0x3a2a1e,roughness:.6}),cols=['#c8763a','#a8d0e8','#8ad0b0','#e8c27a'];for(let i=-1;i<4;i++){const x=-1.44+.0875+i*.175;box(.008,.09,.24,dm,x,.955,-.2);box(.012,.008,.24,M.brass,x,1.002,-.2)}
+  ['mug','cocktail','highball','pint'].forEach((t,i)=>{const tx=canvasTex(128,160,(c,w,h)=>{c.strokeStyle=cols[i];c.lineWidth=6;c.setLineDash([14,8]);c.strokeRect(6,6,w-12,h-12);c.fillStyle=cols[i]+'22';c.fillRect(6,6,w-12,h-12)});const m=new THREE.Mesh(new THREE.PlaneGeometry(.16,.22),new THREE.MeshBasicMaterial({map:tx,transparent:true,depthWrite:false}));m.rotation.x=-Math.PI/2;m.position.set(-1.44+i*.175,.9125,-.2);m.raycast=()=>{};scene.add(m)})}
  ['mug','cocktail','highball','pint'].forEach((t,i)=>{const g=new THREE.Group();g.position.set(-1.44+i*.175,.911,0);scene.add(g);
   const tex=canvasTex(256,96,()=>{});const plate=new THREE.Mesh(new THREE.PlaneGeometry(.11,.04),new THREE.MeshBasicMaterial({map:tex,transparent:true}));plate.position.set(0,.002,-.07);plate.rotation.x=-1.1;g.add(plate);
   const hit=new THREE.Mesh(new THREE.BoxGeometry(.1,.025,.32),new THREE.MeshBasicMaterial());hit.visible=false;hit.position.set(0,.012,-.24);g.add(hit);
@@ -993,7 +1009,7 @@ class Glass{
   this.body=lathe(this.def.prof,mat);this.body.renderOrder=3;this.body.castShadow=true;this.g.add(this.body);
   if(mat===M.glass)addGlassRim(this.def,this.g);
   if(this.def.copper){const h=new THREE.Mesh(new THREE.TorusGeometry(.028,.007,8,16,Math.PI),M.copper);h.position.set(.045,.055,0);h.rotation.z=-Math.PI/2;this.g.add(h)}
-  this.liqMat=std({color:0xe8a838,transparent:true,opacity:.8,roughness:.15,depthWrite:false});this.liq=new THREE.Mesh(new THREE.CylinderGeometry(1,1,1,28),this.liqMat);this.liq.renderOrder=1;this.liq.visible=false;this.liq.raycast=()=>{};this.g.add(this.liq);
+  this.liqMat=std({color:0xe8a838,transparent:true,opacity:.9,roughness:.12,depthWrite:false});this.surfM=new THREE.Mesh(new THREE.CircleGeometry(1,28),new THREE.MeshStandardMaterial({color:0xffffff,transparent:true,opacity:.85,roughness:.05,metalness:.1,depthWrite:false}));this.surfM.rotation.x=-Math.PI/2;this.surfM.renderOrder=2;this.surfM.visible=false;this.surfM.raycast=()=>{};this.liq=new THREE.Mesh(new THREE.CylinderGeometry(1,1,1,28),this.liqMat);this.liq.renderOrder=1;this.liq.visible=false;this.liq.raycast=()=>{};this.g.add(this.liq);this.g.add(this.surfM);
   this.foamM=new THREE.Mesh(new THREE.CylinderGeometry(1,1,1,28),std({color:0xfff6e4,roughness:.9}));this.foamM.visible=false;this.foamM.renderOrder=2;this.foamM.raycast=()=>{};this.g.add(this.foamM);
   this.ices=[];const isz=this.def.inner.cone?.018:.024;const ig=new THREE.BoxGeometry(isz,isz,isz);const eg=new THREE.EdgesGeometry(ig);for(let i=0;i<6;i++){const ic=new THREE.Mesh(ig,ICEM);const ed=new THREE.LineSegments(eg,ICEE);ed.raycast=()=>{};ic.add(ed);ic.visible=false;ic.renderOrder=2;ic.raycast=()=>{};this.ices.push(ic);this.g.add(ic)}
   this.rings=[];for(let i=0;i<2;i++){const r=new THREE.Mesh(new THREE.TorusGeometry(1,.0016,6,40),new THREE.MeshBasicMaterial({color:0x3fd0c9,toneMapped:false}));r.rotation.x=Math.PI/2;r.visible=false;r.raycast=()=>{};this.rings.push(r);this.g.add(r)}
@@ -1015,7 +1031,8 @@ class Glass{
   const liqF=this.shownFill!=null?this.shownFill:(this.liquid()+(c.ice?this.cap()*.35:0))/this.cap();
   const hL=this.levelH(Math.min(liqF,1)),hT=this.levelH(Math.min(total,1));
   if(hL>.002){this.liq.visible=true;this.liq.geometry.dispose();this.liq.geometry=new THREE.CylinderGeometry(this.radAt(hL)*.97,this.radAt(0)*.97,hL,28);this.liq.position.y=n.b+hL/2;
-   this.liqMat.color.set(this.dirtyGlass?'#b89a60':mixColor(c.ings));this.liqMat.opacity=this.dirtyGlass?.35:(c.ings.stout?.97:.86)}else this.liq.visible=false;
+   {const col=new THREE.Color(this.dirtyGlass?'#b89a60':mixColor(c.ings));const hsl={};col.getHSL(hsl);if(!this.dirtyGlass&&hsl.l>.82){col.setHSL(hsl.h||.55,Math.max(.25,hsl.s),.78)}this.liqMat.color.copy(col);this.liqMat.emissive.copy(col).multiplyScalar(this.dirtyGlass?0:.22);this.liqMat.opacity=this.dirtyGlass?.35:(c.ings.stout?.97:.9);
+   const sc=this.radAt(hL)*.95;this.surfM.scale.set(sc,sc,1);this.surfM.position.y=n.b+hL+.0008;this.surfM.material.color.copy(col).lerp(new THREE.Color('#ffffff'),.45);this.surfM.visible=!this.dirtyGlass}}else{this.liq.visible=false;this.surfM.visible=false}
   if(hT-hL>.002&&!this.dirtyGlass){this.foamM.visible=true;this.foamM.geometry.dispose();this.foamM.geometry=new THREE.CylinderGeometry(this.radAt(hT)*.97,this.radAt(hL)*.97,hT-hL,28);this.foamM.position.y=n.b+hL+(hT-hL)/2}else this.foamM.visible=false;
   const span=n.t-n.b,isz=n.cone?.018:.024;this.ices.forEach((ic,i)=>{ic.visible=c.ice&&!this.dirtyGlass&&(!n.cone||i<3);if(!ic.visible)return;const layer=Math.floor(i/2),side=i%2?1:-1;const yb=n.b+isz*.6+layer*isz*1.05;const rr=this.radAt(yb-n.b)-isz*.75;const a=side*0.9+layer*1.3;
    let y=yb;if(hL>0&&i>=4)y=Math.max(yb,n.b+hL-isz*.25);ic.position.set(Math.cos(a)*Math.max(0,rr)*.9,Math.min(y,n.t-isz*.6),Math.sin(a)*Math.max(0,rr)*.9);ic.rotation.set(a*.3,a,i*.4)});
@@ -1168,6 +1185,7 @@ function clocheTick(dt){const C=ST.cloche;if(!C)return;const A=P.act;
 function clocheReveal(gl){const C=ST.cloche;gl.c.smoke=2;C.on=null;C.lift=1;const p=gl.g.position.clone().add(V(0,.12,0));for(let i=0;i<40;i++)emit(p,i%3?'#e0e0e0':'#bdbdbd',1,.35);noise(.8,600,.08,.4);applause();sfx.good();floatAt(p.clone().add(V(0,.2,0)),'✨ お披露目！','#ffd77a',22);addTrick(gl,'お披露目');
  for(const c of G.customers)if(['waiting','ordered','drinking','relax'].includes(c.status)&&Math.random()<.8)setTimeout(()=>say(c,pick(['おお〜！','すごい…！','きれい！','映える〜！']),2),Math.random()*700)}
 function flameFX(gl){const p=gl.g.position.clone().add(V(0,gl.def.inner.t+.06,0));for(let i=0;i<34;i++)emit(p,i%2?'#ffb040':'#ff6a1a',1,.3);noise(.45,1800,.12,.8);tone(180,.3,'sawtooth',.03);const fl=new THREE.PointLight(0xff8a30,4,1.2,2);fl.position.copy(p);scene.add(fl);let k=0;const iv=setInterval(()=>{k++;fl.intensity=Math.max(0,4-k*.4);if(k>10){clearInterval(iv);scene.remove(fl)}},40)}
+const _up=new THREE.Vector3(0,1,0);function segTo(m,a,b,w){const d=b.clone().sub(a);const L=d.length();m.position.copy(a).add(b).multiplyScalar(.5);m.scale.set(w,Math.max(.001,L),w);m.quaternion.setFromUnitVectors(_up,d.normalize())}
 function autoBus(dt){if(!DX().bus)return;for(const st of G.seats){if(st.glasses.length&&st.cust&&st.cust.status!=='leave'){st.busT=(st.busT||0)+dt;if(st.busT>DX().bus){st.busT=0;for(const gl of st.glasses){G.dirty.push(gl.type);gl.dispose()}st.glasses=[];layoutSeat(st);floatAt(V(SEATX[st.i],1.25,-.8),'空きグラスを下げた→シンクへ','#c8faf6',13);sfx.clink()}}else st.busT=0}}
 function patMul0(){return 1+decorFx('pat')}
 function patMul(c){return patMul0()*(S.up.juke?1.3:1)*(c&&c.ty&&CT[c.ty]?CT[c.ty].pat:1)}
@@ -1199,6 +1217,7 @@ function spawnCustomer(force){
  const seat=pick(free);
  let ty=G.forceType||pickType(),reg=null;G.forceType=null;
  if(!force&&!G.tutorial&&S.day>=2&&Math.random()<(rankIdx()>=3?.45:.3)){const cand=REGS.filter(r=>!G.regSeen[r.id]&&!G.customers.some(c=>c.reg===r.id));if(cand.length){reg=pick(cand);G.regSeen[reg.id]=1;ty='regular'}}
+ S.met=S.met||{};if(!S.met[ty]&&!CT[ty].reg){S.met[ty]=1;setTimeout(saveColl,0)}
  let L=reg?{eye:'#2a1a10',build:1,h:1,...reg.L,star:true}:randLook(ty);if(G.ev&&G.ev.hat&&!reg&&Math.random()<.75){L={...L,hatType:G.ev.hat}}
  const c={id:G.nid++,special:G.forceSpecial||null,party:G.forceParty?1:0,forceO:G.forceParty||null,seat:seat.i,L,ty,reg:reg&&reg.id,orderT:0,pref:reg?'any':pick(CT[ty].pref),status:'enter',t:0,pat:1,patMax:1,order:null,drinks:0,drinkT:0,bill:0,mood:'neutral',served:null,say:null,sayT:0,dirty:1,ph:Math.random()*6};
  c.pers=reg?REGPERS[reg.id]:pick(TYPEPERS[ty]||['calm']);c.vp=rnd(.8,1.25)+pers(c).vp;c.vr=rnd(.95,1.08)*pers(c).vr;c.vi=Math.floor(Math.random()*6);c.en=ty==='tourist';if(reg)Object.assign(c,REGVOICE[reg.id]||{});c.m=makeCustomer3D(L);c.m.g.position.copy(OUTSIDE);c.m.g.userData.act={kind:'cust',c};PICK.push(c.m.g);scene.add(c.m.g);
@@ -1250,7 +1269,7 @@ function makeEff(c){const base=RECIPES[c.order];c.eff=null;c.req=null;c.vague=fa
  if(!c.req&&Math.random()<X.vague&&!c.reg)c.vague=true}
 function orderLabel(c){const r=RC(c);if(c.vague&&!c.revealed)return `「${DESC[c.order]||r.name}」`;return r.name+(r.req?`（${r.req}）`:'')}
 function takeOrder(c){if(G&&G.net==='guest'){netSend({t:'take',i:c.id});say(c,'…',.6);return}let o=c.forceO||G.forceOrder||chooseOrder(c);if(!c.forceO&&!G.forceOrder&&G.ev&&G.ev.fav&&S.unlocked[G.ev.fav]&&canMake(G.ev.fav)&&Math.random()<.35)o=G.ev.fav;G.forceOrder=null;c.orderT=0;
- if(c.reg&&o){const st=S.regs[c.reg]||(S.regs[c.reg]={aff:0,met:0});if(!st.met){st.met=1;talk(c.reg,0)}else if(Math.random()<.5)say(c,pick(['いつものを','やあ、また来たよ','こんばんは']),1.6)}
+ if(c.reg&&o){const st=S.regs[c.reg]||(S.regs[c.reg]={aff:0,met:0});if(!st.met){st.met=1;talk(c.reg,0);saveColl()}else if(Math.random()<.5)say(c,pick(['いつものを','やあ、また来たよ','こんばんは']),1.6)}
  if(!o){say(c,'品切れか…帰るよ');leave(c,'sad');S.rep=clamp(S.rep-.05,.5,5);return}
  const r=RECIPES[o];c.order=o;makeEff(c);c.status='ordered';c.pat=c.patMax=(40+(r.method==='shake'||r.method==='stir'?14:0)+(Object.keys(r.ings).length>1?8:0))*DF().patOrder*patMul(c);
  if(!activeCust())G.active=c.id;printer();{let nm=r.name.replace(/<[^>]*>/g,'').replace(/&[a-z#0-9]+;/g,'');if(c.vague)nm=DESC[c.order]||nm;else if(c.req)nm=nm+'を'+REQS[c.req].t;const ln=c.reg&&Math.random()<.7?VL.orderReg(nm):c.en?VL.orderEn(nm):(Math.random()<.6?pers(c).order(nm):VL.order(nm));const t=pick(ln);say(c,t,2.2);setTimeout(()=>speakC(c,human(c,t),true),350)}floatAt(c.m.g.position.clone().add(V(0,1.95,0)),r.name+' お願い！','#fff',16);c.dirty=1;D.ticket=1;
@@ -1370,7 +1389,7 @@ function serveRest(c,gl,r,ev){if(gl.wet&&DX().wetPen){ev.score=Math.max(0,ev.sco
  {const k=ev.score>=90?'p':ev.score>=70?'g':ev.score>=50?'m':'b';let t=pick(Math.random()<.65?pers(c).react[k]:VL.react[k]);if(c.reg&&ev.score>=90&&Math.random()<.6)t=pick(VL.reactReg);if(c.en)t=pick(k==='p'||k==='g'?['Amazing!','So good!','Perfect!']:['Hmm...','Not quite...']);say(c,t,2);setTimeout(()=>speakC(c,t),500);k==='p'?sfx.good():k==='b'?sfx.bad():sfx.ok()}
  floatAt(c.m.g.position.clone().add(V(0,1.3,.3)),`${yen(price)}${tip?' +チップ'+yen(tip):''}`,'#ffd34a',18);
  if(ev.score>=90)for(let i=0;i<14;i++)emit(gl.g.position.clone().add(V(0,.15,0)),'#ffe27a',1,.5);
- G.lastEval={name:r.name,score:ev.score,notes:ev.notes,tip,tricks,combo:G.combo||0};G.evalT=3.8;showEval();c.dirty=1;checkAch()}
+ G.lastEval={name:r.name,score:ev.score,notes:ev.notes,tip,tricks,combo:G.combo||0};G.evalT=3.8;showEval();c.dirty=1;checkAch();saveColl()}
 function showEval(){const e=G.lastEval,p=$('#evalPop');const st=e.score>=90?'★★★':e.score>=70?'★★☆':e.score>=50?'★☆☆':'☆☆☆';const col=e.score>=90?'#7cff9a':e.score>=70?'#ffd77a':e.score>=50?'#ffb070':'#ff7a7a';
  p.innerHTML=`<div style="font-size:13px;font-weight:800">${e.name}</div><div class="sc" style="color:${col}">${st} ${e.score}点</div>${e.tricks&&e.tricks.length?`<div style="color:#ff9ae0;font-weight:900">✨ ${e.tricks.join(' ・ ')}</div>`:''}${e.combo>=2?`<div style="color:#ffe14a;font-weight:900">COMBO ×${e.combo}</div>`:''}${e.tip?`<div style="color:#ffd34a;font-weight:800">チップ ${yen(e.tip)}</div>`:''}<div class="nt">${e.notes.length?e.notes.slice(0,3).join('<br>'):'完璧な一杯！'}</div>`;p.style.display='block'}
 
@@ -1500,7 +1519,7 @@ cv.addEventListener('pointermove',e=>{if(PHO.on){if(PHO.drag){const [x,y]=stageP
   if(lookAll||lookH){const k=.0026*(SET.tsens||1);CAMT.yaw-=dx*k*(SET.invX?-1:1);if(lookAll)CAMT.pitch-=dy*k*(SET.invY?-1:1);camClamp();if(Math.abs(dx)+Math.abs(dy)>2)P.looked=1;
    if(!A)return}}
  if(RB.down&&e.pointerType==='mouse'){let dx;if(FPS.on){const r=cv.getBoundingClientRect();dx=(e.movementX||0)*1280/r.width}else{const nx=stagePos(e)[0];dx=nx-RB.x;RB.x=nx}if(rbTilt(dx))return}
- if(FPS.on){const mx=e.movementX||0,my=e.movementY||0;
+ if(FPS.on){let mx=e.movementX||0,my=e.movementY||0;const now=performance.now();if(now-(FPS.lockT||0)<120)return;const mag=Math.hypot(mx,my);if(mag>220||(FPS.avg&&mag>Math.max(90,FPS.avg*10))){FPS.skip=(FPS.skip||0)+1;if(FPS.skip<3)return}FPS.skip=0;FPS.avg=(FPS.avg||mag)*.85+mag*.15;mx=clamp(mx,-140,140);my=clamp(my,-140,140);
   if(P.down&&P.act){const r=cv.getBoundingClientRect();const sc=1280/r.width;const ox=P.x,oy=P.y;P.x=clamp(P.x+mx*sc,0,1280);P.y=clamp(P.y+my*sc,0,720);P.dx=P.x-ox;P.dy=P.y-oy;onDrag(Math.hypot(P.dx,P.dy))}
   else if(!(G&&G.paused)){const k=.0018*(SET.sens||1);FPS.yaw=clamp(FPS.yaw-mx*k,-.95,.95);FPS.pitch=clamp(FPS.pitch-my*k,-1.2,.15);P.x=640;P.y=360;P.dx=0;P.dy=0}
   return}
@@ -1724,6 +1743,7 @@ function onBeat(){if(!isPeak())return;const b=beatPhase();if(!b)return;const d=M
 function update(dt){
  if(TALK&&(!G.customers.includes(TALK.c)||TALK.c.status==='leave'||performance.now()-TALK.t0>20000))closeTalk();
  if(!G.tutorial&&G.customers.length)G.tidy=Math.max(0,(G.tidy??100)-dt*.25);
+ {const v0=Math.round(G.tidy??100);const parts=[`🧼${v0}%`];if(G.roundIce)parts.push('🧊'+G.roundIce);if(G.shineStock)parts.push('✨'+G.shineStock);let l2='';if(G.chal&&!G.tutorial){const C=G.chal;l2=G.chalDone?'🎯 お題 <b>達成！</b>':`🎯 ${Math.min(C.n,C.d.v())}/${C.n} <span title="${C.d.t(C.n)}">${C.d.t(C.n)}</span>`}if(G.party&&!G.party.done&&G.party.t>0)l2=`🥂 残り${Math.ceil(G.party.t)}秒 ${G.party.served}/${G.party.n}杯`;const ih=parts.join(' ')+(l2?'<br>'+l2:'');const ie=$('#tkInfo');if(ie.innerHTML!==ih)ie.innerHTML=ih}
  {const tb=$('#tidyBar');const v=Math.round(G.tidy??100);const hh=`🧼 カウンターの清潔度 ${v}%<i><b style="width:${v}%;background:${v>70?'#7cff9a':v>40?'#ffd77a':'#ff7a7a'}"></b></i>${(G.roundIce||0)?`　🧊丸氷×${G.roundIce}`:''}${(G.shineStock||0)?`　✨磨き×${G.shineStock}`:''}`;tb.style.display=(G.paused||G.tutorial||$('#ov').classList.contains('show'))?'none':'block';if(tb.innerHTML!==hh)tb.innerHTML=hh}
  if(!G.tutorial&&!G.net)evUpdate(dt);
  {const eb=$('#evBar');const lines=[];if(G.chal&&!G.tutorial)lines.push(chalLine());if(G.party&&!G.party.done&&G.party.t>0)lines.push(`🥂 貸し切りパーティー：残り ${Math.ceil(G.party.t)}秒 ／ ${G.party.served}/${G.party.n}杯`);if(G.ev&&G.ev.hat)lines.push(G.ev.hat==='witch'?'🎃 ハロウィン':'🎄 クリスマス');const hh=lines.join('　');eb.style.display=hh&&!G.paused&&!$('#ov').classList.contains('show')?'block':'none';if(eb.innerHTML!==hh)eb.innerHTML=hh}
@@ -1740,8 +1760,12 @@ function update(dt){
   if(flow>0){pouring=true;const k=tp.k;let amt=150*flow*dt;if(S.stock[k]<=0){if(!tp.warned){msgNoStock(k);tp.warned=1}amt=0}else{tp.warned=0;amt=Math.min(amt,S.stock[k])}
    if(amt>0){if(gl){gl.wob=Math.min(1.2,(gl.wob||0)+dt*4*flow);if(Math.random()<flow*dt*50)emit(surf(gl),Math.random()<.5?'#fff6e4':ING[k].color,1,.15);if(DX().autoTilt&&!(P.act&&P.act.manual)&&!G.manualTilt)G.tilt+=((gl.fill()<.55?.85:0)-G.tilt)*Math.min(1,dt*3);const ff=(.06+.55*Math.pow(flow,3))*DX().foamMul*(1-.65*(G.tilt||0));const foam=amt*ff;const liq=amt-foam;addLiquid(gl,k,liq);const free=gl.cap()-gl.vol();if(free>0)gl.c.foam+=Math.min(foam*1.6,free);else{gl.c.overflow=true}}else{S.stock[k]-=amt;G.stats.waste+=amt}}
    if(gl&&DF().assist&&A&&A.kind==='tap'&&A.i===i){const ac=activeCust();const r=ac&&RC(ac);const fills=r?Object.keys(r.ings).filter(x=>r.ings[x]==='fill'):[];const goal=fills.length>1?.47:.94;if(gl.fill()>=goal){P.act=null;loopSet('pour',false);floatAt(gl.g.position.clone().add(V(0,.25,0)),'ちょうどいい！','#7cff9a',20);sfx.ok()}}
-   const th=(G.tilt||0)*.55;const top=gl?gl.g.position.y+Math.cos(th)*(gl.def.inner.b+gl.levelH(Math.min(1,gl.fill())))+Math.max(0,Math.tan(th)*(gl.def.inner.t*.62-(gl.def.inner.b+gl.levelH(Math.min(1,gl.fill()))))*.35):.91;const y0=1.13;tp.stream.visible=true;tp.stream.scale.set(1+flow*1.4,Math.max(.01,y0-top),1+flow*1.4);tp.stream.position.set(tp.x,(y0+top)/2,-.42)}
-  else tp.stream.visible=false});
+   const y0=1.13;tp.stream.visible=true;if(!tp.stream2){tp.stream2=new THREE.Mesh(new THREE.CylinderGeometry(.004,.004,1,8),tp.stream.material);tp.stream2.raycast=()=>{};scene.add(tp.stream2)}
+   if(gl){const th=(G.tilt||0)*.55;const n=gl.def.inner;const hL=n.b+gl.levelH(Math.min(1,gl.fill()));const loc=(lx,ly)=>V(gl.g.position.x+lx*Math.cos(th)+ly*Math.sin(th),gl.g.position.y-lx*Math.sin(th)+ly*Math.cos(th),-.42);const r=gl.radAt?gl.radAt(n.t-n.b-.01)*.85:.03;
+    if(th>.08){let hw=(n.t*.62*Math.sin(th)-r*Math.cos(th))/Math.max(.05,Math.sin(th));hw=clamp(hw,hL+.01,n.t-.005);const W=loc(r,hw);W.x=tp.x;const E=loc(r*.8,hL);tp.stream.scale.set(1+flow*1.4,Math.max(.01,y0-W.y),1+flow*1.4);tp.stream.position.set(tp.x,(y0+W.y)/2,-.42);segTo(tp.stream2,W,E,1+flow*1.6);tp.stream2.visible=W.y>E.y+.004}
+    else{const top=gl.g.position.y+hL;tp.stream.scale.set(1+flow*1.4,Math.max(.01,y0-top),1+flow*1.4);tp.stream.position.set(tp.x,(y0+top)/2,-.42);tp.stream2.visible=false}}
+   else{const top=.91;tp.stream.scale.set(1+flow*1.4,y0-top,1+flow*1.4);tp.stream.position.set(tp.x,(y0+top)/2,-.42);tp.stream2.visible=false}}
+  else{tp.stream.visible=false;if(tp.stream2)tp.stream2.visible=false}});
 
  if(A&&A.kind==='tap'){const gT=SLOTS.find(s=>s.id==='T'+A.i).glass;loopSet('pour',ST.taps[A.i].pull>.06,450+(gT?gT.fill():0)*1000,.04+.08*ST.taps[A.i].pull);if(gT&&A&&!A.inZ){const r0=activeCust()&&RECIPES[activeCust().order];if(r0&&gT.fill()>=fillBand(r0)[0]){A.inZ=1;ding()}}}
  // pour bottle
@@ -1808,17 +1832,17 @@ function fpsFail(){if(FPS.on||SET.viewMode!=='fps')return;if(FPS.ever){toast('�
 document.addEventListener('pointerlockerror',fpsFail);
 function fpsLock(){setTimeout(()=>{if(!FPS.on&&!document.pointerLockElement)fpsFail()},900);try{const p=cv.requestPointerLock({unadjustedMovement:true});if(p&&p.catch)p.catch(()=>{try{cv.requestPointerLock()}catch(_){}})}catch(_){try{cv.requestPointerLock()}catch(__){}}}
 function fpsUnlock(){if(document.pointerLockElement)try{document.exitPointerLock()}catch(_){}}
-document.addEventListener('pointerlockchange',()=>{const on=document.pointerLockElement===cv;if(on&&!FPS.on){FPS.yaw=camYaw;FPS.pitch=camPitch;P.x=640;P.y=360}FPS.on=on;if(on)FPS.ever=1;document.body.classList.toggle('fpsOn',on);if(!on&&P.down){P.down=false;onUp()}});
-const CAMT={yaw:0,pitch:-.55,gy:0,gp:0};
+document.addEventListener('pointerlockchange',()=>{const on=document.pointerLockElement===cv;if(on&&!FPS.on){FPS.yaw=camYaw;FPS.pitch=camPitch;P.x=640;P.y=360}FPS.on=on;if(on){FPS.ever=1;FPS.lockT=performance.now();FPS.avg=0}document.body.classList.toggle('fpsOn',on);if(!on&&P.down){P.down=false;onUp()}});
+const CAMT={yaw:0,pitch:-.55,gy:0,gp:0};const CUR={yaw:null,pitch:null};
 function camClamp(){CAMT.yaw=clamp(CAMT.yaw,-1.05,1.05);CAMT.pitch=clamp(CAMT.pitch,-1.15,.12)}
 function updateCamera(dt,t){
  if(PHO.on){camYaw+=(PHO.yaw-camYaw)*Math.min(1,dt*12);camPitch+=(PHO.pitch-camPitch)*Math.min(1,dt*12)}
  else if(FPS.on){camYaw=FPS.yaw;camPitch=FPS.pitch}
  else if(touchMode){if(VP.dir){const sp=1.25*(SET.btnSpeed||1)*dt;if(VP.dir==='left')CAMT.yaw+=sp;else if(VP.dir==='right')CAMT.yaw-=sp;else if(VP.dir==='up')CAMT.pitch+=sp*.8;else if(VP.dir==='down')CAMT.pitch-=sp*.8;camClamp()}const ty=clamp(CAMT.yaw+CAMT.gy,-1.1,1.1),tp=clamp(CAMT.pitch+CAMT.gp,-1.2,.15);const k=1-Math.exp(-dt*16);camYaw+=(ty-camYaw)*k;camPitch+=(tp-camPitch)*k}
- else if(!(fpsWanted()&&G&&S.phase==='service')&&!(P.act&&P.down)){const src=touchMode?LOOK:P;const nx=src.x/1280*2-1,ny=src.y/720;
- const dz=.36;let yt=0;if(Math.abs(nx)>dz)yt=-Math.sign(nx)*sstep(clamp((Math.abs(nx)-dz)/(1-dz),0,1))*.5;
- const pt=-(.16+.56*clamp((ny-.08)/.84,0,1));
- const k=1-Math.exp(-dt*(touchMode?4:8)*(SET.sens||1));camYaw+=(yt-camYaw)*k;camPitch+=(pt-camPitch)*k}
+ else if(!(fpsWanted()&&G&&S.phase==='service')&&!(P.act&&P.down)){const nx=P.x/1280*2-1,ny=P.y/720;if(CUR.yaw===null){CUR.yaw=camYaw;CUR.pitch=camPitch}
+ const ex=Math.sign(nx)*clamp((Math.abs(nx)-.74)/.26,0,1);const ey=ny<.2?-clamp((.2-ny)/.13,0,1):ny>.84?clamp((ny-.84)/.1,0,1):0;const sp=(SET.sens||1);
+ CUR.yaw=clamp(CUR.yaw-ex*dt*1.3*sp,-.62,.62);CUR.pitch=clamp(CUR.pitch-ey*dt*1.1*sp,-.8,-.1);
+ const k=1-Math.exp(-dt*7);camYaw+=(CUR.yaw-camYaw)*k;camPitch+=(CUR.pitch-camPitch)*k}
  if(G){G.lookAcc=(G.lookAcc||0)+Math.abs(camYaw-(updateCamera.py??camYaw))+Math.abs(camPitch-(updateCamera.pp??camPitch))}updateCamera.py=camYaw;updateCamera.pp=camPitch;
  let sh=0;if(P.act&&P.act.kind==='shake'&&SET.camShake!==0)sh=.0012;
  camera.position.set(CAM0.x+Math.sin(t*.7)*.004+rnd(-sh,sh),CAM0.y+Math.sin(t*1.3)*.003+rnd(-sh,sh),CAM0.z);camera.rotation.set(camPitch,camYaw,0)}
@@ -1933,6 +1957,7 @@ function renderHUD(t){
  if(A&&(A.kind==='polish'||A.kind==='carve')){const pol=A.kind==='polish';const thr=pol?(DX().wetPen?520:380):1;const pr=pol?clamp((A.pol||0)/thr,0,1):clamp(G.carveP||0,0,1);const circ=(A.turnAbs||0)>Math.PI*(pol?1.2:.8);
   txt=`${pol?(wetCount()?'🧺 拭き上げ':'✨ 磨き上げ'):'🧊 丸氷'} <span style="color:${circ?'#7cff9a':'#ffd77a'}">${Math.round(pr*100)}%</span><div class="meter"><i style="width:${pr*100}%;background:${circ?'#7cff9a':'#ffd77a'}"></i></div><small>${circ?'⭕ いい感じ！ その調子で円を描き続けて':'⭕ 大きく<b>円</b>を描くように動かして（左右だけだと進まない）'}${pol&&wetCount()?`<br>残り ${wetCount()}個`:''}</small>`;rp=toScreen(pol?V(1.52,1.22,-.54):ST.ri.g.position.clone().add(V(0,.16,0)));
   const rg=$('#ringG');const cp=toScreen(pol?V(1.52,1.02,-.54):ST.ri.g.position.clone().add(V(0,.04,0)));rg.style.display='block';rg.style.left=cp.x+'px';rg.style.top=cp.y+'px';rg.classList.toggle('ok',circ)}else $('#ringG').style.display='none';
+ ro.style.opacity=(S.diff==='hard'&&A&&(A.kind==='pour'||A.kind==='tap'||A.kind==='strain'))?'.42':'';
  if(txt){const p=rp||(gl?toScreen(gl.g.position.clone().add(V(0,gl.def.inner.t+.12,0))):{x:640,y:300});G.roLast={txt,x:p.x,y:p.y};G.roT=1.4;ro.classList.remove('linger');ro.style.display='block';ro.style.left=p.x+'px';ro.style.top=p.y+'px';if(ro.innerHTML!==txt)ro.innerHTML=txt}
  else if(G.roT>0&&G.roLast){G.roT-=FDT;ro.classList.add('linger');ro.style.display='block';ro.style.left=G.roLast.x+'px';ro.style.top=G.roLast.y+'px';if(ro.innerHTML!==G.roLast.txt)ro.innerHTML=G.roLast.txt}else ro.style.display='none';
  if(A&&(A.kind==='shake'||A.kind==='stir')&&A.v>0){$('#needle').style.left=(clamp(A.v,0,1.25)/1.25*100)+'%'}
@@ -1952,7 +1977,7 @@ let pauseOrphan=0;
 let frameErr=0;
 function frame(now){requestAnimationFrame(frame);try{frameBody(now)}catch(e){console.error(e);frameErr++;if(G)G.paused=false}}
 function frameBody(now){if(SET.fps30&&now-last<30)return;const dt=Math.min(.05,(now-last)/1000);last=now;
- if(G&&S&&S.phase==='service'&&G.paused&&!PHO.on&&!$('#ov').classList.contains('show')){pauseOrphan+=dt;if(pauseOrphan>.4){G.paused=false;const bp=$('#btnPause');if(bp)bp.textContent='Ⅱ 一時停止'}}else pauseOrphan=0;lightFlicker(now/1000);decorTick(now/1000);T+=dt;FDT=dt;
+ if(G&&S&&S.phase==='service'&&G.paused&&!PHO.on&&!$('#ov').classList.contains('show')){pauseOrphan+=dt;if(pauseOrphan>.4){G.paused=false;const bp=$('#btnPause');if(bp)bp.textContent='Ⅱ'}}else pauseOrphan=0;lightFlicker(now/1000);decorTick(now/1000);T+=dt;FDT=dt;
  if(!(S&&S.phase==='service'&&G&&!G.paused))loopSet('amb',false);
  if(S&&S.phase==='service'&&G&&!G.paused){update(dt);computeHand();hover=P.act?null:pickAt();if(hover)hover.root=actRoot(hover.act)}else hover=null;
  updateCamera(dt,T);if(G){updateHandVisual(T);rackRefresh();sinkRefresh();bottleLevels(dt)}
@@ -1960,7 +1985,7 @@ function frameBody(now){if(SET.fps30&&now-last<30)return;const dt=Math.min(.05,(
  renderer.render(scene,camera)}
 
 /* ====================== FLOW / UI ====================== */
-function checkAch(){for(const a of ACH){if(!S.ach[a.id]&&a.c()){S.ach[a.id]=1;toast('🏆 実績解除：'+a.name);sfx.good()}}}
+function checkAch(){for(const a of ACH){if(!S.ach[a.id]&&a.c()){S.ach[a.id]=1;toast('🏆 実績解除：'+a.name);sfx.good();saveColl()}}}
 function goFull(){if(SET.autoFull===0)return;try{const el=document.documentElement;if(document.fullscreenElement||document.webkitFullscreenElement)return;const f=el.requestFullscreen||el.webkitRequestFullscreen;if(f){const pr=f.call(el,{navigationUI:'hide'});if(pr&&pr.catch)pr.catch(()=>{})}if(screen.orientation&&screen.orientation.lock&&touchMode)screen.orientation.lock('landscape').catch(()=>{})}catch(e){}}
 function startService(){goFull();S.phase='service';setTimeout(()=>{if(G&&G.ev&&G.ev.name)toast(`📅 DAY ${S.day}（${G.ev.wd}曜日） ${G.ev.name}`);else if(G&&G.ev)setTimeout(()=>{},0);if(G&&G.chal)setTimeout(()=>toast('🎯 今日のお題：'+G.chal.d.t(G.chal.n)),2600)},1800);refreshBoard();newDay();closeOv();save();toast(`DAY ${S.day} 開店！ 🍺`)}
 function endDay(){if(G.net==='host'){netSend({t:'end',sv:G.stats.served,sales:G.stats.sales});setTimeout(netClose,800);G.net=null}G.ended=true;P.act=null;loopSet('pour',false);
@@ -2036,7 +2061,7 @@ function showTitle(){if((IS_TOUCH||touchMode)&&!SET.mobSetup){mobileSetup();retu
  <div class="tbtns">${anySv?`<button class="btn" id="tContinue">つづきから${sv?`（スロット${SLOT}・DAY ${sv.day}）`:''}</button>`:''}<button class="btn ${anySv?'sec':''}" id="tNew">はじめから</button><button class="btn sec" id="tSlots">💾 セーブデータ</button><button class="btn sec" id="tZukan">📚 図鑑</button><button class="btn sec" id="tCoop">🤝 2人で遊ぶ</button><button class="btn sec" id="tTut">📘 チュートリアル</button><button class="btn sec" id="tHelp">操作方法</button></div>
  <p style="font-size:11px;color:#f5e6c877;margin-top:16px">パソコン（マウス）・スマホ（横向き・タッチ）対応 ・ 音が出ます</p></div>`);
  if(anySv)$('#tContinue').onclick=()=>slotPicker('load');
- $('#tNew').onclick=()=>slotPicker('new');$('#tSlots').onclick=()=>slotPicker('manage');$('#tCoop').onclick=()=>openCoop();$('#tZukan').onclick=()=>{const s0=load();if(!s0){toast('まだデータがありません');return}const keep=S;S=s0;S.phase='title';openZukan()};
+ $('#tNew').onclick=()=>slotPicker('new');$('#tSlots').onclick=()=>slotPicker('manage');$('#tCoop').onclick=()=>openCoop();$('#tZukan').onclick=()=>{let s0=load();if(!s0){const n=[1,2,3].find(x=>slotInfo(x));if(n){setSlot(n);s0=load()}}if(!s0){toast('まだデータがありません');return}S=s0;S.phase='title';openZukan()};
  $('#tTut').onclick=()=>{ac();const s0=load();S=s0||freshSave();syncOriginals();if(!s0)S.diff='easy';applyDiff();lessonMenu(s0?'shop':'day1')};
  $('#tHelp').onclick=()=>showHelp(false,true)}
 function showHelp(thenStart,fromTitle){const was=G&&G.paused;if(G&&S.phase==='service')G.paused=true;
@@ -2065,11 +2090,11 @@ function showBook(){if(!S)return;const was=G&&G.paused;if(G&&S.phase==='service'
  <div style="display:flex;justify-content:flex-end;margin-top:10px"><button class="btn" id="bClose">閉じる</button></div></div>`);
  $('#bClose').onclick=()=>{if(S.phase==='shop'){openShop();return}if(S.phase==='title'){showTitle();return}closeOv();if(G)G.paused=was}}
 function togglePause(){if(!G||S.phase!=='service')return;
- if(G.paused){G.paused=false;closeOv();$('#btnPause').textContent='Ⅱ 一時停止';return}
- G.paused=true;P.act=null;loopSet('pour',false);$('#btnPause').textContent='▶ 再開';
+ if(G.paused){G.paused=false;closeOv();$('#btnPause').textContent='Ⅱ';return}
+ G.paused=true;P.act=null;loopSet('pour',false);$('#btnPause').textContent='▶';
  openOv(`<div class="modal" style="width:420px;text-align:center"><h1>Ⅱ 一時停止中</h1><div style="display:flex;justify-content:center;margin:8px 0">${diffSel()}</div><div class="tbtns"><button class="btn" id="pRes">▶ 再開</button><button class="btn sec" id="pHelp">操作方法</button><button class="btn sec" id="pZukan">📚 図鑑</button><button class="btn sec" id="pPhoto">📷 写真モード</button><button class="btn sec" id="pTitle">タイトルへ（今日の営業は破棄）</button></div></div>`);
- bindDiffSel(()=>{G.paused=false;togglePause()});$('#pRes').onclick=togglePause;$('#pZukan').onclick=()=>openZukan();$('#pPhoto').onclick=()=>{$('#btnPause').textContent='Ⅱ 一時停止';photoMode()};$('#pHelp').onclick=()=>showHelp(false);
- $('#pTitle').onclick=()=>{G.paused=false;$('#btnPause').textContent='Ⅱ 一時停止';const s=load();if(s)S=s;S.phase='title';newDay();showTitle()}}
+ bindDiffSel(()=>{G.paused=false;togglePause()});$('#pRes').onclick=togglePause;$('#pZukan').onclick=()=>openZukan();$('#pPhoto').onclick=()=>{$('#btnPause').textContent='Ⅱ';photoMode()};$('#pHelp').onclick=()=>showHelp(false);
+ $('#pTitle').onclick=()=>{saveColl();G.paused=false;$('#btnPause').textContent='Ⅱ';const s=load();if(s)S=s;S.phase='title';newDay();showTitle()}}
 $('#btnBook').onclick=showBook;$('#btnHelp').onclick=()=>{if(S&&S.phase==='service')showHelp(false)};
 $('#btnMute').onclick=()=>{muted=!muted;$('#btnMute').textContent=muted?'🔇':'🔊';if(muted)for(const k in loops)loopSet(k,false);bgmVol()};
 $('#btnPause').onclick=togglePause;
@@ -2277,7 +2302,7 @@ function buildDecor(){if(!S)return;S.decor=S.decor||{};for(const d of DECOR){if(
  g.traverse(o=>{if(o.isMesh)o.raycast=()=>{}});scene.add(g);DECOROBJ[d.id]=g}}
 function decorTick(t){const a=DECOROBJ.aquarium;if(a)a.userData.fish.forEach((f,i)=>{const p=t*.6+i*1.6;f.position.set(Math.sin(p)*.25,.12+i*.06,Math.cos(p*1.3)*.08);f.rotation.y=-p+Math.PI/2});const r=DECOROBJ.record;if(r)r.userData.rec.rotation.y=t*3}
 /* ---------- 11/12. collection & records ---------- */
-const TRICKS=['ジャストポア','ハイポア','ローリングシェイク','神速サーブ','フレア','スライドサーブ','リズム職人','きれいなカット','磨き上げグラス','丸氷'];
+const TRICKS=['ジャストポア','ハイポア','ローリングシェイク','神速サーブ','フレア','スライドサーブ','リズム職人','きれいなカット','磨き上げグラス','丸氷','スモーク演出','お披露目','ファイヤーピール'];
 function openZukan(tab,back){tab=tab||'drink';const was=G&&G.paused;if(G&&S.phase==='service')G.paused=true;S.made=S.made||{};S.met=S.met||{};S.tricksSeen=S.tricksSeen||{};S.best=S.best||{};
  const tabs=[['drink','🍸 お酒'],['cust','🙋 お客さん'],['trick','✨ 技'],['ach','🏆 実績'],['rec','🏅 きろく']];let body='';
  if(tab==='drink')body=`<div class="zgrid">${Object.keys(RECIPES).map(k=>{const r=RECIPES[k],n=S.made[k]||0;return `<div class="zc ${n?'':'lock'}"><div>${glassSVG(r.glass,{w:34,fill:.85,color:recipeColor(r),garnish:r.garnish,foam:r.method==='tap'})}</div><b>${n?r.name:'？？？'}</b><small>${n?`${n}杯 つくった`:'まだ作っていない'}</small></div>`}).join('')}</div>`;
@@ -2285,7 +2310,8 @@ function openZukan(tab,back){tab=tab||'drink';const was=G&&G.paused;if(G&&S.phas
  if(tab==='trick')body=`<div class="zgrid">${TRICKS.map(t=>`<div class="zc ${S.tricksSeen[t]?'':'lock'}"><div style="font-size:24px">✨</div><b>${S.tricksSeen[t]?t:'？？？'}</b><small>${S.tricksSeen[t]?S.tricksSeen[t]+'回':''}</small></div>`).join('')}</div>`;
  if(tab==='ach')body=`<div class="zgrid">${ACH.map(a=>`<div class="zc ${S.ach[a.id]?'':'lock'}"><div style="font-size:24px">🏆</div><b>${a.name}</b><small>${S.ach[a.id]?'達成！':'未達成'}</small></div>`).join('')}</div>`;
  if(tab==='rec'){const B=S.best,Y=S.yday||{};const row=(l,k,f=v=>v)=>`<tr><td>${l}</td><td>${f(B[k]||0)}</td><td style="color:#f5e6c8aa">${Y[k]!==undefined?f(Y[k]):'-'}</td></tr>`;body=`<table class="rtab"><tr><td></td><td><b>自己ベスト</b></td><td><b>前回</b></td></tr>${row('1日の杯数','served',v=>v+'杯')}${row('1日の売上','sales',yen)}${row('1日のチップ','tips',yen)}${row('最高コンボ','combo',v=>'×'+v)}${row('パーフェクト','perfect',v=>v+'杯')}</table><p style="font-size:13px;margin-top:8px">🎯 お題クリア ${S.chalWins||0}回 ／ 🏆 カクテル大会 最高 ${S.contestBest?S.contestBest+'位':'未出場'} ／ 📸 写真 ${S.photos||0}枚</p>`}
- openOv(`<div class="modal" style="width:900px"><h1>📚 図鑑・きろく</h1><div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">${tabs.map(([k,l])=>`<button class="tg ${k===tab?'on':''}" data-zt="${k}">${l}</button>`).join('')}</div><div style="max-height:400px;overflow:auto">${body}</div><div style="display:flex;justify-content:flex-end;margin-top:10px"><button class="btn" id="zClose">閉じる</button></div></div>`);
+ const cntD=Object.keys(RECIPES).filter(k=>S.made[k]).length,cntT=TRICKS.filter(t=>S.tricksSeen[t]).length,cntC=Object.keys(CT).filter(k=>!CT[k].reg&&S.met[k]).length+REGS.filter(r=>S.regs[r.id]&&S.regs[r.id].met).length;
+ openOv(`<div class="modal" style="width:900px"><h1>📚 図鑑・きろく</h1><p style="font-size:13px;color:#f5e6c8bb">お酒 ${cntD}/${Object.keys(RECIPES).length} ・ お客さん ${cntC}/${Object.keys(CT).filter(k=>!CT[k].reg).length+REGS.length} ・ 技 ${cntT}/${TRICKS.length} ・ 実績 ${ACH.filter(a=>S.ach[a.id]).length}/${ACH.length}</p><div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">${tabs.map(([k,l])=>`<button class="tg ${k===tab?'on':''}" data-zt="${k}">${l}</button>`).join('')}</div><div style="max-height:400px;overflow:auto">${body}</div><div style="display:flex;justify-content:flex-end;margin-top:10px"><button class="btn" id="zClose">閉じる</button></div></div>`);
  document.querySelectorAll('[data-zt]').forEach(b=>b.onclick=()=>openZukan(b.dataset.zt,back||(was?'paused':'')));
  $('#zClose').onclick=()=>{if(S.phase==='title'){showTitle();return}if(S.phase==='shop'){openShop();return}closeOv();if(G)G.paused=false}}
 /* ---------- 7. contest ---------- */
@@ -2598,18 +2624,19 @@ function renderLabels(hl){const box=$('#labels');const mode=SET.labelMode==='off
 const _b=new THREE.Box3();
 function stageRect(el){const r=el.getBoundingClientRect();if(!r.width)return null;const sr=$('#stage').getBoundingClientRect();const k=sr.width/1280;return{l:(r.left-sr.left)/k,t:(r.top-sr.top)/k,r:(r.right-sr.left)/k,b:(r.bottom-sr.top)/k}}
 function hit(a,b){return a.l<b.r&&a.r>b.l&&a.t<b.b&&a.b>b.t}
-function renderArrow(hl,txt){const ar=$('#arrow');document.querySelectorAll('.slab.dim').forEach(e=>e.classList.remove('dim'));
+function renderArrow(hl,txt){const ar=$('#arrow');const tr=$('#tgtRing');tr.style.display='none';document.querySelectorAll('.slab.dim').forEach(e=>e.classList.remove('dim'));
  if((!SET.arrow&&!G.tutorial)||!hl||P.act){ar.style.display='none';return}
  const t=hlTargets(hl);if(!t.length){ar.style.display='none';return}
  visBox(t[0],_b);const c=_b.getCenter(new THREE.Vector3());let ctr=toScreen(c.clone());c.y=_b.max.y+.015;let p=toScreen(c);let ownBub=null;
  {const cu=t[0].userData&&t[0].userData.act&&t[0].userData.act.c;if(cu&&cu.bub&&cu.bub.style.display!=='none'&&(hl==='callers'||hl.startsWith('serve'))){const br=stageRect(cu.bub);if(br){ownBub=cu.bub;p={x:(br.l+br.r)/2,y:br.t-2,vis:true};ctr={x:(br.l+br.r)/2,y:(br.t+br.b)/2,vis:true}}}}
  let lab=hl.startsWith('serve')||hl==='callers'?'ここをクリック':hl.startsWith('tap')?'押して手前に引く':hl==='board'?(H&&H.kind==='knife'?'押して上から下へスッ':'クリック'):hl==='sink'&&H&&H.kind==='towel'?'押してぐるぐる':hl==='sink'&&!(H&&H.kind==='glass')?'押してこする':hl==='glass'&&H&&H.kind==='spoon'?'押してぐるぐる':hl==='glass'&&H&&H.kind==='bottle'?'ここで長押し':hl==='shaker'&&H&&H.glass===G.shaker?'押したまま振る':'ここ！';
  if(!p.vis){ar.style.display='none';return}
+ if(!ownBub&&p.x>40&&p.x<1240&&p.y>60){const a1=toScreen(V(_b.min.x,_b.min.y,_b.min.z)),a2=toScreen(V(_b.max.x,_b.max.y,_b.max.z)),a3=toScreen(V(_b.min.x,_b.max.y,_b.max.z)),a4=toScreen(V(_b.max.x,_b.min.y,_b.min.z));const xs=[a1.x,a2.x,a3.x,a4.x],ys=[a1.y,a2.y,a3.y,a4.y];const w=clamp(Math.max(...xs)-Math.min(...xs),34,220),h=clamp(Math.max(...ys)-Math.min(...ys),34,220);const d=Math.max(w,h)+16;tr.style.display='block';tr.style.width=d+'px';tr.style.height=d+'px';tr.style.left=(ctr.x-d/2)+'px';tr.style.top=(ctr.y-d/2)+'px'}
  let x=p.x,y=p.y,mode='up';
  if(x<40){x=70;y=clamp(y,150,500);mode='side';lab=touchMode?'👈 画面を左へドラッグ（左を見る）':fpsWanted()?'◀ 左を向いて':'左を見て（マウスを左端へ）'}
  else if(x>1240){x=1180;y=clamp(y,150,500);mode='side';lab=touchMode?'画面を右へドラッグ（右を見る）👉':fpsWanted()?'右を向いて ▶':'右を見て（マウスを右端へ）'}
- else if(y<60){y=110;mode='upTop';lab=touchMode?'👆 画面を上へドラッグ（客席）':fpsWanted()?'上を向いて':'上を見て（マウスを上へ）'}
- else if(y>560&&ctr.y>560){y=500;mode='downTop';lab=touchMode?'👇 画面を下へドラッグ（手元）':fpsWanted()?'下を向いて':'下を見て（マウスを下へ）'}
+ else if(y<60){y=110;mode='upTop';lab=touchMode?'👆 画面を上へドラッグ（客席）':fpsWanted()?'上を向いて':'マウスを画面の上の端へ（客席）'}
+ else if(y>560&&ctr.y>560){y=500;mode='downTop';lab=touchMode?'👇 画面を下へドラッグ（手元）':fpsWanted()?'下を向いて':'マウスを画面の下の端へ（手元）'}
  const W=Math.max(70,lab.length*13+26),Hh=74;
  const obs=[];for(const sel of ['#ticket','#top','#hand','#evalPop','#tut','#gaugeBox','#readout'])for(const e of document.querySelectorAll(sel)){if(e.offsetParent!==null||sel==='#top'){const r=stageRect(e);if(r)obs.push(r)}}
  document.querySelectorAll('.bub').forEach(e=>{if(e.style.display!=='none'&&e!==ownBub){const r=stageRect(e);if(r)obs.push(r)}});
@@ -2629,7 +2656,7 @@ function renderArrow(hl,txt){const ar=$('#arrow');document.querySelectorAll('.sl
 const LESSONS=[{n:'レッスン1　きほんの接客',icon:'🍺',d:'見回す・持つ・ビールを注ぐ・お会計'},{n:'レッスン2　カクテルと片付け',icon:'🍋',d:'フルーツを切る・カクテル・洗う・拭く'},{n:'レッスン3　ひまな時間とお楽しみ',icon:'🧊',d:'丸氷・雑談・雰囲気・お題と図鑑'}];
 const TUT=[
  {les:0,c:'ようこそ',ic:'🍸',t:'<b>「Bar 憩」</b>へようこそ！ 今夜からあなたがこの店のバーテンダー。<br>チュートリアルは <b>3つのレッスン</b>。各ステップの <b>✅やること</b> を全部こなすと次へ進みます。<br>時間制限なし・失敗してもOK！',btn:'レッスン1をはじめる'},
- {les:0,c:'見回す',ic:'👀',t:()=>fpsWanted()?'<b>画面をクリック</b> → マウスで見回す（FPSと同じ）。中央の<b>＋照準</b>を物に合わせてクリック。<b>Esc</b>でカーソルに戻る':touchMode?'何もない所を<b>指でなぞる</b>と見回せます（⚙設定でボタン・ジャイロも選べる）':'マウスを<b>上</b>で客席、<b>下</b>で手元、<b>左右の端</b>で首を振る',enter(){G.lookAcc=0},goals:[['客席と手元を見回す',()=>(G.lookAcc||0)>1.6]],skip:'次へ'},
+ {les:0,c:'見回す',ic:'👀',t:()=>fpsWanted()?'<b>画面をクリック</b> → マウスで見回す（FPSと同じ）。中央の<b>＋照準</b>を物に合わせてクリック。<b>Esc</b>でカーソルに戻る':touchMode?'何もない所を<b>指でなぞる</b>と見回せます（⚙設定でボタン・ジャイロも選べる）':'マウスを画面の<b>上・下・左右の端</b>に寄せると、その方向を向きます（真ん中では動かないので作業に集中できる）',enter(){G.lookAcc=0},goals:[['客席と手元を見回す',()=>(G.lookAcc||0)>1.6]],skip:'次へ'},
  {les:0,c:'持つ・戻す',ic:'✋',t:()=>touchMode?'<b>タップで持つ</b>、左下の<b>✋置く・戻す</b>で戻す。':'<b>クリックで持つ</b>、<b>右クリック</b>（Qキー）で戻す。',enter(){G.tutHeld=0},goals:[['①グラス棚からグラスを持つ',()=>G.tutHeld],[()=>touchMode?'✋ボタンで戻す':'右クリックで戻す',()=>G.tutHeld&&!H]],hl:'rack:pint'},
  {les:0,c:'ビールを出す',ic:'🍺',t:()=>'お客さんが来た！ 注文を聞いて<b>'+RECIPES.pale.name+'</b>を注ごう。<br>右上の「グラスの角度」パネル：'+(touchMode?'<b>スライダー右</b>で傾ける。':'<b>右ボタン＋右へ</b>で傾ける。')+'<b>前半は傾けて、後半はまっすぐ</b>がコツ。',enter(){tutSpawn('pale')},goals:[['「🙋注文！」のお客さんをクリック',()=>G.customers.some(c=>c.status==='ordered')||G.stats.served>=1],['パイントグラスを⑧タップに置く',()=>SLOTS.some(s=>s.kind==='tap'&&s.glass)||G.stats.served>=1],['グラスを傾ける',()=>(G.tilt||0)>.4||G.stats.served>=1],[()=>touchMode?'ハンドルを指で下へなぞって注ぐ':'ハンドルを押したまま下へ引いて注ぐ',()=>SLOTS.some(s=>s.kind==='tap'&&s.glass&&s.glass.fill()>.5)||G.stats.served>=1],['お客さんをクリックして提供',()=>G.stats.served>=1]],dyn:1},
  {les:0,c:'お会計',ic:'💴',t:'飲み終わると<b>💴お会計と空きグラス</b>が残ります。回収しないと次のお客さんが座れません。',goals:[['飲み終わるのを待つ',()=>G.seats.some(s=>s.money>0)||(G.stats.served>=1&&!G.customers.some(c=>c.status==='drinking'))],['💴お会計をクリック',()=>!G.seats.some(s=>s.money>0||s.glasses.length)&&G.stats.served>=1&&!G.customers.some(c=>c.status==='drinking')]],hl:'tables',dyn:1},
@@ -2657,7 +2684,7 @@ function tutUpdate(){if(H&&H.kind==='glass')G.tutHeld=1;const s=TUT[G.tutorial.s
 function tutRender(){const s=TUT[G.tutorial.st];const el=$('#tut');if(!s){el.style.display='none';return}
  const nh=s.dyn?nextHint().t:'';const tx=typeof s.t==='function'?s.t():s.t;const ti=G.tutorial.st,tn=TUT.length;const gl=tutGoals(s);const gh=gl.length?`<div class="tgoals">${gl.map(g=>`<div class="${g[1]?'ok':''}">${g[1]?'✅':'⬜'} ${g[0]}</div>`).join('')}</div>`:'';
  const lsn=TUT.filter(x=>x.les===s.les),li=lsn.indexOf(s);const html=`<div class="th"><span>📘 ${LESSONS[s.les].n.split('　')[0]}　<b style="color:#ffd77a">${s.ic||''} ${s.c||''}</b> <small style="color:#aaa">${li+1}/${lsn.length}</small></span><span><span style="color:#ffd77a;cursor:pointer;margin-right:12px" id="tutMin">${G.tutMin?"▼説明を開く":"▲たたむ"}</span><span style="color:#aaa;cursor:pointer" id="tutSkip">スキップ ✕</span></span></div><div class="tprog"><i style="width:${Math.round((li+1)/lsn.length*100)}%"></i></div>${G.tutMin?'':`<div class="tt">${tx}</div>`}${gh}${nh&&!s.btn?`<div class="nx"><b>次は▶</b> ${nh}</div>`:''}${s.act?`<div class="row"><button class="btn sm" id="tutAct" style="background:#5a3a6a;color:#fff">${s.act.l}</button></div>`:''}${s.btn||s.skip?`<div class="row"><button class="btn sm" id="tutBtn">${s.btn||s.skip}</button>${s.btn&&FPS.on?'<small style="color:#aaa;margin-left:8px">Enterでも進む</small>':''}</div>`:''}`;
- el.style.display='block';if(html===tutRender.last)return;tutRender.last=html;el.innerHTML=html;
+ el.style.display='block';el.classList.toggle('working',!!(P.act&&P.down));if(html===tutRender.last)return;tutRender.last=html;el.innerHTML=html;
  const ta=$('#tutAct');if(ta)ta.onclick=()=>{try{s.act.f()}catch(e){console.error(e)}};
  const b=$('#tutBtn');if(b)b.onclick=()=>{sfx.pop();if(s.end){tutFinish();return}tutGo(G.tutorial.st+1)};
  $('#tutSkip').onclick=()=>tutFinish();$('#tutMin').onclick=()=>{G.tutMin=!G.tutMin;tutRender.last=null;tutRender()}}
