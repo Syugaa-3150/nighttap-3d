@@ -413,7 +413,7 @@ body.touch #tut{max-height:250px!important}
 #tkInfo{display:none!important}
 #top .ic,#top button{white-space:nowrap;min-width:38px;overflow:hidden}
 #top .chip{white-space:nowrap;overflow:hidden}
-#tgtRing{position:absolute;border:3px solid #ffe14a;border-radius:50%;pointer-events:none;display:none;z-index:3;box-shadow:0 0 14px #ffe14a88,inset 0 0 10px #ffe14a55;animation:tgp 1.1s ease-in-out infinite}
+#tgtRing{position:absolute;border:2px solid #ffe14a;border-radius:50%;pointer-events:none;display:none;z-index:3;box-shadow:0 0 14px #ffe14a88,inset 0 0 10px #ffe14a55;animation:tgp 1.1s ease-in-out infinite}
 @keyframes tgp{0%,100%{transform:scale(1);opacity:.95}50%{transform:scale(1.12);opacity:.55}}
 #edgeHint{position:absolute;display:none;pointer-events:none;z-index:4;background:rgba(14,11,9,.8);border:1px solid var(--gold,#d9b06a);color:#ffe9b8;border-radius:12px;padding:5px 14px 8px;font-size:14px;font-weight:800;overflow:hidden}
 #edgeHint i{position:absolute;left:0;bottom:0;height:3px;background:#ffd77a}
@@ -2645,7 +2645,7 @@ function renderArrow(hl,txt){const ar=$('#arrow');const tr=$('#tgtRing');tr.styl
  {const cu=t[0].userData&&t[0].userData.act&&t[0].userData.act.c;if(cu&&cu.bub&&cu.bub.style.display!=='none'&&(hl==='callers'||hl.startsWith('serve'))){const br=stageRect(cu.bub);if(br){ownBub=cu.bub;p={x:(br.l+br.r)/2,y:br.t-2,vis:true};ctr={x:(br.l+br.r)/2,y:(br.t+br.b)/2,vis:true}}}}
  let lab=hl.startsWith('serve')||hl==='callers'?'ここをクリック':hl.startsWith('tap')?'押して手前に引く':hl==='board'?(H&&H.kind==='knife'?'押して上から下へスッ':'クリック'):hl==='sink'&&H&&H.kind==='towel'?'押してぐるぐる':hl==='sink'&&!(H&&H.kind==='glass')?'押してこする':hl==='glass'&&H&&H.kind==='spoon'?'押してぐるぐる':hl==='glass'&&H&&H.kind==='bottle'?'ここで長押し':hl==='shaker'&&H&&H.glass===G.shaker?'押したまま振る':'ここ！';
  if(!p.vis){ar.style.display='none';return}
- if(!ownBub&&p.x>40&&p.x<1240&&p.y>60){const a1=toScreen(V(_b.min.x,_b.min.y,_b.min.z)),a2=toScreen(V(_b.max.x,_b.max.y,_b.max.z)),a3=toScreen(V(_b.min.x,_b.max.y,_b.max.z)),a4=toScreen(V(_b.max.x,_b.min.y,_b.min.z));const xs=[a1.x,a2.x,a3.x,a4.x],ys=[a1.y,a2.y,a3.y,a4.y];const w=clamp(Math.max(...xs)-Math.min(...xs),34,220),h=clamp(Math.max(...ys)-Math.min(...ys),34,220);const d=Math.max(w,h)+16;tr.style.display='block';tr.style.width=d+'px';tr.style.height=d+'px';tr.style.left=(ctr.x-d/2)+'px';tr.style.top=(ctr.y-d/2)+'px'}
+ if(!ownBub&&p.x>40&&p.x<1240&&p.y>60){const a1=toScreen(V(_b.min.x,_b.min.y,_b.min.z)),a2=toScreen(V(_b.max.x,_b.max.y,_b.max.z)),a3=toScreen(V(_b.min.x,_b.max.y,_b.max.z)),a4=toScreen(V(_b.max.x,_b.min.y,_b.min.z));const xs=[a1.x,a2.x,a3.x,a4.x],ys=[a1.y,a2.y,a3.y,a4.y];const w=Math.max(...xs)-Math.min(...xs),h=Math.max(...ys)-Math.min(...ys);const d=clamp(Math.min(w,h)*.55+Math.max(w,h)*.25,30,96);tr.style.display='block';tr.style.width=d+'px';tr.style.height=d+'px';tr.style.left=(ctr.x-d/2)+'px';tr.style.top=(ctr.y-d/2)+'px'}
  let x=p.x,y=p.y,mode='up';
  if(x<40){x=70;y=clamp(y,150,500);mode='side';lab=touchMode?'👈 画面を左へドラッグ（左を見る）':fpsWanted()?'◀ 左を向いて':(SET.viewMode==='follow'?'◀ マウスを左端へ':'◀ 画面の左端へ（またはAキー）')}
  else if(x>1240){x=1180;y=clamp(y,150,500);mode='side';lab=touchMode?'画面を右へドラッグ（右を見る）👉':fpsWanted()?'右を向いて ▶':(SET.viewMode==='follow'?'マウスを右端へ ▶':'画面の右端へ（またはDキー） ▶')}
