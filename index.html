@@ -249,6 +249,7 @@ body.touch #ticket{width:640px!important}
 .bub.act{box-shadow:0 0 0 4px #3fd0c9,0 0 18px #3fd0c9,0 3px 0 #0005!important;transform:translate(-50%,-100%) scale(1.12)}
 #gaugeBox{bottom:auto!important;top:112px}
 #arrow .al{white-space:nowrap}
+#arrow .al{position:relative;z-index:2}#arrow .ar{position:relative;z-index:1}
 .slab.dim{opacity:.18}
 #tiltW{position:absolute;right:14px;top:150px;width:200px;background:rgba(18,12,8,.9);border:1px solid #e8c27a;border-radius:16px;padding:8px 10px 10px;display:none;pointer-events:none;text-align:center;color:#f5e6c8;z-index:3;box-shadow:0 8px 24px #000a}
 #twSlBox{display:none;margin-top:8px}body.touch #twSlBox{display:block}
@@ -596,7 +597,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden&&SET.autoPa
 function vib(ms){try{if(SET.vib&&touchMode&&navigator.vibrate)navigator.vibrate(ms)}catch(e){}}
 function applyBodySet(){const b=document.body;if(SET.vpad&&SET.lookMode==='drag'){SET.lookMode='both';SET.vpad=0}b.classList.toggle('vpad',SET.lookMode==='btn'||SET.lookMode==='both');b.classList.toggle('lefty',!!SET.lefty);b.style.setProperty('--bs',({s:1,m:1.3,l:1.65})[SET.btnSize||'m']);b.classList.toggle('ui-s',SET.uiScale==='s');b.classList.toggle('ui-l',SET.uiScale==='l')}
 const SETKEY='nighttap3d_settings';
-const SET=(()=>{const d={bgmVol:.55,sfxVol:.8,voiceVol:.9,envVol:.5,arrow:1,labels:1,hint:1,quality:'auto',gyro:0,voice:1,sens:1,viewMode:'fps',nameMode:'easy',labelMode:'smart',tsens:1,invY:0,gsens:1,vpad:0,uiScale:'m',vib:1,fps30:0,mobSetup:0,lookMode:'drag',btnSize:'m',btnSpeed:1,lefty:0,camShake:1,autoPause:1};try{const t=JSON.parse(localStorage.getItem(SETKEY)||'{}');return{...d,...t}}catch(e){return d}})();
+const SET=(()=>{const d={bgmVol:.55,sfxVol:.8,voiceVol:.9,envVol:.5,arrow:1,labels:1,hint:1,quality:'auto',gyro:0,voice:1,sens:1,viewMode:'fps',nameMode:'easy',labelMode:'smart',tsens:1,invY:0,gsens:1,vpad:0,uiScale:'m',vib:1,fps30:0,mobSetup:0,lookMode:'drag',btnSize:'m',btnSpeed:1,lefty:0,camShake:1,autoPause:1,curGuide:1};try{const t=JSON.parse(localStorage.getItem(SETKEY)||'{}');return{...d,...t}}catch(e){return d}})();
 function saveSet(){try{localStorage.setItem(SETKEY,JSON.stringify(SET))}catch(e){}}
 const IS_TOUCH=(()=>{try{return matchMedia('(pointer:coarse)').matches||('ontouchstart' in window&&navigator.maxTouchPoints>0)}catch(e){return false}})();
 let touchMode=IS_TOUCH;
@@ -1473,7 +1474,7 @@ function nextHint(){
  if(G.customers.some(c=>c.status==='relax'))return{t:'お客さんはひと休み中。次の注文までに片付けや洗い物をしておこう'};
  if(G.seats.some(s=>s.glasses.length))return{t:'飲み終わったグラスをクリックして下げよう',hl:'tables'};
  const ideas=[(G.roundIce||0)<3&&{t:'暇な時間に：⑫丸氷を ぐるぐる削っておこう（ウイスキー系の注文でチップUP）',hl:'roundice'},DX().cutStart<99&&GARN.filter(citrus).reduce((a,k)=>a+(G.cut[k]||0),0)<8&&{t:'暇な時間に：レモン・ライムを切って仕込み（8枚以上でピーク中チップ+15%）',hl:'garnish:g_lemon'},(G.shineStock||0)<6&&{t:'暇な時間に：⑪布を持ってシンク奥のカゴでぐるぐる＝グラスを磨き上げ（次の提供でチップUP）',hl:'towel'},G.customers.some(c=>(c.status==='drinking'||c.status==='relax')&&!c.talked)&&{t:'飲んでいるお客さんをクリックして雑談しよう（うまく答えるとチップUP）',hl:''},{t:'ボトルを持って、何もない所で'+(touchMode?'指で':'')+'円を2周＝フレア練習（5回成功でフレアLvUP）',hl:''},{t:'好きにお酒を注いだグラスを持って👅味見'+(touchMode?'ボタン':'（Tキー）')+' ＝ 新作カクテルの試作',hl:''},{t:'右上の🎵ボタン（雰囲気）で音楽と照明を変えると、来るお客さんが変わる',hl:''}].filter(Boolean);
- const id=ideas[Math.floor(performance.now()/7000)%ideas.length];return{t:id.t,hl:id.hl||null}}
+ const id=ideas[Math.floor(performance.now()/7000)%ideas.length];return{t:id.t,hl:G.tutorial?(id.hl||null):null}}
 
 /* ====================== INPUT ====================== */
 const ray=new THREE.Raycaster();const ndc=new THREE.Vector2();
@@ -1495,7 +1496,8 @@ function anchors(){const L=[];
  return L}
 function sameAct(x,y){return x.kind===y.kind&&x.k===y.k&&x.t===y.t&&x.i===y.i&&x.glass===y.glass}
 function pickAnchor(){let best=null,bd=1e9,all=[];const sc=touchMode?1.7:1.3;for(const a of anchors()){const q=toScreen(a.p);if(!q.vis)continue;const d=Math.hypot(q.x-P.x,q.y-P.y);a.nd=d/(a.r*sc);all.push(a);if(a.nd<1&&a.nd<bd){bd=a.nd;best=a}}if(best)best.all=all;return best}
-function pickAt(){const ra=pickRay();const an=pickAnchor();
+function pickAt(){const r=pickAt0();try{if(r&&r.act&&r.act.kind==='sink'&&ST.towel&&!(H&&(H.kind==='towel'||H.kind==='glass'))){const tp=toScreen(ST.towel.position.clone());if(tp.vis&&Math.hypot(tp.x-P.x,tp.y-P.y)<(touchMode?58:44)){const ta=anchors().find(a=>a.act&&a.act.kind==='towel');if(ta)return{act:ta.act,point:ta.p}}}}catch(e){}return r}
+function pickAt0(){const ra=pickRay();const an=pickAnchor();
  if(!an)return ra;const A0={act:an.act,point:an.p};
  if(!ra)return A0;const k=ra.act.kind;
  if(k==='cust'||k==='seat')return (an.nd<.45&&P.y>toScreen(an.p).y-8)?A0:ra;
@@ -1615,7 +1617,14 @@ function handGlassToCust(c,gl){
  if(!gl.hasIngs()){msg('空のグラスです');return}
  serve(c,gl)}
 function custTap(c){if(!G||S.phase!=='service'||G.paused||c.status==='leave')return;ac();if(H&&H.kind==='glass'){handGlassToCust(c,H.glass);return}if(!autoServe(c))clickCust(c)}
-function clickCust(c){if(c.status==='waiting')takeOrder(c);else if(c.status==='ordered'){const w=workGlass(RC(c));if(w&&w.hasIngs()&&w.type!=='shaker'&&G.active===c.id){if(G.pendServe===c.id&&performance.now()-G.pendT<3500){if(w.loc.kind==='slot')w.loc.slot.glass=null;G.pendServe=null;serve(c,w);return}G.pendServe=c.id;G.pendT=performance.now();msg('まだ完成していません：'+(nextHint().t||'')+'（もう一度クリックでこのまま提供）');return}G.active=c.id;D.ticket=1;for(const x of G.customers)x.dirty=1;sfx.pop()}else if(c.quarrel&&calmQuarrel(c)){}else if((c.status==='drinking'||c.status==='relax')&&!c.talked)openTalk(c);else if(c.status==='drinking')say(c,pick(['うまい！','いい店だね','♪','最高の夜だ']),1.6)}
+function essentialOk(c,w){try{const r=RR(RC(c));if(!r||w.type!==r.glass)return false;
+ for(const k in r.ings){if(!((w.c.ings[k]||0)>0.5))return false}
+ if(r.method==='shake'&&!w.c.shaken)return false;
+ if(r.ice&&!w.c.ice)return false;
+ const fills=Object.keys(r.ings).filter(k=>r.ings[k]==='fill');if(fills.length&&w.fill()<fillBand(r)[0]*.7)return false;
+ for(const k in r.ings)if(r.ings[k]!=='fill'&&(w.c.ings[k]||0)<r.ings[k]*.5)return false;
+ return true}catch(e){return false}}
+function clickCust(c){if(c.status==='waiting')takeOrder(c);else if(c.status==='ordered'){const w=workGlass(RC(c));if(w&&w.hasIngs()&&w.type!=='shaker'&&essentialOk(c,w)){if(w.loc.kind==='slot')w.loc.slot.glass=null;G.pendServe=null;serve(c,w);return}if(w&&w.hasIngs()&&w.type!=='shaker'&&G.active===c.id){if(G.pendServe===c.id&&performance.now()-G.pendT<3500){if(w.loc.kind==='slot')w.loc.slot.glass=null;G.pendServe=null;serve(c,w);return}G.pendServe=c.id;G.pendT=performance.now();msg('まだ完成していません：'+(nextHint().t||'')+'（もう一度クリックでこのまま提供）');return}G.active=c.id;D.ticket=1;for(const x of G.customers)x.dirty=1;sfx.pop()}else if(c.quarrel&&calmQuarrel(c)){}else if((c.status==='drinking'||c.status==='relax')&&!c.talked)openTalk(c);else if(c.status==='drinking')say(c,pick(['うまい！','いい店だね','♪','最高の夜だ']),1.6)}
 function turnAcc(A,dist){if(dist>3){const ang=Math.atan2(P.dy,P.dx);if(A.la!==undefined){let d=ang-A.la;if(d>Math.PI)d-=2*Math.PI;if(d<-Math.PI)d+=2*Math.PI;if(Math.abs(d)<1.3){A.turn=(A.turn||0)+d;A.turnAbs=(A.turnAbs||0)+Math.abs(d)}}A.la=ang}}
 function onDrag(dist){if(!P.down||!P.act)return;P.moved+=dist;const A=P.act;
  if(A.kind==='pendBottle'){turnAcc(A,dist);if(Math.abs(A.turn)>Math.PI*2.2&&P.moved>140){P.act=null;startFlair()}return}
@@ -1846,7 +1855,7 @@ function curViewTick(dt){CVW.cool=Math.max(0,CVW.cool-dt);if(!G||!S||S.phase!=='
  let z=null;if(inCanvas&&!(P.down&&(P.act||P.hadAct))&&!P.holdView){if(ny<.15)z='up';else if(ny>.8)z='down';else if(nx<.05)z='left';else if(nx>.95)z='right'}
  if(z==='up'&&CVW.row===0||z==='down'&&CVW.row===1||z==='left'&&CVW.col===0||z==='right'&&CVW.col===2)z=null;
  if(z!==CVW.zone){CVW.zone=z;CVW.zt=0}else if(z)CVW.zt+=dt;
- const need=.38;const eh=$('#edgeHint');if(z&&CVW.cool<=0){const pr=clamp(CVW.zt/need,0,1);eh.style.display='block';eh.className='e-'+z;eh.innerHTML=`${({up:'▲ 客席を見る',down:'▼ 手元を見る',left:'◀ 左を見る',right:'右を見る ▶'})[z]}<i style="width:${pr*100}%"></i>`;
+ const need=.38;const eh=$('#edgeHint');if(z&&CVW.cool<=0){const pr=clamp(CVW.zt/need,0,1);eh.style.display=SET.curGuide!==0?'block':'none';eh.className='e-'+z;eh.innerHTML=`${({up:'▲ 客席を見る',down:'▼ 手元を見る',left:'◀ 左を見る',right:'右を見る ▶'})[z]}<i style="width:${pr*100}%"></i>`;
   if(CVW.zt>=need){if(z==='up')cvSet(0,CVW.col);else if(z==='down')cvSet(1,CVW.col);else if(z==='left')cvSet(CVW.row,CVW.col-1);else cvSet(CVW.row,CVW.col+1);CVW.zt=0;CVW.zone=null}}else eh.style.display='none'}
 cv.addEventListener('wheel',e=>{if(SET.viewMode!=='cursor'&&!touchMode)return;if(touchMode||!G||S.phase!=='service'||G.paused)return;e.preventDefault();if(e.deltaY<0)cvSet(0,CVW.col);else if(e.deltaY>0)cvSet(1,CVW.col)},{passive:false});
 cv.addEventListener('pointerleave',()=>{P.offCanvas=true});cv.addEventListener('pointerenter',()=>{P.offCanvas=false});
@@ -1931,7 +1940,7 @@ function renderBubbles(){for(const c of G.customers){const b=c.bub;const p=toScr
   else if(c.reg){html=`⭐${REGS.find(r=>r.id===c.reg).name}`;cls+=' regtag'}
   else{b.style.display='none';continue}
   if(c.status==='waiting'||c.status==='ordered'){const pp=clamp(c.pat/c.patMax,0,1);html+=`<div class="pb"><i style="width:${pp*100}%;background:${pp>.5?'#7cd67c':pp>.25?'#f0c040':'#ff5a5a'}"></i></div>`}
-  b.style.display='block';if(b.className!==cls)b.className=cls;if(b.innerHTML!==html)b.innerHTML=html;b.style.left=p.x+'px';b.style.top=Math.max(p.y,192)+'px';
+  b.style.display='block';if(b.className!==cls)b.className=cls;if(b.innerHTML!==html)b.innerHTML=html;b.style.left=p.x+'px';b.style.top=p.y+"px";
   if(c.dirty){drawFace(c.m.ftex,c.mood,c.L);c.dirty=0}}
  // money labels
  let mh='';for(const s of G.seats){if(s.money>0){const p=toScreen(V(SEATX[s.i]+.13,1.16,-.72));if(p.vis)mh+=`<div class="mlab" style="left:${p.x}px;top:${p.y}px">💴${yen(s.money)}</div>`}}
@@ -2055,6 +2064,7 @@ function openShop(tab){shopTab=tab||shopTab;S.phase='shop';
  bindDiffSel(()=>openShop());refreshLocks()}
 function openOv(h){fpsUnlock();if(typeof closeTalk==='function'&&TALK)closeTalk();{const tb=document.getElementById('tidyBar');if(tb)tb.style.display='none'}const o=$('#ov');o.innerHTML=h;o.classList.add('show')}
 function fpsRelock(){if(!fpsWanted()||FPS.on||!G||!S||S.phase!=='service')return;try{const p=cv.requestPointerLock();if(p&&p.catch)p.catch(()=>{})}catch(e){}}
+{let dn=null;const ov=$('#ov');ov.addEventListener('pointerdown',e=>{dn=e.target===ov?ov:null});ov.addEventListener('click',e=>{if(e.target!==ov||dn!==ov)return;dn=null;for(const id of ['#sClose','#mClose','#zClose','#hClose','#bClose']){const b=ov.querySelector(id);if(b){b.click();return}}})}
 function closeOv(){$('#ov').classList.remove('show');$('#ov').innerHTML='';fpsRelock()}
 function slotPicker(mode){ac();const fmt=t=>{if(!t)return '';const d=new Date(t);return `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`};
  const card=n=>{const v=slotInfo(n);const rk=v?(()=>{let i=0;RANKS.forEach((r,j)=>{if((v.xp||0)>=r.xp)i=j});return RANKS[i].n})():'';
@@ -2574,7 +2584,7 @@ function showSettings(){const was=G&&G.paused;if(G&&S.phase==='service')G.paused
  <div class="setrow"><span>🍸 商品名の表示<br><small style="font-size:11px;color:#aaa">例：ウイスキーの炭酸割り／ハイボール</small></span>${[['easy','わかりやすい名前'],['orig','元の名前'],['both','両方']].map(([k,l])=>`<button class="tg ${SET.nameMode===k?'on':''}" data-nm="${k}">${l}</button>`).join('')}</div>${tg('hint','💬 画面下の「次は▶」')}
  <div class="setrow"><span>🖥 画質</span>${[['auto','自動'],['high','高画質'],['low','軽量（スマホ向け）']].map(([k,l])=>`<button class="tg ${SET.quality===k?'on':''}" data-q="${k}">${l}</button>`).join('')}</div>
  ${touchMode?'':`<div class="setrow"><span>🎯 視点モード<br><small style="font-size:11px;color:#aaa">PC（マウス）用</small></span>${[['fps','FPS（マウスロック）'],['follow','カーソル（マウスに追従）'],['cursor','カーソル（視点を切り替え）']].map(([k,l])=>`<button class="tg ${SET.viewMode===k?'on':''}" data-vm="${k}">${l}</button>`).join('')}</div>
- <div class="setrow"><span>🖱 視点の感度<br><small style="font-size:11px;color:#aaa">FPS：回転の速さ／カーソル：追従の速さ</small></span><input type="range" min="10" max="300" step="5" value="${Math.round((SET.sens||1)*100)}" id="sSens"><b id="sSensV" style="width:44px;text-align:right">${(SET.sens||1).toFixed(2)}</b></div>
+ ${SET.viewMode!=='fps'?tg('curGuide','🧭 カーソル操作の案内<br><small style="font-size:11px;color:#aaa">画面端の「▲ 客席を見る」と、矢印の「マウスを〇へ」の文字</small>'):''}<div class="setrow"><span>🖱 視点の感度<br><small style="font-size:11px;color:#aaa">FPS：回転の速さ／カーソル：追従の速さ</small></span><input type="range" min="10" max="300" step="5" value="${Math.round((SET.sens||1)*100)}" id="sSens"><b id="sSensV" style="width:44px;text-align:right">${(SET.sens||1).toFixed(2)}</b></div>
  
  `}${(touchMode||IS_TOUCH)?'':`<div class="setrow"><span>📱 ジャイロ操作<br><small style="font-size:11px;color:#aaa">傾けて見回す・振ってシェイク</small></span><button class="tg ${GY.on?'on':''}" id="sGyro">${GY.on?'ON':'OFF'}</button><button class="tg" id="sGyroC">正面リセット</button></div>`}
  <div style="margin:10px 0 4px;color:#ffd77a;font-weight:900">🛠 便利な設定</div>
@@ -2643,7 +2653,7 @@ function renderArrow(hl,txt){const ar=$('#arrow');const tr=$('#tgtRing');tr.styl
  if((!SET.arrow&&!G.tutorial)||!hl||P.act||(S.diff==='hard'&&!G.tutorial)){ar.style.display='none';return}
  const t=hlTargets(hl);if(!t.length){ar.style.display='none';return}
  visBox(t[0],_b);const c=_b.getCenter(new THREE.Vector3());let ctr=toScreen(c.clone());c.y=_b.max.y+.015;let p=toScreen(c);let ownBub=null;
- {const cu=t[0].userData&&t[0].userData.act&&t[0].userData.act.c;if(cu&&cu.bub&&cu.bub.style.display!=='none'&&(hl==='callers'||hl.startsWith('serve'))){const br=stageRect(cu.bub);if(br){ownBub=cu.bub;p={x:(br.l+br.r)/2,y:br.t-2,vis:true};ctr={x:(br.l+br.r)/2,y:(br.t+br.b)/2,vis:true}}}}
+ {const cu=t[0].userData&&t[0].userData.act&&t[0].userData.act.c;if(cu&&cu.bub&&cu.bub.style.display!=='none'&&(hl==='callers'||hl.startsWith('serve'))){const br=stageRect(cu.bub);if(br&&br.b>56&&br.t<700){ownBub=cu.bub;p={x:(br.l+br.r)/2,y:br.t-2,vis:true};ctr={x:(br.l+br.r)/2,y:(br.t+br.b)/2,vis:true}}}}
  let lab=hl.startsWith('serve')||hl==='callers'?'ここをクリック':hl.startsWith('tap')?'押して手前に引く':hl==='board'?(H&&H.kind==='knife'?'押して上から下へスッ':'クリック'):hl==='sink'&&H&&H.kind==='towel'?'押してぐるぐる':hl==='sink'&&!(H&&H.kind==='glass')?'押してこする':hl==='glass'&&H&&H.kind==='spoon'?'押してぐるぐる':hl==='glass'&&H&&H.kind==='bottle'?'ここで長押し':hl==='shaker'&&H&&H.glass===G.shaker?'押したまま振る':'ここ！';
  if(!p.vis){ar.style.display='none';return}
  if(!ownBub&&p.x>40&&p.x<1240&&p.y>60){const a1=toScreen(V(_b.min.x,_b.min.y,_b.min.z)),a2=toScreen(V(_b.max.x,_b.max.y,_b.max.z)),a3=toScreen(V(_b.min.x,_b.max.y,_b.max.z)),a4=toScreen(V(_b.max.x,_b.min.y,_b.min.z));const xs=[a1.x,a2.x,a3.x,a4.x],ys=[a1.y,a2.y,a3.y,a4.y];const w=Math.max(...xs)-Math.min(...xs),h=Math.max(...ys)-Math.min(...ys);const d=clamp(Math.min(w,h)*.55+Math.max(w,h)*.25,30,96);tr.style.display='block';tr.style.width=d+'px';tr.style.height=d+'px';tr.style.left=(ctr.x-d/2)+'px';tr.style.top=(ctr.y-d/2)+'px'}
@@ -2652,10 +2662,11 @@ function renderArrow(hl,txt){const ar=$('#arrow');const tr=$('#tgtRing');tr.styl
  else if(x>1240){x=1180;y=clamp(y,150,500);mode='side';lab=touchMode?'画面を右へドラッグ（右を見る）👉':fpsWanted()?'右を向いて ▶':(SET.viewMode==='follow'?'マウスを右端へ ▶':'画面の右端へ（またはDキー） ▶')}
  else if(y<60){y=110;mode='upTop';lab=touchMode?'👆 画面を上へドラッグ（客席）':fpsWanted()?'上を向いて':(SET.viewMode==='follow'?'マウスを上へ（客席）':'ホイール↑ か 画面の上の端へ（客席）')}
  else if(y>560&&ctr.y>560){y=500;mode='downTop';lab=touchMode?'👇 画面を下へドラッグ（手元）':fpsWanted()?'下を向いて':(SET.viewMode==='follow'?'マウスを下へ（手元）':'ホイール↓ か 画面の下の端へ（手元）')}
+ if(mode!=='up'&&!touchMode&&!fpsWanted()&&SET.curGuide===0)lab='';
  const W=Math.max(70,lab.length*13+26),Hh=74;
  const obs=[];for(const sel of ['#ticket','#top','#hand','#evalPop','#tut','#gaugeBox','#readout'])for(const e of document.querySelectorAll(sel)){if(e.offsetParent!==null||sel==='#top'){const r=stageRect(e);if(r)obs.push(r)}}
  document.querySelectorAll('.bub').forEach(e=>{if(e.style.display!=='none'&&e!==ownBub){const r=stageRect(e);if(r)obs.push(r)}});
- const cands=mode==='up'?[['up',x,y],['left',ctr.x-14-(_b.max.x-_b.min.x)*0,ctr.y],['right',ctr.x+14,ctr.y],['down',x,toScreen(V(c.x,_b.min.y,c.z)).y+6]]:[[mode==='side'?'side':'up',x,y]];
+ const cands=mode==='up'?[['up',x,y],['left',ctr.x-14-(_b.max.x-_b.min.x)*0,ctr.y],['right',ctr.x+14,ctr.y],['down',x,toScreen(V(c.x,_b.min.y,c.z)).y+6]]:[[mode,x,y]];
  if(ownBub&&mode==='up'){const br=stageRect(ownBub);cands.length=0;cands.push(['up',(br.l+br.r)/2,Math.max(br.t+24,48+Hh)])}
  const rectOf=(m,X,Y)=>m==='up'||m==='side'||m==='upTop'||m==='downTop'?{l:X-W/2,r:X+W/2,t:Y-Hh,b:Y}:m==='left'?{l:X-W-40,r:X,t:Y-Hh/2,b:Y+Hh/2}:m==='right'?{l:X,r:X+W+40,t:Y-Hh/2,b:Y+Hh/2}:{l:X-W/2,r:X+W/2,t:Y,b:Y+Hh};
  const ob2=ownBub?[...obs,stageRect(ownBub)]:obs;let pickC=cands[0];for(const cd of cands){const rr=rectOf(cd[0],cd[1],cd[2]);if(rr.l<0||rr.r>1280||rr.t<48)continue;if(!ob2.some(o=>hit(o,rr))){pickC=cd;break}}
@@ -2665,7 +2676,7 @@ function renderArrow(hl,txt){const ar=$('#arrow');const tr=$('#tgtRing');tr.styl
  ar.classList.toggle('side',m==='left'||m==='right'||m==='side');ar.style.display='block';
  if(m==='left'){ar.style.left=X+'px';ar.style.top=Y+'px';ar.style.transform='translate(-100%,-50%)'}else if(m==='right'){ar.style.left=X+'px';ar.style.top=Y+'px';ar.style.transform='translate(0,-50%)'}
  else if(m==='down'){ar.style.left=X+'px';ar.style.top=Y+'px';ar.style.transform='translate(-50%,0)'}else{ar.style.left=X+'px';ar.style.top=(Y-4)+'px';ar.style.transform='translate(-50%,-100%)'}
- const hh=m==='left'?`<div style="display:flex;align-items:center;gap:4px"><div class="al">${lab}</div><div class="ar">${ch}</div></div>`:m==='right'?`<div style="display:flex;align-items:center;gap:4px"><div class="ar">${ch}</div><div class="al">${lab}</div></div>`:m==='down'||m==='upTop'?`<div class="ar">${ch}</div><div class="al">${lab}</div>`:`<div class="al">${lab}</div><div class="ar">${ch}</div>`;
+ const hh=m==='left'?`<div style="display:flex;align-items:center;gap:4px">${lab?`<div class="al">${lab}</div>`:''}<div class="ar">${ch}</div></div>`:m==='right'?`<div style="display:flex;align-items:center;gap:4px"><div class="ar">${ch}</div>${lab?`<div class="al">${lab}</div>`:''}</div>`:m==='down'||m==='upTop'?`<div class="ar">${ch}</div>${lab?`<div class="al">${lab}</div>`:''}`:`${lab?`<div class="al">${lab}</div>`:''}<div class="ar">${ch}</div>`;
  if(ar.innerHTML!==hh)ar.innerHTML=hh}
 
 /* ====================== TUTORIAL ====================== */
