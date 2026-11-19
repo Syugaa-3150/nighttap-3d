@@ -852,28 +852,34 @@ function labelTex2(k){const I=ING[k],b=BRAND[k]||[I.short,'',I.color,'#222'];ret
   x.font=`900 50px ${FONTS}`;const tw=x.measureText(I.short).width;x.save();x.scale(Math.min(1,190/tw),1);x.fillText(I.short,0,92);x.restore();
   x.font=`600 15px ${MINCHO}`;x.fillText(b[1],0,138);x.restore()}})}
 const TALKS=[
- {q:'最近、仕事が忙しくてさ…',a:[['お疲れさまです。今日はゆっくりしていってください',2],['大変ですね',1],['そうなんですね（グラスを磨く）',0]]},
- {q:'このお店、いい雰囲気だね',a:[['ありがとうございます！そう言ってもらえるのが一番うれしいです',2],['どうも',1],['よく言われます',0]]},
- {q:'おすすめってある？',a:[['今日の気分に合わせてお作りしますよ。さっぱり系ですか？',2],['メニューに書いてあります',0],['全部おすすめです',1]]},
- {q:'実は明日、大事なプレゼンなんだ',a:[['きっとうまくいきますよ。応援してます！',2],['飲みすぎ注意ですね',1],['へえ',0]]},
- {q:'この辺で美味しいご飯屋さん知らない？',a:[['角の定食屋さん、焼き魚が絶品ですよ',2],['うーん、わからないです',0],['コンビニならありますよ',1]]},
- {q:'バーテンダーって大変じゃない？',a:[['お客さんの笑顔が見られるので楽しいです',2],['正直、大変です…',1],['普通です',0]]},
- {q:'昨日、猫を拾ったんだよね',a:[['えっ、いいですね！名前はもう決めたんですか？',2],['猫アレルギーなんです',0],['かわいいですよね',1]]},
- {q:'ひとりで飲むのも悪くないね',a:[['ひとりの時間も大切ですよね。のんびりどうぞ',2],['寂しくないですか？',0],['ですね',1]]},
- {q:'この曲、なんて曲？',a:[['お店のオリジナルなんです。気に入ってもらえてうれしいです',2],['わかりません',0],['いい曲ですよね',1]]},
- {q:'お酒って、どうやって覚えたの？',a:[['先輩に教わって、毎日練習しました',2],['なんとなくです',0],['本で勉強しました',1]]},
-];
+ {q:'最近、仕事が忙しくてさ…',a:[['お疲れさまです。今日はゆっくりしていってください',2,'…ありがとう。その一言で、来てよかったって思えるよ'],['大変ですね',1,'まあね。みんな大変だよな'],['そうなんですね（グラスを磨く）',0,'…うん。（少しさみしそうにグラスを見つめた）']]},
+ {q:'このお店、いい雰囲気だね',a:[['ありがとうございます！そう言ってもらえるのが一番うれしいです',2,'ほんとに。照明も音楽も、ちょうどいいんだよ'],['どうも',1,'ははっ、クールだね'],['よく言われます',0,'…あ、そう。（ちょっと鼻白んだ）']]},
+ {q:'おすすめってある？',a:[['今日の気分に合わせてお作りしますよ。さっぱり系ですか？',2,'そうそう、さっぱりしたいんだよ！ よくわかったね'],['メニューに書いてあります',0,'…うん、見ればわかるけどさ'],['全部おすすめです',1,'ははっ、それ一番困るやつ（笑）']]},
+ {q:'実は明日、大事なプレゼンなんだ',a:[['きっとうまくいきますよ。応援してます！',2,'よし、なんだかいける気がしてきた！'],['飲みすぎ注意ですね',1,'だよね、一杯でやめとく…たぶん'],['へえ',0,'…へえ、って（苦笑）']]},
+ {q:'この辺で美味しいご飯屋さん知らない？',a:[['角の定食屋さん、焼き魚が絶品ですよ',2,'焼き魚！ 明日の昼、行ってみる'],['うーん、わからないです',0,'そっか…まあいいや'],['コンビニならありますよ',1,'それは知ってる（笑）']]},
+ {q:'バーテンダーって大変じゃない？',a:[['お客さんの笑顔が見られるので楽しいです',2,'いいなあ。そう言える仕事、うらやましいよ'],['正直、大変です…',1,'だよねえ。立ちっぱなしだもんね'],['普通です',0,'…そ、そっか']]},
+ {q:'昨日、猫を拾ったんだよね',a:[['えっ、いいですね！名前はもう決めたんですか？',2,'まだなんだよ！ 一緒に考えてくれる？ …「ハイボール」とか？'],['猫アレルギーなんです',0,'あ、ごめん…この話はやめとこう'],['かわいいですよね',1,'そうなんだよ、もう写真ばっかり撮ってる']]},
+ {q:'ひとりで飲むのも悪くないね',a:[['ひとりの時間も大切ですよね。のんびりどうぞ',2,'うん。ここなら、ひとりでも寂しくない'],['寂しくないですか？',0,'…今、ちょっと寂しくなった'],['ですね',1,'ね。']]},
+ {q:'この曲、なんて曲？',a:[['お店のオリジナルなんです。気に入ってもらえてうれしいです',2,'へえ、オリジナル！ この店にぴったりだね'],['わかりません',0,'…そっか'],['いい曲ですよね',1,'うん、つい聞き入っちゃう']]},
+ {q:'お酒って、どうやって覚えたの？',a:[['先輩に教わって、毎日練習しました',2,'毎日かあ。だからこんなに手際いいんだね'],['なんとなくです',0,'なんとなくで、これ？ …天才？'],['本で勉強しました',1,'独学！ すごいね']]},
+ {q:'今日、誕生日なんだよね。誰にも言ってないけど',a:[['おめでとうございます！ この一杯はお祝いです',2,'え、ありがとう…！ 言ってよかった'],['そうなんですね、おめでとうございます',1,'へへ、ありがと'],['大人になると、誕生日も普通の日ですよね',0,'…まあ、そうなんだけどさ']]},
+ {q:'転職しようか迷ってるんだ',a:[['迷うってことは、やりたいことがあるんですね',2,'…そうなんだよ。本当はずっと、やりたいことがあって'],['今の時代、普通ですよ',1,'そうだよね、みんな転職してるし'],['もったいないですよ',0,'…そう、かな']]},
+ {q:'この街に引っ越してきたばかりでさ',a:[['ようこそ！ 何かあったら、いつでも寄ってください',2,'ありがとう。行きつけの店ができて、ほっとしたよ'],['どこから来たんですか？',1,'北のほうからね。こっちはあったかいなあ'],['へえ',0,'…うん']]},
+ {q:'このグラス、きれいだね',a:[['毎日、ピカピカに磨いているんです',2,'やっぱり！ 光り方が違うもん'],['普通のグラスですよ',0,'あ、そうなんだ…'],['ありがとうございます',1,'いい道具を使ってるんだね']]},
+ {q:'彼女とケンカしちゃってさ…',a:[['仲直りの一杯、何がいいか一緒に考えましょうか',2,'…それいいね。帰りに、彼女の好きなケーキ買って帰る'],['時間が解決しますよ',1,'そうだといいけど'],['どっちが悪いんですか？',0,'…それ聞く？（苦笑）']]},
+ {q:'昔、バンドやってたんだよね',a:[['かっこいい！ 何を担当してたんですか？',2,'ベース！ …今度、店で弾かせてよ（笑）'],['今はやらないんですか？',1,'時間がなくてさ。でも、またやりたいな'],['へえ',0,'…まあ、昔の話だよ']]}];
+const WXTALK={rain:{q:'雨の日って、なんか落ち着くよね',a:[['雨の音を聞きながらの一杯、いいですよね',2,'わかってるねえ。今日はゆっくりしていくよ'],['傘、大丈夫でしたか？',1,'うん、ちゃんと持ってきた'],['僕は苦手です',0,'あ、そう…']]},snow:{q:'外、雪だよ。積もるかな',a:[['積もったら、雪見酒もいいですね',2,'雪見酒！ 風流だねえ'],['帰り道、気をつけてくださいね',1,'ありがとう、気をつけるよ'],['寒いのは嫌ですね',0,'…まあね']]},hot:{q:'今日は本当に暑かったね…',a:[['キンキンに冷えた一杯、すぐお作りします',2,'それそれ！ 生き返る〜'],['夏バテに気をつけてくださいね',1,'ありがとう、気をつける'],['暑いですね',0,'…うん、知ってる（笑）']]}};
 let TALK=null;
-function openTalk(c){if(!c||c.talked)return;c.talked=1;let T0=pick(TALKS);let story=null;if(c.reg&&lifeTalk(c))return;if(c.reg){story=storyTalk(c);if(story&&story.kind==='q')T0={q:story.q.q,a:story.q.a.map(x=>[x[0],2,x[1]])};
-  if(story&&story.kind==='end'){const st=S.regs[c.reg];const SD=STORY[c.reg];const txt=SD.end[st.route.q2]||SD.end[st.route.q4]||Object.values(SD.end)[0];st.ended=1;st.endDay=S.day;save();fpsUnlock();const el=$('#talkBox');TALK={c,opts:[],end:1,t0:performance.now()};el.innerHTML=`<button class="tx" id="talkX">✕ 閉じる</button><div class="q"><small>📖 ${REGS.find(r=>r.id===c.reg).name}の物語・完結</small>「${txt}」</div><div style="color:#7cff9a;font-size:12px">物語を見届けた！ XP+40・評判UP</div>`;el.style.display='block';addXP(40);S.rep=clamp(S.rep+.15,.5,5);applause();$('#talkX').onclick=e=>{e.stopPropagation();closeTalk()};return}}
+function openTalk(c){if(!c||c.talked)return;c.talked=1;if(c.couple&&coupleTalk(c))return;if(c.celeb&&celebTalk(c))return;if(c.ren&&renTalk(c))return;let T0=(G.wx&&WXTALK[G.wx]&&Math.random()<.3)?WXTALK[G.wx]:pick(TALKS);let story=null;if(c.reg&&lifeTalk(c))return;if(c.reg){story=storyTalk(c);if(story&&story.kind==='q')T0={q:story.q.q,a:story.q.a.map(x=>[x[0],2,x[1],x[2]])};
+  if(story&&story.kind==='end'){const st=S.regs[c.reg];const SD=STORY[c.reg];const txt=SD.end[(SD.k||[]).map(k=>st.route[k]).join('_')]||Object.values(SD.end)[0];addLetter(REGS.find(r=>r.id===c.reg).name,'物語を見届けたお礼の手紙。「'+txt.slice(0,40)+'…」','📖');st.ended=1;st.endDay=S.day;save();fpsUnlock();const el=$('#talkBox');TALK={c,opts:[],end:1,t0:performance.now()};el.innerHTML=`<button class="tx" id="talkX">✕ 閉じる</button><div class="q"><small>📖 ${REGS.find(r=>r.id===c.reg).name}の物語・完結</small>「${txt}」</div><div style="color:#7cff9a;font-size:12px">物語を見届けた！ XP+40・評判UP</div>`;el.style.display='block';addXP(40);S.rep=clamp(S.rep+.15,.5,5);applause();$('#talkX').onclick=e=>{e.stopPropagation();closeTalk()};return}}
  const isStory=!!(story&&story.kind==='q');const opts=isStory?[...T0.a]:[...T0.a].sort(()=>Math.random()-.5);TALK={c,opts,story:isStory?story.q.aff:0};
  const el=$('#talkBox');TALK.t0=performance.now();el.innerHTML=`<button class="tx" id="talkX">✕ 閉じる</button><div class="q"><small>${isStory?'📖 '+REGS.find(r=>r.id===c.reg).name+'の物語':'💬 '+(c.seat+1)+'番席'+(c.reg?(regStage(c.reg)>=1?'・'+REGS.find(r=>r.id===c.reg).name:'・はじめてのお客さん'):'のお客さん'+(custSub(c)?'（'+custSub(c)+'）':''))}</small>「${T0.q}」</div>${opts.map((o,i)=>`<button data-tk="${i}">${i+1}. ${o[0]}</button>`).join('')}${touchMode?'':`<div style="font-size:12px;color:${FPS.on?'#ffd77a':'#aaa'};margin-top:4px">${FPS.on?'⌨ キーボードの 1・2・3 で答えてね':'数字キー 1〜3 でも選べます'}</div>`}`;el.style.display='block';
  el.querySelectorAll('[data-tk]').forEach(b=>{b.onclick=e=>{e.stopPropagation();answerTalk(+b.dataset.tk)};b.onpointerdown=e=>e.stopPropagation()});$('#talkX').onclick=e=>{e.stopPropagation();closeTalk()};$('#talkX').onpointerdown=e=>e.stopPropagation();say(c,T0.q.slice(0,16),2.5)}
 function closeTalk(){if(!TALK)return;const c=TALK.c;TALK=null;$('#talkBox').style.display='none';if(c)c.talked=0}
-function answerTalk(i){if(!TALK)return;const {c,opts,story}=TALK;const o=opts[i];TALK=null;if(story&&o&&c.reg&&S.regs[c.reg]){const st=S.regs[c.reg];st.route=st.route||{};st.route['q'+story]=o[2];save();toast('📖 '+REGS.find(r=>r.id===c.reg).name+'の物語が進んだ…')}$('#talkBox').style.display='none';if(!o||!G.customers.includes(c))return;
+function answerTalk(i){if(!TALK)return;const {c,opts,story}=TALK;const o=opts[i];const rp=o?(story?o[3]:(typeof o[2]==='string'?o[2]:null)):null;TALK=null;if(story&&o&&c.reg&&S.regs[c.reg]){const st=S.regs[c.reg];st.route=st.route||{};st.route['q'+story]=o[2];save();toast('📖 '+REGS.find(r=>r.id===c.reg).name+'の物語が進んだ…')}$('#talkBox').style.display='none';if(!o||!G.customers.includes(c))return;
  if(o[1]===2){G.goodTalk=(G.goodTalk||0)+1;c.talkBonus=1.2;c.mood='happy';c.dirty=1;say(c,pick(['ははっ、ありがとう！','いいね、気に入った！','君と話すと元気が出るよ']),2);sfx.good();addXP(2);S.rep=Math.min(5,S.rep+.02);if(c.reg)regAff(c,'talk');floatAt(c.m.g.position.clone().add(V(0,1.9,0)),'💬 会話がはずんだ！ チップUP','#ffd77a',16);if(G.idleN!==undefined)G.idleN++;G.tutTalk=1}
  else if(o[1]===1){say(c,pick(['そうだね','うん','まあね']),1.6);c.talkBonus=1.05;G.tutTalk=1}
- else{say(c,pick(['…あ、うん','そっか…','（ちょっと気まずい）']),1.8);c.talkBonus=.95;G.tutTalk=1}}
+ else{say(c,pick(['…あ、うん','そっか…','（ちょっと気まずい）']),1.8);c.talkBonus=.95;G.tutTalk=1}if(rp&&G.customers.includes(c)){setTimeout(()=>{if(G.customers.includes(c)){say(c,rp,3.6);speakC(c,rp,true)}},900)}}
 function riRefresh(){const R2=ST.ri;if(!R2)return;const p=(G&&G.carveP)||0;const n=(G&&G.roundIce)||0;R2.blk.scale.setScalar(1-.45*p);R2.blk.rotation.y=p*2;R2.sph.visible=p>.15;R2.sph.scale.setScalar(.6+.4*p);R2.done.forEach((d,i)=>d.visible=i<n)}
 function tasteGlass(){if(!H||H.kind!=='glass'||H.glass.type==='shaker'||!H.glass.hasIngs()){msg('味見するには、中身の入ったグラスを持とう');return}const gl=H.glass;
  const ks=Object.keys(gl.c.ings).filter(k=>gl.c.ings[k]>2).sort((a,b)=>gl.c.ings[b]-gl.c.ings[a]).slice(0,3);
@@ -1162,7 +1168,7 @@ function makeCustomer3D(L){
 let H=null; // item in hand
 const P={x:640,y:400,down:false,act:null,dx:0,dy:0};
 const D={ticket:1};
-function newDay(){if(ST.board)clearBoardVis();setTimeout(()=>{if(G&&S){G.ev=evToday();G.wx=G.tutorial?'sunny':wxOf(S.day);G.regPlan=regPlan();try{wxVisual()}catch(e){console.warn(e)}try{ensureP3();buildReno();buildPlace();buildStaff();buildTableNpc();buildCat()}catch(e){console.warn(e)}if(!G.tutorial){const d=pick(CHALL);G.chal={d,n:d.n()};G.special=null;if(S.day>=3){if(Math.random()<.28)G.special={k:'critic',t:rnd(.2,.7)};else if(Math.random()<.16)G.special={k:'legend',t:rnd(.2,.7)}}G.partyAt=G.ev.party?rnd(.35,.6):null;G.convT=rnd(18,30);buildDecor()}}},0);TALK=null;$('#talkBox').style.display='none';setTimeout(()=>{riRefresh();applyLight()},0);
+function newDay(){if(ST.board)clearBoardVis();setTimeout(()=>{if(G&&S){G.ev=evToday();G.wx=G.tutorial?'sunny':wxOf(S.day);G.regPlan=regPlan();try{ensureP4();G.coupleToday=couplePlanToday();G.coupleAt=rnd(.15,.5);G.celebToday=celebPlanToday();G.celebAt=rnd(.25,.7);G.renAt=renDue()?rnd(.3,.7):null}catch(e){console.warn(e)}try{wxVisual()}catch(e){console.warn(e)}try{ensureP3();buildReno();buildPlace();buildStaff();buildTableNpc();buildCat()}catch(e){console.warn(e)}if(!G.tutorial){const d=pick(CHALL);G.chal={d,n:d.n()};G.special=null;if(S.day>=3){if(Math.random()<.28)G.special={k:'critic',t:rnd(.2,.7)};else if(Math.random()<.16)G.special={k:'legend',t:rnd(.2,.7)}}G.partyAt=G.ev.party?rnd(.35,.6):null;G.convT=rnd(18,30);buildDecor()}}},0);TALK=null;$('#talkBox').style.display='none';setTimeout(()=>{riRefresh();applyLight()},0);
  for(const gl of [...GLASSOBJS])gl.dispose();for(const s of SLOTS)s.glass=null;for(const pu of [...PUDDLES])removePuddle(pu);FLAIR=null;
  if(G)for(const c of G.customers){scene.remove(c.m.g);c.bub&&c.bub.remove()}
  G={time:0,dayLen:({easy:330,normal:290,hard:250})[S.diff||'normal']||270,customers:[],seats:[],active:null,clean:{...S.glasses},dirty:[],spawnT:4,phaseShown:0,nid:1,closing:false,paused:false,ended:false,evalT:0,repStart:S.rep,moneyStart:S.money,dishT:0,scrubAcc:0,
@@ -1181,6 +1187,9 @@ function refreshLocks(){
  for(let i=0;i<7;i++)SEATOBJ[i].resv.visible=i>=S.up.seats;
 }
 function evUpdate(dt){chalCheck();const f=G.time/G.dayLen;
+ if(!G.closing&&!G.tutorial){if(G.coupleToday&&f>G.coupleAt){if(coupleSpawn(G.coupleToday))G.coupleToday=null;else G.coupleAt=f+.05}
+  if(G.celebToday&&f>G.celebAt&&G.seats.some(seatFree)){G.forceCeleb=G.celebToday;spawnCustomer(true);G.forceCeleb=null;G.celebToday=null}
+  if(G.renAt&&f>G.renAt&&G.seats.some(seatFree)){G.forceRen=1;spawnCustomer(true);G.forceRen=null;G.renAt=null;toast('🆚 向かいのBAR NEONの店主が来たようだ…')}}
  if(G.special&&!G.special.done&&f>G.special.t&&!G.closing){const sp=G.special;sp.done=1;const free=G.seats.filter(seatFree);if(free.length){G.forceType=sp.k==='critic'?'critic':'gent';G.forceSpecial=sp.k;spawnCustomer(true);G.forceSpecial=null;const c=G.customers[G.customers.length-1];if(c){c.patMax*=1.5;setTimeout(()=>{toast(sp.k==='critic'?'📰 雑誌の有名評論家が来店！ 90点以上で雑誌に載るかも':'🍸 伝説のバーテンダーが来店！ 95点以上で認めてもらえる');sfx.bell()},300)}}}
  if(G.partyAt&&f>G.partyAt&&!G.party&&!G.closing){const free=G.seats.filter(seatFree);const n=Math.min(free.length,({easy:3,normal:4,hard:5})[S.diff]||4);if(n>=2){const ord=pick(['pale','highball'].filter(k=>S.unlocked[k]));G.party={n,served:0,t:({easy:180,normal:150,hard:120})[S.diff]||150,ord};for(let i=0;i<n;i++){G.forceParty=ord;G.forceType='office';spawnCustomer(true)}G.forceParty=null;toast(`🥂 貸し切りパーティー！ ${n}人が${RECIPES[ord].name}を注文。時間内に全員に出そう`);sfx.bell()}else G.partyAt=null}
  if(G.party&&!G.party.done&&G.party.t>0){G.party.t-=dt;if(G.party.t<=0){G.party.done=1;toast('🥂 パーティーは時間切れ… 次は手早く！');S.rep=clamp(S.rep-.05,.5,5)}}
@@ -1204,7 +1213,7 @@ function autoBus(dt){if(!DX().bus)return;for(const st of G.seats){if(st.glasses.
 function patMul0(){return 1+decorFx('pat')}
 function patMul(c){return patMul0()*(1+ambFx().pat)*(WXc().pat||1)*((G&&G.ev&&G.ev.pat)||1)*(c&&c.pers==='easy'?1.25:c&&c.pers==='picky'?.88:1)*(S.up.juke?1.3:1)*(c&&c.ty&&CT[c.ty]?CT[c.ty].pat:1)}
 function phaseMul(){const f=G.time/G.dayLen;return f<.15?1.5:f<.3?1.05:f<.7?.72:f<.85?1.1:1.7}
-function spawnInterval(){let b=14*DF().spawn/(0.6+S.rep*0.2)*phaseMul();if(G&&G.ev)b*=G.ev.spawn;b*=WXc().spawn||1;if(placedHas('maneki'))b*=.96;if(S.flags&&S.flags.magazine>0)b*=.82;b*=1-decorFx('spawn');if(S.up.neon)b*=0.77;if(S.day===1)b*=1.4;b*=1-Math.min(.3,(S.day-1)*.03);return Math.max(6,b*rnd(.75,1.3))}
+function spawnInterval(){let b=14*DF().spawn/(0.6+S.rep*0.2)*phaseMul();if(G&&G.ev)b*=G.ev.spawn;b*=WXc().spawn||1;if(S.rival)b*=rivalSpawnMul();if(S.sns&&S.sns.buzz>0)b*=.8;if(S.rival&&S.rival.friend)b*=.95;if(S.hhDay===S.day)b*=.82;if(placedHas('maneki'))b*=.96;if(S.flags&&S.flags.magazine>0)b*=.82;b*=1-decorFx('spawn');if(S.up.neon)b*=0.77;if(S.day===1)b*=1.4;b*=1-Math.min(.3,(S.day-1)*.03);return Math.max(6,b*rnd(.75,1.3))}
 function seatFree(s){return s.i<S.up.seats&&!s.cust&&!s.glasses.length&&!s.money}
 const DOOR=V(-3.85,0,-2.6),OUTSIDE=V(-5.4,0,-2.6);
 const HATS=['cap','fedora','flat','beret'];const JK=['#2a3040','#3a3a3a','#4a3020','#203a30','#5a2a2a','#2a2a4a','#6a6a6a','#d8d0c0'];
@@ -1228,13 +1237,13 @@ function pickType(){const opts=Object.keys(CT).filter(k=>!CT[k].reg&&(CT[k].minD
 function spawnCustomer(force){
  const free=G.seats.filter(seatFree);if(!free.length){G.spawnT=2;return}
  if(!force&&G.customers.filter(c=>c.status==='enter'||c.status==='waiting'||c.status==='ordered').length>=DF().cap){G.spawnT=2.5;return}
- const seat=pick(free);
+ const seat=(G.forceSeat!=null&&free.find(x=>x.i===G.forceSeat))||pick(free);
  let ty=G.forceType||pickType(),reg=null;G.forceType=null;
  if(!force&&!G.tutorial&&S.day>=2&&Math.random()<(rankIdx()>=3?.45:.32)){if(!G.regPlan)G.regPlan=regPlan();const cand=REGS.filter(r=>G.regPlan.includes(r.id)&&!G.regSeen[r.id]&&!G.customers.some(c=>c.reg===r.id));if(cand.length){reg=pick(cand);G.regSeen[reg.id]=1;ty='regular'}}
  S.met=S.met||{};if(!S.met[ty]&&!CT[ty].reg){S.met[ty]=1;setTimeout(saveColl,0)}
- let L=reg?{eye:'#2a1a10',build:1,h:1,...reg.L,star:regStage(reg.id)>=2}:seasonLook(randLook(ty),ty);if(G.ev&&G.ev.hat&&!reg&&Math.random()<.75){L={...L,hatType:G.ev.hat}}
+ let L=reg?{eye:'#2a1a10',build:1,h:1,...reg.L,star:regStage(reg.id)>=2}:seasonLook(randLook(ty),ty);const FC=G.forceCouple,FCe=G.forceCeleb,FR=G.forceRen;if(FC){L={eye:'#2a1a10',...FC.C[FC.who].L};ty='office'}else if(FCe){L={eye:'#2a1a10',...FCe.L};ty='gent'}else if(FR){L={...REN.L};ty='office'}if(G.ev&&G.ev.hat&&!reg&&Math.random()<.75){L={...L,hatType:G.ev.hat}}
  const c={id:G.nid++,special:G.forceSpecial||null,party:G.forceParty?1:0,forceO:G.forceParty||null,seat:seat.i,L,ty,reg:reg&&reg.id,orderT:0,pref:reg?'any':pick(CT[ty].pref),status:'enter',t:0,pat:1,patMax:1,order:null,drinks:0,drinkT:0,bill:0,mood:'neutral',served:null,say:null,sayT:0,dirty:1,ph:Math.random()*6};
- c.pers=reg?REGPERS[reg.id]:pick(TYPEPERS[ty]||['calm']);if(!reg){custExtras(c,ty);if(S.cat&&!G.tutorial&&Math.random()<.08+Math.min(.12,(S.cat.aff||0)*.0015))c.catFan=1}else{c.job=reg.job;regArrive(c)}c.vp=rnd(.8,1.25)+pers(c).vp;c.vr=rnd(.95,1.08)*pers(c).vr;c.vi=Math.floor(Math.random()*6);c.en=ty==='tourist';if(reg)Object.assign(c,REGVOICE[reg.id]||{});c.m=makeCustomer3D(L);c.m.g.position.copy(OUTSIDE);c.m.g.userData.act={kind:'cust',c};PICK.push(c.m.g);scene.add(c.m.g);if(WXc().wet&&!G.tutorial)try{giveUmbrella(c)}catch(e){}
+ c.pers=reg?REGPERS[reg.id]:pick(TYPEPERS[ty]||['calm']);if(!reg){custExtras(c,ty);if(FC){c.couple=FC.C.id;c.cw=FC.who;c.cname=FC.C[FC.who].n;c.job=FC.C[FC.who].job;c.taste=null;c.pers='cheerful';c.favO=FC.C[FC.who].fav}else if(FCe){c.celeb=FCe.id;c.job='？？？';c.pers='polite';c.taste=null}else if(FR){c.ren=1;c.cname='レン';c.job='BAR NEONの店主';c.pers='grumpy';c.favO='martini'}else if(!force&&!G.tutorial&&Math.random()<troubleRate()){c.trouble=pick(['loud','claim','camp']);if(c.trouble==='loud'){L.blush=1;c.pers='chatty'}}if(S.cat&&!G.tutorial&&Math.random()<.08+Math.min(.12,(S.cat.aff||0)*.0015))c.catFan=1}else{c.job=reg.job;regArrive(c)}c.vp=rnd(.8,1.25)+pers(c).vp;c.vr=rnd(.95,1.08)*pers(c).vr;c.vi=Math.floor(Math.random()*6);c.en=ty==='tourist';if(reg)Object.assign(c,REGVOICE[reg.id]||{});c.m=makeCustomer3D(L);c.m.g.position.copy(OUTSIDE);c.m.g.userData.act={kind:'cust',c};PICK.push(c.m.g);scene.add(c.m.g);if(WXc().wet&&!G.tutorial)try{giveUmbrella(c)}catch(e){}
  c.target=V(SEATX[seat.i],0,-1.36);
  const b=document.createElement('div');b.className='bub';b.addEventListener('pointerdown',e=>{e.stopPropagation();e.preventDefault();custTap(c)});$('#bubbles').appendChild(b);c.bub=b;
  seat.cust=c;G.customers.push(c);sfx.bell();
@@ -1243,7 +1252,7 @@ function canMake(rid){const r=RECIPES[rid];const fills=Object.keys(r.ings).filte
  for(const k in r.ings){const need=r.ings[k]==='fill'?GL[r.glass].cap*(r.ice?.6:.95)/fills.length:r.ings[k];if(S.stock[k]<need)return false}
  if(r.garnish&&S.stock[r.garnish]<1)return false;return true}
 function chooseOrder(c){const opts=Object.keys(RECIPES).filter(k=>S.unlocked[k]&&seasonOK(k)&&canMake(k)&&!(NET.on&&k.startsWith('o_')));if(!opts.length)return null;
- if(c.reg){const R0=REGS.find(r=>r.id===c.reg);const pf=regStage(c.reg)>=1?.8:.45;for(const f of [R0.fav,R0.fb])if(opts.includes(f)&&Math.random()<pf)return f}
+ if(c.favO&&opts.includes(c.favO)&&Math.random()<.7)return c.favO;if(c.reg){const R0=REGS.find(r=>r.id===c.reg);const pf=regStage(c.reg)>=1?.8:.45;for(const f of [R0.fav,R0.fb])if(opts.includes(f)&&Math.random()<pf)return f}
  if(c.ty==='vip'||c.ty==='critic'){const ex=opts.filter(k=>RECIPES[k].price>=900);if(ex.length&&Math.random()<.7)return pick(ex)}
  const w=opts.map(k=>{const r=RECIPES[k];let v=r.cat==='beer'?1.3:1;if(r.cat==='original')v=origWeight(r);if(c.pref===r.cat)v*=2.4;if(c.pref==='mix'&&r.cat==='cocktail')v*=1.3;if(c.order===k)v*=1.8;v*=wxPref(k);if(SEAS_REC[k])v*=2;if(c.taste&&TASTE[c.taste]&&TASTE[c.taste].includes(k))v*=2.2;return v});
  let t=w.reduce((a,b)=>a+b,0)*Math.random();for(let i=0;i<opts.length;i++){t-=w[i];if(t<=0)return opts[i]}return opts[0]}
@@ -1315,11 +1324,11 @@ function updateCust(c,dt){if(c.m.star){c.m.star.rotation.y+=dt*2;c.m.star.positi
  else if(c.status==='waiting'||c.status==='ordered'){if(!G.tutorial)c.pat-=dt;if(DF().noAngry)c.pat=Math.max(c.pat,c.patMax*.12);{const LP=(LIGHTSET[S.light]||{}).pat;if(LP&&!G.tutorial)c.pat+=dt*(LP-1)*.9}if(c.status==='ordered'){c.orderT+=dt;if(c.ty==='drunk'&&!c.changed&&c.orderT>9&&Math.random()<dt*.12){const o2=chooseOrder(c);if(o2&&o2!==c.order){c.changed=1;c.order=o2;makeEff(c);c.pat=Math.min(c.patMax,c.pat+20);say(c,`やっぱ${RECIPES[o2].name}にして〜`,3);sfx.pop();floatAt(c.m.g.position.clone().add(V(0,1.95,0)),'注文変更！','#ffb070',18);D.ticket=1}}}g.position.y=Math.sin(c.t*2+c.ph)*.004;
   if(c.pat<=0){say(c,'もういいよ！',2);G.stats.angry++;G.combo=0;S.rep=clamp(S.rep-.12,.5,5);floatAt(g.position.clone().add(V(0,1.9,0)),'怒って帰った… 評判↓','#ff7a7a',16);sfx.bad();leave(c,'angry')}
   else if(c.pat/c.patMax<.3&&c.mood!=='angry'){c.mood='angry';c.dirty=1}}
- else if(c.status==='drinking'){c.drinkT-=dt;if(!c.say&&!G.tutorial&&Math.random()<dt*(c.pers==='chatty'?.06:.015)){const t=pick(c.reg&&S.regs[c.reg]?[REGS.find(r=>r.id===c.reg).lines[clamp(S.regs[c.reg].aff,0,5)].slice(0,26)+'…',...(pers(c).small||[])]:(pers(c).small||['……']));say(c,t,3.2);if(Math.random()<.3)speakC(c,human(c,t))}g.rotation.z=Math.sin(c.t*1.3+c.ph)*.02;
+ else if(c.status==='drinking'){c.drinkT-=dt;if(!c.say&&!G.tutorial&&Math.random()<dt*(c.pers==='chatty'?.06:.015)){const t=pick(c.reg&&S.regs[c.reg]?[REGS.find(r=>r.id===c.reg).lines[clamp(S.regs[c.reg].aff,0,8)].slice(0,26)+'…',...(pers(c).small||[])]:(pers(c).small||['……']));say(c,t,3.2);if(Math.random()<.3)speakC(c,human(c,t))}g.rotation.z=Math.sin(c.t*1.3+c.ph)*.02;
   if(c.served){c.served.shownFill=Math.max(.04,c.served.fill0*(c.drinkT/c.drinkMax));
    const sip=(c.t%4)<.9;const hp=V(SEATX[c.seat]+.05,1.125,-.78);if(sip){const k=Math.sin((c.t%4)/.9*Math.PI);c.served.g.position.set(hp.x,hp.y+k*.38,hp.z-k*.42);c.served.g.rotation.x=-k*.9}else{c.served.g.position.copy(hp);c.served.g.rotation.x=0}}
   if(c.drinkT<=0){c.drinks++;const seat=G.seats[c.seat];const gl=c.served;c.served=null;if(gl){gl.dirtyGlass=true;gl.shownFill=.05;seat.glasses.push(gl);layoutSeat(seat)}
-   if(!G.tutorial&&!G.closing&&c.drinks<3&&Math.random()<.55+(WXc().stay||0)&&G.time<G.dayLen*.9){c.status='relax';c.relaxT=DF().brk*rnd(.8,1.3);c.mood='happy';c.dirty=1;g.rotation.z=0}
+   if(!G.tutorial&&!G.closing&&c.drinks<3&&((c.trouble==='camp'&&!c.resolved)||Math.random()<.55+(WXc().stay||0))&&G.time<G.dayLen*.9){c.status='relax';c.relaxT=DF().brk*rnd(.8,1.3);c.mood='happy';c.dirty=1;g.rotation.z=0}
    else{const t=pick(c.reg?VL.leaveReg:c.en?['Thank you!','See you!']:pers(c).leave);say(c,t,1.8);speakC(c,t);leave(c,c.mood==='happy'?'happy':'neutral')}}}
  else if(c.status==='leave'){walkAnim(c,true,dt);if(c.t<2){const k=c.t/2;g.position.lerpVectors(c.from,DOOR,k);g.rotation.y=Math.atan2(DOOR.x-c.from.x,DOOR.z-c.from.z)}else{const k=clamp((c.t-2)/1.1,0,1);g.position.lerpVectors(DOOR,OUTSIDE,k);g.rotation.y=-Math.PI/2}g.position.y=0;
   if(c.t>3.1){scene.remove(g);PICK.splice(PICK.indexOf(g),1);c.bub.remove();G.customers.splice(G.customers.indexOf(c),1)}}
@@ -1383,12 +1392,12 @@ function serve(c,gl){
  const r=RC(c);const ev=G.netEv||evaluate(gl,r);
  if(gl.loc&&gl.loc.kind==='slot'&&gl.loc.slot.glass===gl)gl.loc.slot.glass=null;if(H&&H.glass===gl)H=null;gl.loc={kind:'served'};c.served=gl;c.status='drinking';c.drinkT=c.drinkMax=rnd(12,18);c.t=0;gl.g.position.set(SEATX[c.seat]+.05,1.125,-.78);gl.g.rotation.set(0,0,0);if(G.active===c.id)G.active=null;c.dirty=1;D.ticket=1;
  try{serveRest(c,gl,r,ev)}catch(e){console.error(e)}pickNextActive()}
-function serveRest(c,gl,r,ev){if(c.pers==='easy')ev.score=Math.min(100,ev.score+5);else if(c.pers==='picky'&&ev.score<90)ev.score=Math.max(0,ev.score-4);if(gl.wet&&DX().wetPen){ev.score=Math.max(0,ev.score-DX().wetPen);ev.notes.push('グラスが濡れている（拭こう）')}const pr=c.pat/c.patMax;
+function serveRest(c,gl,r,ev){c.lastScore=ev.score;if(c.pers==='easy')ev.score=Math.min(100,ev.score+5);else if(c.pers==='picky'&&ev.score<90)ev.score=Math.max(0,ev.score-4);if(gl.wet&&DX().wetPen){ev.score=Math.max(0,ev.score-DX().wetPen);ev.notes.push('グラスが濡れている（拭こう）')}const pr=c.pat/c.patMax;
  const ct=CT[c.ty]||CT.office;const tricks=[...(gl.c.tricks||[])];if(c.orderT<=20&&ev.score>=70)tricks.push('神速サーブ');
  onBeat();if((G.beatStreak||0)>=4&&isPeak()){tricks.push('リズム職人');G.beatStreak=0}
  if(ev.score>=90){G.combo=(G.combo||0)+1}else G.combo=0;G.hl.maxCombo=Math.max(G.hl.maxCombo,G.combo||0);
  if(ev.score>=50){if((G.shineStock||0)>0){G.shineStock--;tricks.push('磨き上げグラス')}if((G.roundIce||0)>0&&r.ice&&r.ings&&(r.ings.whisky||r.ings.ikoi)){G.roundIce--;tricks.push('丸氷');riRefresh()}}
- let price=r.price,tip=0;if(ev.score>=90)tip=price*.3*(.5+pr);else if(ev.score>=70)tip=price*.12*(.5+pr);if(S.up.tipjar)tip*=1.4;
+ let price=Math.round(r.price*(S.hhDay===S.day?.8:1)/10)*10,tip=0;if(ev.score>=90)tip=price*.3*(.5+pr);else if(ev.score>=70)tip=price*.12*(.5+pr);if(S.up.tipjar)tip*=1.4;
  tip*=ct.tip*(1+.2*tricks.length)*(1+Math.min(.5,.05*Math.max(0,(G.combo||0)-1)))*(rankIdx()>=4?1.2:rankIdx()>=2?1.1:1);if(tricks.length&&ev.score>=50&&tip<100)tip+=100*tricks.length;
  if(c.tipCut)tip*=c.tipCut;if(gl.shiny)tip*=1.08;if(G.prepBoost&&isPeak())tip*=1.15;tip*=.9+.2*(G.tidy??100)/100;if(c.talkBonus)tip*=c.talkBonus;tip*=(WXc().tip||1)*((G.ev&&G.ev.tip)||1)*(G.ev&&G.ev.favTip&&c.order===G.ev.fav?G.ev.favTip:1);if(c.pers==='picky')tip*=ev.score>=90?1.35:.7;tip*=1+ambFx().tip+renoFx('tip');if(c.catFan)tip*=G.catPet?1.4:1.2;if(c.pers==='easy')tip*=.9;if(tricks.includes('フレア'))tip*=1+.06*(S.flairLv||0);tip=Math.round(tip/10)*10;if(ev.score<40)price=Math.round(price*.5/10)*10;
  for(const t of tricks){G.hl.tricks[t]=(G.hl.tricks[t]||0)+1}
@@ -1641,7 +1650,7 @@ function essentialOk(c,w){try{const r=RR(RC(c));if(!r||w.type!==r.glass)return f
  const fills=Object.keys(r.ings).filter(k=>r.ings[k]==='fill');if(fills.length&&w.fill()<fillBand(r)[0]*.7)return false;
  for(const k in r.ings)if(r.ings[k]!=='fill'&&(w.c.ings[k]||0)<r.ings[k]*.5)return false;
  return true}catch(e){return false}}
-function clickCust(c){if(c.status==='waiting')takeOrder(c);else if(c.status==='ordered'){const w=workGlass(RC(c));if(w&&w.hasIngs()&&w.type!=='shaker'&&essentialOk(c,w)){if(w.loc.kind==='slot')w.loc.slot.glass=null;G.pendServe=null;serve(c,w);return}if(w&&w.hasIngs()&&w.type!=='shaker'&&G.active===c.id){if(G.pendServe===c.id&&performance.now()-G.pendT<3500){if(w.loc.kind==='slot')w.loc.slot.glass=null;G.pendServe=null;serve(c,w);return}G.pendServe=c.id;G.pendT=performance.now();msg('まだ完成していません：'+(nextHint().t||'')+'（もう一度クリックでこのまま提供）');return}G.active=c.id;D.ticket=1;for(const x of G.customers)x.dirty=1;sfx.pop()}else if(c.quarrel&&calmQuarrel(c)){}else if((c.status==='drinking'||c.status==='relax')&&!c.talked)openTalk(c);else if(c.status==='drinking')say(c,pick(['うまい！','いい店だね','♪','最高の夜だ']),1.6)}
+function clickCust(c){if(c.status==='waiting')takeOrder(c);else if(c.status==='ordered'){const w=workGlass(RC(c));if(w&&w.hasIngs()&&w.type!=='shaker'&&essentialOk(c,w)){if(w.loc.kind==='slot')w.loc.slot.glass=null;G.pendServe=null;serve(c,w);return}if(w&&w.hasIngs()&&w.type!=='shaker'&&G.active===c.id){if(G.pendServe===c.id&&performance.now()-G.pendT<3500){if(w.loc.kind==='slot')w.loc.slot.glass=null;G.pendServe=null;serve(c,w);return}G.pendServe=c.id;G.pendT=performance.now();msg('まだ完成していません：'+(nextHint().t||'')+'（もう一度クリックでこのまま提供）');return}G.active=c.id;D.ticket=1;for(const x of G.customers)x.dirty=1;sfx.pop()}else if(c.quarrel&&calmQuarrel(c)){}else if(c.trouble&&!c.resolved&&(c.status==='drinking'||c.status==='relax')&&(c.trouble!=='claim'||c.claiming))troubleTalk(c);else if((c.status==='drinking'||c.status==='relax')&&!c.talked)openTalk(c);else if(c.status==='drinking')say(c,pick(['うまい！','いい店だね','♪','最高の夜だ']),1.6)}
 function turnAcc(A,dist){if(dist>3){const ang=Math.atan2(P.dy,P.dx);if(A.la!==undefined){let d=ang-A.la;if(d>Math.PI)d-=2*Math.PI;if(d<-Math.PI)d+=2*Math.PI;if(Math.abs(d)<1.3){A.turn=(A.turn||0)+d;A.turnAbs=(A.turnAbs||0)+Math.abs(d)}}A.la=ang}}
 function onDrag(dist){if(!P.down||!P.act)return;P.moved+=dist;const A=P.act;
  if(A.kind==='pendBottle'){turnAcc(A,dist);if(Math.abs(A.turn)>Math.PI*2.2&&P.moved>140){P.act=null;startFlair()}return}
@@ -1772,7 +1781,7 @@ function isPeak(){return G&&!G.tutorial&&G.time/G.dayLen>.3&&G.time/G.dayLen<.7}
 function onBeat(){if(!isPeak())return;const b=beatPhase();if(!b)return;const d=Math.min(b.ph,1-b.ph)*b.beat;if(d<DX().beat){G.beatStreak=(G.beatStreak||0)+1;const el=$('#beat');el.classList.add('hit');setTimeout(()=>el.classList.remove('hit'),180);if(G.beatStreak>=2)floatAt(handPt.clone().add(V(0,.2,0)),'♪ ON BEAT ×'+G.beatStreak,'#9ae6ff',14)}else G.beatStreak=0}
 /* ====================== UPDATE ====================== */
 function update(dt){
- if(TALK&&((TALK.c&&(!G.customers.includes(TALK.c)||TALK.c.status==='leave'))||performance.now()-TALK.t0>20000))closeTalk();try{staffTick(dt)}catch(e){console.warn(e)}
+ if(TALK&&((TALK.c&&(!G.customers.includes(TALK.c)||TALK.c.status==='leave'))||performance.now()-TALK.t0>20000))closeTalk();try{staffTick(dt);troubleTick(dt)}catch(e){console.warn(e)}
  if(!G.tutorial&&G.customers.length)G.tidy=Math.max(0,(G.tidy??100)-dt*.25);
  {const v0=Math.round(G.tidy??100);const parts=[`🧼${v0}%`];if(G.roundIce)parts.push('🧊'+G.roundIce);if(G.shineStock)parts.push('✨'+G.shineStock);let l2='';if(G.chal&&!G.tutorial){const C=G.chal;l2=G.chalDone?'🎯 お題 <b>達成！</b>':`🎯 ${Math.min(C.n,C.d.v())}/${C.n} <span title="${C.d.t(C.n)}">${C.d.t(C.n)}</span>`}if(G.party&&!G.party.done&&G.party.t>0)l2=`🥂 残り${Math.ceil(G.party.t)}秒 ${G.party.served}/${G.party.n}杯`;const ih=parts.join(' ')+(l2?'<br>'+l2:'');const ie=$('#tkInfo');if(ie.innerHTML!==ih)ie.innerHTML=ih}
  {const tb=$('#tidyBar');const v=Math.round(G.tidy??100);const hh=`🧼 カウンターの清潔度 ${v}%<i><b style="width:${v}%;background:${v>70?'#7cff9a':v>40?'#ffd77a':'#ff7a7a'}"></b></i>${(G.roundIce||0)?`　🧊丸氷×${G.roundIce}`:''}${(G.shineStock||0)?`　✨磨き×${G.shineStock}`:''}`;tb.style.display=(G.paused||G.tutorial||PHO.on||$('#ov').classList.contains('show'))?'none':'block';if(tb.innerHTML!==hh)tb.innerHTML=hh}
@@ -1951,9 +1960,12 @@ function renderBubbles(){for(const c of G.customers){const b=c.bub;const p=toScr
   if(!p.vis||c.status==='enter'&&c.t<2||c.status==='leave'&&(!c.say||c.t>2)){b.style.display='none';continue}
   let html='',cls='bub';
   if(c.say){cls+=' say';html=c.say}
-  else if(c.status==='waiting'){cls+=' call';html=`<span class="sn" style="background:${SEATCOL[c.seat]}">${c.seat+1}</span>${c.reg?regName(c):CT[c.ty].icon} ${c.again?'🍺 おかわり！':'注文！'}`}
+  else if(c.claiming){cls+=' call';html='😤 クレーム中…（クリックで対応）'}
+  else if(c.trouble&&!c.resolved&&c.status==='relax'&&c.trouble==='camp'&&c.trT>15){cls+=' call';html='🪑 ずっと居座っている…（クリックで対応）'}
+  else if((c.couple||c.ren||c.celeb)&&(c.status==='drinking'||c.status==='relax')){cls+=' regtag';html=c.couple?'💞'+c.cname+'（クリックで話す）':c.ren?'🆚レン（クリックで話す）':'🕶 サングラスのお客さん'}
+  else if(c.status==='waiting'){cls+=' call';html=`<span class="sn" style="background:${SEATCOL[c.seat]}">${c.seat+1}</span>${c.reg?regName(c):c.couple?'💞'+c.cname:c.celeb?'🕶':c.ren?'🆚レン':c.trouble&&!c.resolved?TROUBLE[c.trouble].i:CT[c.ty].icon} ${c.again?'🍺 おかわり！':'注文！'}`}
   else if(c.status==='relax'&&!c.reg){html='☕ ひと休み中';cls+=' regtag'}
-  else if(c.status==='ordered'){html=`<span class="sn" style="background:${SEATCOL[c.seat]}">${c.seat+1}</span>${c.reg?(regStage(c.reg)>=2?'⭐':'🙂'):CT[c.ty].icon} ${orderLabel(c)}`;if(G.active===c.id){cls+=' act';html='<div class="actl">▼ いま作っている注文</div>'+html}}
+  else if(c.status==='ordered'){html=`<span class="sn" style="background:${SEATCOL[c.seat]}">${c.seat+1}</span>${c.reg?(regStage(c.reg)>=2?'⭐':'🙂'):c.couple?'💞':c.celeb?'🕶':c.ren?'🆚':c.trouble&&!c.resolved?TROUBLE[c.trouble].i:CT[c.ty].icon} ${orderLabel(c)}`;if(G.active===c.id){cls+=' act';html='<div class="actl">▼ いま作っている注文</div>'+html}}
   else if(c.reg&&regStage(c.reg)>=1){html=regName(c);cls+=' regtag'}
   else{b.style.display='none';continue}
   if(c.status==='waiting'||c.status==='ordered'){const pp=clamp(c.pat/c.patMax,0,1);html+=`<div class="pb"><i style="width:${pp*100}%;background:${pp>.5?'#7cd67c':pp>.25?'#f0c040':'#ff5a5a'}"></i></div>`}
@@ -2032,7 +2044,7 @@ function startService(){goFull();S.phase='service';setTimeout(()=>{if(G&&G.ev&&!
 function endDay(){if(G.net==='host'){netSend({t:'end',sv:G.stats.served,sales:G.stats.sales});setTimeout(netClose,800);G.net=null}G.ended=true;P.act=null;loopSet('pour',false);
  let auto=0;for(const s of G.seats){auto+=s.money;s.money=0;for(const gl of s.glasses)gl.dispose();s.glasses=[];layoutSeat(s)}S.money+=auto;
  if(H&&H.kind==='glass'&&H.glass.type!=='shaker')H.glass.dispose();H=null;
- const rent=3000+(S.up.seats-4)*1000+expMaint();S.money-=rent;const SW=staffEndDay(),EX=expandSales();S.best=S.best||{};const today={served:G.stats.served,sales:G.stats.sales,tips:G.stats.tips,combo:G.hl.maxCombo||0,perfect:G.stats.perfect};const newBest=[];const BL={served:'杯数',sales:'売上',tips:'チップ',combo:'コンボ',perfect:'パーフェクト'};for(const k in today){if(today[k]>(S.best[k]||0)&&today[k]>0){S.best[k]=today[k];newBest.push(BL[k])}}const yd=S.yday||null;S.yday=today;if(S.flags.magazine>0)S.flags.magazine--;G.newBest=newBest;G.ydCmp=yd?today.served-yd.served:null;S.totals.best=Math.max(S.totals.best,G.stats.served);checkAch();
+ const rent=3000+(S.up.seats-4)*1000+expMaint();S.money-=rent;const SW=staffEndDay(),EX=expandSales();let P4R=null;try{P4R=p4EndDay(S.day)}catch(e){console.warn(e)}S.best=S.best||{};const today={served:G.stats.served,sales:G.stats.sales,tips:G.stats.tips,combo:G.hl.maxCombo||0,perfect:G.stats.perfect};const newBest=[];const BL={served:'杯数',sales:'売上',tips:'チップ',combo:'コンボ',perfect:'パーフェクト'};for(const k in today){if(today[k]>(S.best[k]||0)&&today[k]>0){S.best[k]=today[k];newBest.push(BL[k])}}const yd=S.yday||null;S.yday=today;if(S.flags.magazine>0)S.flags.magazine--;G.newBest=newBest;G.ydCmp=yd?today.served-yd.served:null;S.totals.best=Math.max(S.totals.best,G.stats.served);checkAch();
  const st=G.stats,avg=st.served?Math.round(st.scoreSum/st.served):0,profit=S.money-G.moneyStart,dayDone=S.day;S.phase='report';if(G.ev&&G.ev.bell&&!muted){for(let k=0;k<3;k++){tone(196,3.2,'sine',.12,k*2.2);tone(392,2.4,'sine',.04,k*2.2)}setTimeout(()=>toast('🔔 除夜の鐘…よいお年を！'),300)}if(calOf(dayDone).month===12&&calOf(dayDone).slot===6)setTimeout(()=>toast('🎍 新しい年が始まります'),3500);S.day++;S.contestDone=S.contestDone===dayDone?S.day:S.contestDone;save();const repD=S.rep-G.repStart;
  openOv(`<div class="modal rep"><h1>🌙 DAY ${dayDone} 営業終了</h1><div style="font-size:13px;color:#f5e6c8cc;margin:-6px 0 6px">📅 ${dateStr(dayDone)}　${(WX[G.wx]||WX.sunny).i} ${(WX[G.wx]||WX.sunny).n}${G.ev&&G.ev.id?'　'+G.ev.name.split('（')[0]:''}</div><table class="rtab">
  <tr><td>提供した杯数</td><td>${st.served}杯 ${st.served>=50?'🏆':''}</td></tr><tr><td>パーフェクト（90点以上）</td><td>${st.perfect}杯</td></tr><tr><td>平均スコア</td><td>${avg}点</td></tr><tr><td>怒って帰ったお客さん</td><td>${st.angry}人</td></tr>
@@ -2041,7 +2053,7 @@ function endDay(){if(G.net==='host'){netSend({t:'end',sv:G.stats.served,sales:G.
  ${hlHTML()}
  ${G.newBest&&G.newBest.length?`<p style="color:#ffd77a;font-weight:900;margin-top:6px">🏅 自己ベスト更新：${G.newBest.join('・')}</p>`:''}${G.ydCmp!==null&&G.ydCmp!==undefined?`<p style="font-size:13px">前回より ${G.ydCmp>=0?'+':''}${G.ydCmp}杯</p>`:''}${G.chal?`<p style="font-size:13px">🎯 今日のお題：${G.chal.d.t(G.chal.n)} … ${G.chalDone?'<b style="color:#7cff9a">達成</b>':'未達成'}</p>`:''}
  ${isContestDay(dayDone)&&S.contestDone!==dayDone+1?'<button class="btn" id="repContest" style="margin-top:8px;background:#c08a20">🏆 今夜はカクテル大会！ 出場する</button>':''}
- <p style="font-size:12px;color:#f5e6c8aa;margin-top:8px">最高記録：1日${S.totals.best}杯 ／ 目標：1日50杯</p>
+ ${p4Report(P4R)}<p style="font-size:12px;color:#f5e6c8aa;margin-top:8px">最高記録：1日${S.totals.best}杯 ／ 目標：1日50杯</p>
  <div style="display:flex;justify-content:space-between;gap:10px;margin-top:14px"><div style="display:flex;gap:8px"><button class="btn sec" id="repTitle">🏠 タイトルへ</button><button class="btn sec" id="repSet">⚙ 設定</button></div><button class="btn" id="toShop">仕入れ・設備へ ▶</button></div></div>`);
  REPORT_HTML=$('#ov').innerHTML;bindReport();
  }
@@ -2160,22 +2172,22 @@ const CT={
  vip:{name:'セレブ',icon:'💎',w:.4,pat:.9,tip:2.2,pref:['cocktail'],trait:'高いお酒を頼む・チップ2倍以上',look:{vip:1},minDay:4},
  regular:{name:'常連',icon:'⭐',w:0,pat:1.3,tip:1.3,pref:['any'],trait:'おいしい一杯で仲良くなれる',reg:1},
 };
-function custLabel(c){if(c.reg&&regStage(c.reg)<2){const R0=REGS.find(r=>r.id===c.reg);return regStage(c.reg)?`🙂 ${R0.name}（${R0.job}・顔なじみ）`:'🙂 はじめてのお客さん'}if(c.reg){const R0=REGS.find(r=>r.id===c.reg);const a=(S.regs[c.reg]||{}).aff||0;return `⭐常連 ${R0.name}（${R0.job}）${'♥'.repeat(a)}${'♡'.repeat(5-a)}`}const t=CT[c.ty]||CT.office;return `${t.icon} ${c.job||t.name}`}
+function custLabel(c){if(c.reg&&regStage(c.reg)<2){const R0=REGS.find(r=>r.id===c.reg);return regStage(c.reg)?`🙂 ${R0.name}（${R0.job}・顔なじみ）`:'🙂 はじめてのお客さん'}if(c.reg){const R0=REGS.find(r=>r.id===c.reg);const a=(S.regs[c.reg]||{}).aff||0;return `⭐常連 ${R0.name}（${R0.job}）${'♥'.repeat(a)}${'♡'.repeat(Math.max(0,MAXAFF-a))}`}const t=CT[c.ty]||CT.office;return `${t.icon} ${c.job||t.name}`}
 
 /* ====================== REGULARS ====================== */
 const REGS=[
  {id:'sato',name:'佐藤さん',job:'会社員・課長',fav:'highball',fb:'pale',col:'#3a4a6a',L:{skin:'#eec29b',hair:'#3b2416',shirt:'#f0f0f0',jacket:'#3a4a6a',hs:4,glasses:true,tie:'#c0392b',beard:'mus',build:1.12},
-  lines:['はじめまして。仕事帰りに一杯だけ…って、毎回言うんだけどね。','ハイボールはこれくらいの濃さがいい。課長になってから、帰りがいつも遅くてさ。','娘が来年受験でね。家だと気を張るから、ここが息抜きなんだ。','部下に「最近顔色いいですね」って言われたよ。ここのおかげかな。','実は昇進の話が来てる。でも家族との時間も大事にしたくて…悩むね。','決めたよ、昇進は断った。家族と、たまにここで一杯。それが一番だ。これ、お祝いの気持ち。'],reward:{money:5000,txt:'お祝いに ¥5,000 もらった！'}},
+  lines:["はじめまして。仕事帰りに一杯だけ…って、毎回言うんだけどね。", "ハイボールはこれくらいの濃さがいい。課長になってから、帰りがいつも遅くてさ。", "娘が来年受験でね。家だと気を張るから、ここが息抜きなんだ。", "部下に「最近顔色いいですね」って言われたよ。ここのおかげかな。", "会社で大きな話が動いてる。まだ詳しくは言えないけどね。", "娘と久しぶりにちゃんと話したよ。…いや、ほとんど聞いてただけだけどさ。", "妻に「最近楽しそうね」って言われた。この店のことは、まだ内緒なんだ。", "この店に来ると、自分がどうしたいのか、だんだんわかってくるんだよ。", "マスター、いつもありがとう。今日は、大事な報告があるんだ。"],reward:{money:5000,txt:'お祝いに ¥5,000 もらった！'}},
  {id:'mika',name:'ミカ',job:'デザイナー',fav:'gintonic',fb:'highball',col:'#c06a8a',L:{skin:'#f7d7b8',hair:'#b03030',shirt:'#e8e0d0',jacket:'#e07a3a',hs:5,earring:true,hatType:'beret',hat:'#2a6a8a',glasses:true,glassCol:0xd04040},
-  lines:['わ、雰囲気いいお店。デザインの仕事してて、つい内装見ちゃうの。','ジントニックのライム、香りが立ってて好き。ネオンの色も素敵。','最近スランプでさ…。ここに来ると、色のアイデアが浮かぶんだよね。','このお店をモチーフにポスター描いてみた。今度見せるね。','そのポスター、コンペで賞とったの！ マスターのおかげ。','お礼にお店のロゴ、作り直させて。…ほら、評判上がるはず！'],reward:{rep:.3,txt:'新しいロゴで評判 +0.3！'}},
+  lines:["わ、雰囲気いいお店。デザインの仕事してて、つい内装見ちゃうの。", "ジントニックのライム、香りが立ってて好き。ネオンの色も素敵。", "最近スランプでさ…。ここに来ると、色のアイデアが浮かぶんだよね。", "このお店をモチーフにポスター描いてみた。今度見せるね。", "ポスター、コンペに出してみたの。結果はまだ。ドキドキ…", "会社の先輩とぶつかっちゃって。自分の色、大事にしたいんだけどな。", "地元の商店街のロゴを頼まれたの。小さい仕事だけど、うれしい。", "マスターって、迷ったときどうしてる？ …そっか、一杯飲んで寝るんだ（笑）", "聞いて聞いて！ 大事な報告があるの！"],reward:{rep:.3,txt:'新しいロゴで評判 +0.3！'}},
  {id:'john',name:'ジョン',job:'旅行者',fav:'ipa',fb:'pale',col:'#3a8a5a',L:{skin:'#f7d7b8',hair:'#e0b050',shirt:'#c03030',jacket:'#2a4a2a',hs:6,beard:'full',eye:'#3a6ad0',h:1.06},
-  lines:['Hi！ 日本のクラフトビール、だいすきです。IPA ありますか？','このIPA、ホップの香り、Amazing！ ぼく、ポートランドから来ました。','日本語の勉強、むずかしい…。でもここのみんな、やさしいね。','決めました。ぼく、日本に住みます！ 仕事、見つけた！','友達に、このバーのことたくさん話しました。みんな来たいって。','Thank you, my friend！ 友達をいっぱい連れてくるね。Cheers！'],reward:{flag:'tourist',money:2000,txt:'観光客がよく来るようになった！'}},
+  lines:["Hi！ 日本のクラフトビール、だいすきです。IPA ありますか？", "このIPA、ホップの香り、Amazing！ ぼく、ポートランドから来ました。", "日本語の勉強、むずかしい…。でもここのみんな、やさしいね。", "もっと日本にいたい。ビザのこと、調べてます。", "お母さんから電話。「いつ帰ってくるの？」って。…むずかしい質問。", "ぼく、友達ができました！ ここで会った人たちです！", "日本のお祭り、行きました。おみこし、すごかった！", "ぼくの夢、少しずつ形になってきた気がします。", "マスター！ ビッグニュースがあります！"],reward:{flag:'tourist',money:2000,txt:'観光客がよく来るようになった！'}},
  {id:'gen',name:'源さん',job:'元バーテンダー',fav:'martini',fb:'highball',col:'#5a5a5a',L:{skin:'#dba87c',hair:'#d8d8d8',shirt:'#f0f0f0',jacket:'#4a3a2a',hs:3,beard:'full',hatType:'flat',hat:'#6a5a4a',bow:'#8a1a1a',glasses:true,glassCol:0xc0a040,build:.95},
-  lines:['…ほう、若いの。昔、わしもカウンターに立っておった。','カクテルはな、急いでも丁寧さを忘れるでないぞ。','わしの店は40年続いた。最後の夜も、こうして客と飲んだもんじゃ。','良いバーテンダーは、客の顔を見て一杯を決める。お主はその目をしておる。','わしの店の常連たちに、この店を勧めておいた。大事にせいよ。','これを持っていけ。わしが使っていた秘伝の計量のコツじゃ。'],reward:{flag:'gen',txt:'秘伝のコツ：計量の許容範囲が広がった！'}},
+  lines:["…ほう、若いの。昔、わしもカウンターに立っておった。", "カクテルはな、急いでも丁寧さを忘れるでないぞ。", "わしの店は40年続いた。最後の夜も、こうして客と飲んだもんじゃ。", "良いバーテンダーは、客の顔を見て一杯を決める。お主はその目をしておる。", "昔の弟子がおってな。今はどこで何をしておるやら。", "わしの店の常連たちに、この店を勧めておいた。大事にせいよ。", "妻が生きておったら、この店を気に入ったじゃろうな。", "お主の一杯から、迷いが消えてきた。…ふん、褒めすぎたか。", "今夜は、話しておきたいことがある。"],reward:{flag:'gen',txt:'秘伝のコツ：計量の許容範囲が広がった！'}},
  {id:'yuta',name:'ユウタ',job:'大学院生',fav:'cassis',fb:'gintonic',col:'#4a7a8a',L:{skin:'#eec29b',hair:'#1d1410',shirt:'#ffffff',jacket:'#e0c040',hood:true,hs:6,phones:'#2ad0a0',build:.92},
-  lines:['あの、甘めのお酒ありますか…？ お酒あんまり強くなくて。','大学院で研究してるんです。毎日実験で…ここは落ち着きます。','論文がリジェクトされました…。一杯、しみます。','もう一回出したら、通りました！ 一番に報告したくて来ました！','来月から海外の研究所に行くんです。寂しくなるなぁ。','向こうでもこの店の話をします。いつか、ここで乾杯しに戻ってきますね！'],reward:{money:3000,txt:'お礼に ¥3,000 もらった！'}},
+  lines:["あの、甘めのお酒ありますか…？ お酒あんまり強くなくて。", "大学院で研究してるんです。毎日実験で…ここは落ち着きます。", "論文がリジェクトされました…。一杯、しみます。", "もう一回出したら、通りました！ 一番に報告したくて来ました！", "海外の研究所から声がかかったんです。…まだ迷ってます。", "研究室の後輩に相談されるようになりました。ぼくが先輩って、変な感じ。", "実は…気になる人がいて。研究室の同期なんですけど。", "最近、自分のことを少し好きになれた気がします。", "マスター、聞いてください。決めたんです。"],reward:{money:3000,txt:'お礼に ¥3,000 もらった！'}},
  {id:'reiko',name:'玲子さん',job:'小説家',fav:'stout',fb:'pale',col:'#6a4a8a',L:{skin:'#f7d7b8',hair:'#101018',shirt:'#2a2a2a',jacket:'#4a2a5a',hs:1,glasses:true,glassCol:0x8a6a2a,scarf:'#a03050',earring:true},
-  lines:['……ビールを。黒いビールは、夜の色だから好き。','小説を書いているの。ここのカウンター、物語の匂いがする。','締め切り前なのに一行も書けない。…もう一杯いただける？','あなたをモデルにした登場人物、書いてもいいかしら。','書き上げたわ。舞台は、小さなクラフトビールのバー。','本が出たの。読者がこの店を探しに来るかもね。'],reward:{rep:.5,txt:'小説の効果で評判 +0.5！'}},
+  lines:["……ビールを。黒いビールは、夜の色だから好き。", "小説を書いているの。ここのカウンター、物語の匂いがする。", "締め切り前なのに一行も書けない。…もう一杯いただける？", "あなたをモデルにした登場人物、書いてもいいかしら。", "編集者と喧嘩したの。「もっと売れる話を」ですって。", "昔、恋人とよく通ったバーがあったの。もう、なくなってしまったけど。", "書きかけの原稿、最後の一章だけが書けないの。", "このカウンターで書くと筆が進むのよ。…迷惑かしら？", "書き上げたわ。最初に、あなたに伝えたくて。"],reward:{rep:.5,txt:'小説の効果で評判 +0.5！'}},
 ];
 let talkT=null;
 /* ====================== 14. 2-PLAYER CO-OP (WebRTC P2P, no game server) ====================== */
@@ -2289,21 +2301,21 @@ function openCoop(longMode){ac();if(typeof RTCPeerConnection==='undefined'){open
 
 /* ---------- 1. regulars' story choices ---------- */
 const STORY={
- sato:{q:[{aff:2,q:'娘の受験、つい口うるさく言っちゃうんだ。どうしたらいいと思う？',a:[['「信じて見守るのも、応援ですよ」','trust'],['「ビシッと言うのも親の愛ですね」','strict']]},{aff:4,q:'部長に昇進の話が来た。でも家族との時間が減る。迷ってるんだ…',a:[['「家族との時間を大事にしては？」','family'],['「チャンスは掴むべきですよ」','career']]}],
-  end:{trust:'娘、合格したよ！「見守ってくれてありがとう」だってさ。あなたのおかげだ。',strict:'娘、合格したよ。最後は「厳しくしてくれて助かった」って。不器用な親だよ、まったく。'}},
- mika:{q:[{aff:2,q:'ポスターの色、青と赤で迷ってるの。どっちがいいと思う？',a:[['「この店みたいな、あたたかい赤」','red'],['「夜のネオンみたいな青」','blue']]},{aff:4,q:'独立して自分の事務所を作るか迷ってる。怖いけど…',a:[['「ミカさんならきっとできます」','go'],['「今の会社で力をためるのも手です」','stay']]}],
-  end:{red:'赤いポスター、賞をとったの！ 受賞作のタイトルは「憩」。勝手に使ってごめんね。',blue:'青いポスター、街中に貼られることになったの！ 夜の憩をイメージしたんだ。'}},
- john:{q:[{aff:2,q:'日本で仕事したい。でもビザ、むずかしい…。どうしよう？',a:[['「まず日本語学校に行ってみては？」','school'],['「ビール会社に直接聞いてみよう！」','brew']]},{aff:4,q:'ぼく、自分のビールを作りたい。名前、何がいいかな？',a:[['「IKOI IPA」','ikoi'],['「ポートランド・ドリーム」','dream']]}],
-  end:{school:'日本語の先生になりました！ 生徒たちと、いつかここに来ます！',brew:'ビール工場で働いてます！ そしてこれ…ぼくのビール。このお店に置いてください！'}},
- gen:{q:[{aff:2,q:'わしの店の古いシェイカー、捨てようか迷っておる。',a:[['「ぜひ大切に使わせてください」','keep'],['「思い出として飾りましょう」','display']]},{aff:4,q:'若いの、バーテンダーで一番大事なものは何だと思う？',a:[['「お客さんの顔を見ること」','face'],['「正確な一杯を作ること」','skill']]}],
-  end:{face:'お主はもう一人前じゃ。わしの店の看板、ここに掛けてくれんか。',skill:'その腕なら、どこへ行っても通用する。…このレシピ帳を託そう。'}},
- yuta:{q:[{aff:2,q:'研究、続けるか就職するか迷ってて…',a:[['「好きなことを続けてほしいです」','research'],['「一度社会に出るのも経験です」','job']]},{aff:4,q:'海外に行く前に、何か一つ挑戦したいんです',a:[['「告白したい人がいるなら…」','love'],['「最後にここで乾杯しましょう」','toast']]}],
-  end:{research:'海外の研究所でも頑張ってます！ ビデオ通話で、このお店の話をみんなにしてるんです。',job:'会社員になりました！ でもやっぱり研究の夢は捨てません。今日はその決意の一杯です。'}},
- reiko:{q:[{aff:2,q:'主人公の結末、ハッピーエンドにすべきかしら。',a:[['「読んだ人が救われる結末に」','happy'],['「余韻の残るビターな結末に」','bitter']]},{aff:4,q:'次の作品の舞台、ここにしてもいい？',a:[['「ぜひ！ 光栄です」','yes'],['「こっそりなら…」','secret']]}],
-  end:{happy:'本、出たわ。最後のページにあなたの名前を書いたの。…ありがとう。',bitter:'本、出たわ。評論家には「苦いけど忘れられない」って。あなたの一杯みたいね。'}}};
+ sato:{k:['q4','q6'],q:[{aff:2,q:'娘の受験、つい口うるさく言っちゃうんだ。どうしたらいいと思う？',a:[['「信じて見守るのも、応援ですよ」','trust','見守る、か…。そうだな、娘を信じてみるよ'],['「ビシッと言うのも親の愛ですね」','strict','だよな！ …でも言い方には気をつけるよ']]},{aff:4,q:'部長に昇進の話が来た。でも家族との時間が減る。迷ってるんだ…',a:[['「家族との時間を大事にしては？」','family','…そうだよな。娘が家にいるのも、あと少しだし'],['「チャンスは掴むべきですよ」','career','背中を押してくれるのか。…やってみるかな']]},{aff:6,q:'妻に、この店のこと話そうか迷ってる。一緒に来たいって言われたら…',a:[['「ぜひご一緒に。特等席を用意します」','share','そうか…じゃあ今度、二人で来るよ。照れるなあ'],['「ひとりの場所も大事ですよ」','secret','はは、そうだよな。ここは俺の秘密基地だ']]}],
+  end:{family_share:'昇進は断ったよ。今日は妻と二人で来た。娘も合格して…家族みんなでここに来られる日が楽しみだ。',family_secret:'昇進は断った。家族との時間を選んだんだ。でも金曜の一杯だけは、これからもここで、ひとりでね。',career_share:'部長になったよ！ 妻に話したら「お祝いはあなたの行きつけで」だってさ。今度、家族で来るよ。',career_secret:'部長になった。忙しくなるけど…ここに来れば自分に戻れる。これからも頼むよ、マスター。'}},
+ mika:{k:['q4','q6'],q:[{aff:2,q:'ポスターの色、青と赤で迷ってるの。どっちがいいと思う？',a:[['「この店みたいな、あたたかい赤」','red','赤…うん、なんだか描ける気がしてきた！'],['「夜のネオンみたいな青」','blue','青か〜。夜の空気、出せそう！']]},{aff:4,q:'独立して自分の事務所を作るか迷ってる。怖いけど…',a:[['「ミカさんならきっとできます」','go','…ありがと。その一言、ずっと待ってたのかも'],['「今の会社で力をためるのも手です」','stay','そっか、焦らなくてもいいんだよね']]},{aff:6,q:'商店街の人に、事務所をこの近くに構えないかって誘われてるの。',a:[['「ご近所さんになれたら心強いです」','near','ふふ、毎晩来ちゃうかもよ？'],['「もっと大きな街で挑戦するのも」','city','…うん、そういう道もあるよね。考えてみる']]}],
+  end:{go_near:'独立したよ！ 事務所はこの店の2軒となり。最初のお客さんは商店街のみんな。看板、マスターにも見てほしいな。',go_city:'独立して、東京に事務所を出したの。忙しいけど毎日が楽しい！ 月に一度は、ここに帰ってくるからね。',stay_near:'会社に残ることにした。でも商店街の仕事は続けてるの。昼は会社員、夜はこの町のデザイナー。悪くないでしょ？',stay_city:'会社でチームリーダーになったの！ 大きな案件で海外にも行くんだ。帰ってきたら、またジントニックね。'}},
+ john:{k:['q4','q6'],q:[{aff:2,q:'日本で仕事したい。でもビザ、むずかしい…。どうしよう？',a:[['「まず日本語学校に行ってみては？」','school','学校…いいですね！ 日本語、もっとうまくなりたい'],['「ビール会社に直接聞いてみよう！」','brew','直接！ ぼく、勇気出してみます！']]},{aff:4,q:'ぼく、自分のビールを作りたい。名前、何がいいかな？',a:[['「IKOI IPA」','ikoi','IKOI IPA！ この店の名前…最高です！'],['「ポートランド・ドリーム」','dream','ポートランド・ドリーム…ぼくのふるさとの夢。いいね！']]},{aff:6,q:'ポートランドのお母さん、ひとりで寂しそう。ぼく、どうしたらいい？',a:[['「一度日本に招待してみては？」','invite','Oh…それ、いいアイデア！ ここにも連れてきます！'],['「一度帰って顔を見せてあげて」','home','うん…そうですね。ぼく、一度帰ります']]}],
+  end:{ikoi_invite:'ぼくのビール「IKOI IPA」が完成しました！ 今日はお母さんと一緒に来ました。最初の一杯は、ここで乾杯です！',ikoi_home:'ポートランドでお母さんと話して、また日本に戻ってきました！ 「IKOI IPA」、この店に置いてください。',dream_invite:'「ポートランド・ドリーム」完成！ お母さんが日本に来て「この店の味がする」って。ぼく、泣きました。',dream_home:'ポートランドで、日本のビールを広める仕事を始めます。「ポートランド・ドリーム」で、この店を世界に紹介するね！'}},
+ gen:{k:['q4','q6'],q:[{aff:2,q:'わしの店の古いシェイカー、捨てようか迷っておる。',a:[['「ぜひ大切に使わせてください」','keep','…ほう。なら、お主に預けよう'],['「思い出として飾りましょう」','display','飾る、か。あやつも喜ぶじゃろう']]},{aff:4,q:'若いの、バーテンダーで一番大事なものは何だと思う？',a:[['「お客さんの顔を見ること」','face','…わしと同じ答えじゃな'],['「正確な一杯を作ること」','skill','ふむ、それも真理じゃ。腕がなければ心も届かん']]},{aff:6,q:'昔の弟子から手紙が来た。会いに来たいと言うておる。…どうしたものかの。',a:[['「ぜひ、ここで会ってください」','meet','…ふん、お主がそう言うなら。席を空けておいてくれ'],['「手紙で気持ちを伝えては」','letter','そうじゃな。言葉にするのは苦手じゃが…やってみるか']]}],
+  end:{face_meet:'弟子とここで再会した。あやつ、立派なバーテンダーになっておったわ。…お主もじゃ。わしの店の看板、ここに掛けてくれんか。',face_letter:'弟子に手紙を書いた。「客の顔を見ろ」とな。お主にも同じ言葉を贈る。わしの店の看板、受け取ってくれ。',skill_meet:'弟子とここで飲んだ。昔の話で夜が明けそうじゃった。…このレシピ帳は、お主ら若い者に託そう。',skill_letter:'弟子への手紙に、お主のことも書いておいた。「わしより腕のいいのがおる」とな。このレシピ帳を託そう。'}},
+ yuta:{k:['q4','q6'],q:[{aff:2,q:'研究、続けるか就職するか迷ってて…',a:[['「好きなことを続けてほしいです」','research','…はい。やっぱり研究、好きなんです'],['「一度社会に出るのも経験です」','job','そういう考え方もありますね。視野が広がりそう']]},{aff:4,q:'海外に行く前に、何か一つ挑戦したいんです',a:[['「告白したい人がいるなら…」','love','えっ、な、なんでわかったんですか…！'],['「最後にここで乾杯しましょう」','toast','はい！ 絶対、ここで乾杯します']]},{aff:6,q:'あの人も海外に誘われてるみたいで…ぼくはどうすれば。',a:[['「一緒に行こうって言ってみては」','together','…言えるかな。いや、言います！'],['「お互いの夢を応援し合えばいい」','apart','そうですね。離れても、きっと大丈夫']]}],
+  end:{love_together:'告白しました。…OKでした！ 来月、二人で海外の研究所に行きます。いつか二人で、ここに乾杯しに戻ってきますね！',love_apart:'告白して、付き合うことになりました。ぼくはドイツ、彼女はアメリカ。遠いけど、夢を応援し合うって決めたんです。',toast_together:'あの人と一緒に海外に行くことになりました。最後の夜は、ここで乾杯したくて。マスター、いってきます！',toast_apart:'明日、ひとりで出発します。あの人とは「お互いがんばろう」って。最後の一杯、甘めでお願いします。'}},
+ reiko:{k:['q2','q6'],q:[{aff:2,q:'主人公の結末、ハッピーエンドにすべきかしら。',a:[['「読んだ人が救われる結末に」','happy','救われる結末…そうね、書いてみるわ'],['「余韻の残るビターな結末に」','bitter','ビター…あなた、わかってるわね']]},{aff:4,q:'次の作品の舞台、ここにしてもいい？',a:[['「ぜひ！ 光栄です」','yes','ふふ、じゃあ取材させてもらうわ'],['「こっそりなら…」','secret','こっそり、ね。いい響き']]},{aff:6,q:'編集者が、本の帯に「実在のバーが舞台」と書きたいって。どう思う？',a:[['「ぜひ。お客さんが増えそうです」','open','ふふ、商売上手ね。じゃあそうするわ'],['「物語の中だけの店にしましょう」','hidden','そうね。見つけた人だけの、秘密の店に']]}],
+  end:{happy_open:'本が出たわ。帯には「実在のバーが舞台」。読者がこの店を探しに来るかもね。最後のページに、あなたの名前を書いたの。',happy_hidden:'本が出たわ。舞台のバーの名前は伏せたの。でも、わかる人にはわかる。…最後のページは、ハッピーエンドよ。',bitter_open:'本が出たわ。「苦いけど忘れられない」って評判よ。帯を見てこの店を探す人がいるみたい。…あなたの一杯みたいね。',bitter_hidden:'本が出たわ。名もないバーの、苦くて優しい物語。…ここは、私だけの秘密のままにしておくわ。'}}};
 function storyTalk(c){const st=S.regs[c.reg];const SD=STORY[c.reg];if(!st||!SD)return null;st.route=st.route||{};
  for(const q of SD.q){if((st.aff||0)>=q.aff&&!st.route['q'+q.aff])return{kind:'q',q}}
- if((st.aff||0)>=5&&!st.ended&&Object.keys(st.route).length>=2)return{kind:'end'};return null}
+ if((st.aff||0)>=MAXAFF&&!st.ended&&Object.keys(st.route).length>=SD.q.length)return{kind:'end'};return null}
 /* ---------- 6. daily challenges ---------- */
 const CHALL=[
  {id:'served',t:n=>`${n}杯 提供する`,n:()=>({easy:12,normal:20,hard:30})[S.diff]||20,v:()=>G.stats.served},
@@ -2416,9 +2428,9 @@ function regName(c){const R0=REGS.find(r=>r.id===c.reg);const sg=regStage(c.reg)
 function regPlan(){const out=[];if(!S||G.tutorial)return out;const w=WXc();for(const r of REGS){const st=regSt(r.id);if(S.day<(REGDAY[r.id]||2))continue;if(st.awayUntil&&S.day<st.awayUntil)continue;
  let p=!st.met?.6:st.regular?.62:.5;if(w.reg)p*=1.35;if(G.ev&&G.ev.reg)p=1;if(st.lastDay&&S.day-st.lastDay>=8)p=Math.max(p,.8);if(Math.random()<p)out.push(r.id)}return out}
 function regArrive(c){const st=regSt(c.reg);const prev=st.lastDay||0;if(st.lastDay!==S.day){st.visits=(st.visits||0)+1;if(prev&&S.day-prev>=10)c.longTime=1;if(st.away){st.away=0;c.returned=1}}st.lastDay=S.day}
-function regAff(c,why){const st=regSt(c.reg);if(st.affDay===S.day||(st.aff||0)>=5)return false;st.affDay=S.day;st.aff=(st.aff||0)+1;const R0=REGS.find(r=>r.id===c.reg);
+function regAff(c,why){const st=regSt(c.reg);if(st.affDay===S.day||(st.aff||0)>=MAXAFF)return false;st.affDay=S.day;st.aff=(st.aff||0)+1;const R0=REGS.find(r=>r.id===c.reg);
  if(!st.named&&st.aff>=1){st.named=1;setTimeout(()=>toast(`🙂 名前を教えてもらった：${R0.name}（${R0.job}）`),900)}
- if(!st.regular&&st.aff>=2&&st.visits>=3){st.regular=1;setTimeout(()=>{toast(`⭐ ${R0.name}が常連さんになった！`);sfx.good()},2400)}
+ if(!st.regular&&st.aff>=2&&st.visits>=3){st.regular=1;addLetter(R0.name,'「これからも、ちょくちょく寄らせてもらうよ」','⭐');setTimeout(()=>{toast(`⭐ ${R0.name}が常連さんになった！`);sfx.good()},2400)}
  setTimeout(()=>talk(c.reg,st.aff),1200);saveColl();return true}
 const LIFE={
  sato:[{gap:6,t:'娘がね、大学で一人暮らしを始めたんだ。家が静かすぎてさ…ここに来る回数、増えちゃうかもな。'},{gap:10,t:'今日、結婚記念日なんだ。…今度は妻と二人で来ようかな。席を2つ、お願いできるかい？'},{gap:14,t:'娘が帰省してきてね、「お父さんの行きつけのバー、行ってみたい」だって。照れるなあ。'}],
@@ -2436,8 +2448,155 @@ function evToday(){const d=S.day;ensureCal();const c=calOf(d);const wd=c.slot;co
  const E=c.ev;if(E){e.id=E.id;e.name=E.name;if(E.spawn)e.spawn*=E.spawn;e.fav=E.fav||null;e.hat=E.hat||null;e.fire=!!E.fire;e.tip=E.tip||1;e.party=!!E.party;e.petal=!!E.petal;e.look=E.look||null;e.tourist=!!E.tourist;e.reg=!!E.reg;e.pat=E.pat||1;e.taste=E.taste||null;e.bell=!!E.bell;if(E.hat)e.favTip=1.5}
  if(!e.party&&d>=2&&d%5===3&&!e.hat)e.party=true;return e}
 function calLine(d,withWx){const c=calOf(d);const w=WX[wxOf(d)];return `${dateStr(d)} ${SEASONJ[c.season]}${withWx?`　${w.i} ${w.n}`:''}`}
-function calStrip(){try{ensureCal();const d=S.day,c=calOf(d),w=WX[wxOf(d)];const up=upcoming(d+1,14);return `<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:12.5px;background:#0005;border:1px solid #6a4a2a;border-radius:10px;padding:6px 10px;margin:-2px 0 8px">📅 <b>次の営業：${dateStr(d)}</b>　${SEASONJ[c.season]}　<span>予報 ${w.i} ${w.n}${w.spawn&&w.spawn>1.1?'（客足少なめ）':w.spawn&&w.spawn<1?'（客足多め）':''}</span>${c.ev?`<span style="color:#ffd77a">${c.ev.name}</span>`:''}${up.length?`<span style="color:#f5e6c8aa">｜これからの行事：${up.slice(0,3).join('、')}</span>`:''}</div>`}catch(e){return''}}
+function calStrip(){try{ensureCal();const d=S.day,c=calOf(d),w=WX[wxOf(d)];const up=upcoming(d+1,14);return `<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:12.5px;background:#0005;border:1px solid #6a4a2a;border-radius:10px;padding:6px 10px;margin:-2px 0 8px">📅 <b>次の営業：${dateStr(d)}</b>　${SEASONJ[c.season]}　<span>予報 ${w.i} ${w.n}${w.spawn&&w.spawn>1.1?'（客足少なめ）':w.spawn&&w.spawn<1?'（客足多め）':''}</span>${c.ev?`<span style="color:#ffd77a">${c.ev.name}</span>`:''}${up.length?`<span style="color:#f5e6c8aa">｜これからの行事：${up.slice(0,3).join('、')}</span>`:''}${S.rival&&d>=S.rival.open?`<span style="color:#ff9ad0">🆚 BAR NEON：${S.rival.friend?'和解済み（なかよし）':rivalCamp(d)?'次の営業日は「'+rivalCamp(d)+'」':'通常営業'}</span>`:''}<button class="tg ${S.hhDay===d?'on':''}" data-hh="1" style="padding:3px 10px">📣 うちもハッピーアワー${S.hhDay===d?'：実施':'（全品2割引・客足UP）'}</button></div>`}catch(e){return''}}
 function upcoming(d,n){const out=[];for(let k=d;k<d+n;k++){const c=calOf(k);if(c.ev)out.push(`${c.month}/${c.date} ${c.ev.name.split('（')[0]}`)}return out}
+/* ====================== STORIES & PEOPLE: romance / celebs / troublemakers / rival / SNS / letters ====================== */
+const MAXAFF=8;
+function ensureP4(){if(!S)return;S.rom=S.rom||{};S.celebs=S.celebs||{};S.letters=S.letters||[];S.rival=S.rival||null;S.sns=S.sns||{posts:0,buzz:0};}
+/* ---------- letters ---------- */
+function addLetter(from,t,ic){ensureP4();const L0={d:S.day,from,t,ic:ic||'✉'};S.letters.push(L0);if(S.letters.length>120)S.letters.shift();if(G){G.newLetters=G.newLetters||[];G.newLetters.push(L0)}}
+/* ---------- romance ---------- */
+const COUPLES=[
+ {id:'haruka',start:7,a:{n:'春香',job:'会社員',fav:'cassis',L:{skin:'#f7d7b8',hair:'#6a3a20',shirt:'#f0e6f0',jacket:'#c87a9a',hs:5,earring:true,build:.9,h:.96}},b:{n:'大地',job:'消防士',fav:'pale',L:{skin:'#dba87c',hair:'#1a1410',shirt:'#2a3a5a',jacket:null,hs:2,build:1.15,h:1.05}},
+  st:[{s:'（春香と大地が、たまたま隣の席になった）大地「…それ、何飲んでるんですか？」春香「え、カシスオレンジです」',a:[['「お隣の方と同じもの、お作りしましょうか？」',2,'大地「じゃあ、同じので！」　春香「（くすっと笑う）」'],['（そっとしておく）',1,'二人は少しだけ会釈をして、静かに飲んだ']]},
+   {s:'春香「この前の消防士さん、今日も来てるかな…」（大地が店に入ってきた）',a:[['「ちょうど、お隣が空いてますよ」',2,'大地「あ、この前の！」　春香「こ、こんばんは」'],['「いらっしゃいませ」（いつも通りに）',1,'二人は目が合うと、照れくさそうに笑った']]},
+   {s:'大地「今度の休み、どこか行きませんか…って、俺、何言ってんだ」春香「…」',a:[['「花火大会、きれいらしいですよ」',2,'春香「…行きたいです」　大地「マジっすか！」'],['（聞こえないふりでグラスを磨く）',1,'春香「…考えておきますね」']]},
+   {s:'春香「大地さん、昨日の火事の現場にいたって…。心配で眠れなかった」',a:[['「無事を信じて、待ってあげてください」',2,'春香「…うん。帰ってきたら、ここで乾杯する」'],['「大変なお仕事ですよね」',1,'春香「…そうですよね」（少しうつむく）']]},
+   {s:'（大地がひとりで来た）大地「マスター、俺、春香さんに…ちゃんと気持ちを伝えたい」',a:[['「いつもの席、二人分空けておきます」',2,'大地「…ありがとうございます。今度、ここで言います」'],['「焦らなくても大丈夫ですよ」',1,'大地「そっすね…もう少し、考えます」']]},
+   {s:'（二人が並んで座る。大地がポケットから何か取り出した）',a:[['（そっと照明を落とす）',2,'お店がやさしい明かりに包まれた…'],['（いつも通りに一杯を出す）',1,'二人の前に、いつもの一杯が並んだ']]}],
+  end:{hi:'大地「春香さん、俺と結婚してください！」春香「…はい！」　—— 店中が拍手に包まれた。結婚式の招待状が届きそうだ。',mid:'二人は付き合い始めたらしい。今日もこのカウンターで、仲良くカシスオレンジとビールで乾杯している。',lo:'二人は「いい飲み友達」になったようだ。恋になるかは、まだこれから。'}},
+ {id:'ritsu',start:15,a:{n:'律',job:'ピアニスト',fav:'martini',L:{skin:'#eec29b',hair:'#2a2a3a',shirt:'#1a1a1a',jacket:'#2a2a3a',hs:1,glasses:true,build:.92,h:1.04}},b:{n:'紬',job:'花屋',fav:'umesoda',L:{skin:'#f7d7b8',hair:'#8a5a2a',shirt:'#f6efe0',jacket:'#7a9a6a',hs:5,scarf:'#e8b0c0',build:.9,h:.95}},
+  st:[{s:'紬「その花、この店に飾ったら素敵だと思って」（一輪の花を持ってきた）律「…いい色ですね」',a:[['「ぜひ飾らせてください」',2,'紬「よかった！」　律（花を見つめている）'],['「お気持ちだけで」',0,'紬「あ、そうですよね…」']]},
+   {s:'律「ピアノの音が、最近うまく出ないんです」紬「…音、聴いてみたいな」',a:[['「今度、店でミニライブしませんか？」',2,'律「ここで…？ やってみようかな」　紬「絶対来ます！」'],['「疲れているのかもしれませんね」',1,'律「…そうかもしれません」']]},
+   {s:'（律のミニライブの夜。紬が一番前で聴いている）',a:[['「紬さんに一曲、いかがですか」',2,'律が弾いたのは、花の名前がついた曲だった'],['（静かに聴き入る）',1,'やわらかい音が店に満ちた']]},
+   {s:'紬「律さん、海外のコンクールに出るんですって。…応援したいけど、遠いな」',a:[['「気持ち、伝えてみては？」',2,'紬「…手紙、書いてみます」'],['「応援してあげましょう」',1,'紬「…はい」（少しさみしそう）']]},
+   {s:'律「コンクール、紬さんの花の曲で出ようと思います。…許してくれるかな」',a:[['「本人に聴かせてあげてください」',2,'律「…ここで、弾かせてください」'],['「きっと喜びますよ」',1,'律「そうだといいな」']]},
+   {s:'（コンクールから戻った律と、待っていた紬）',a:[['（二人分のグラスをそっと置く）',2,'紬「おかえりなさい」　律「…ただいま」'],['「おかえりなさい」',1,'律は少し照れて、うなずいた']]}],
+  end:{hi:'律は紬の花の曲でコンクールに入賞した。そして今日、紬の店の隣に小さな音楽教室を開くと決めたらしい。二人の指には、おそろいの指輪。',mid:'律は海外を拠点に活動を始め、紬は花屋を続けている。毎月、律から紬に絵はがきが届くらしい。',lo:'二人はそれぞれの道を歩き始めた。それでも時々、この店で偶然会っては、少しだけ話していく。'}},
+ {id:'kenji',start:24,a:{n:'健二',job:'定食屋の店主',fav:'highball',L:{skin:'#dba87c',hair:'#8a8a8a',shirt:'#f0f0f0',jacket:'#3a4a3a',hs:3,hatType:'flat',hat:'#4a3a2a',beard:'mus',build:1.08,h:1.0}},b:{n:'由美子',job:'図書館司書',fav:'umerock',L:{skin:'#f7d7b8',hair:'#3a3030',shirt:'#e8e0d0',jacket:'#6a4a5a',hs:1,glasses:true,glassCol:0x8a6a2a,build:.95,h:.95}},
+  st:[{s:'健二「いやあ、最近は店を閉めてから飲むのが楽しみでね」由美子「…私もです。本に囲まれた後の一杯」',a:[['「お二人とも、お疲れさまです」',2,'健二「いやいや、どうも」　由美子「ふふ、どうも」'],['（それぞれに一杯を出す）',1,'二人はそれぞれ、静かにグラスを傾けた']]},
+   {s:'健二「うちの定食、たまには食べに来てくださいよ」由美子「え、私ですか？」',a:[['「健二さんの焼き魚、絶品ですよ」',2,'由美子「…じゃあ、今度のお昼に」'],['（ほほえんで見守る）',1,'由美子は少し考えてから、うなずいた']]},
+   {s:'由美子「健二さんに、料理の本を選んであげたんです。…変ですよね、こんな歳で」',a:[['「素敵だと思います」',2,'由美子「…ありがとう。少し勇気が出ました」'],['「本好き同士、いいですね」',1,'由美子「そういうのとは、ちょっと違うんですけどね」']]},
+   {s:'健二「女房を亡くして十年。…もう一度、誰かと飯を食う人生も、ありかね」',a:[['「ありだと思います。きっと奥様も」',2,'健二「…そうか。そうだよな」'],['「健二さん次第ですよ」',1,'健二「はは、そりゃそうだ」']]},
+   {s:'由美子「健二さんが、定食屋を一緒にやらないかって…。図書館、どうしよう」',a:[['「両方、という道もありますよ」',2,'由美子「昼は図書館、夜は定食屋…楽しそう」'],['「よく考えて決めてください」',1,'由美子「…そうね」']]},
+   {s:'（健二が、少し改まった顔で由美子の隣に座った）',a:[['（二人に、とっておきの一杯を）',2,'健二「由美子さん、これからも一緒に、飯を食ってくれませんか」'],['（いつも通りに迎える）',1,'健二は言いかけて、また今度にしたようだ']]}],
+  end:{hi:'健二と由美子は、一緒に暮らし始めたそうだ。定食屋の壁には、由美子が選んだ料理の本がずらり。「二人の店の打ち上げは、ここでね」',mid:'二人は、休日ごとに一緒に出かけているらしい。「急ぐ歳でもないからね」と健二は笑う。',lo:'二人は今も、いい飲み仲間だ。並んで座ると、本と料理の話が尽きない。'}}];
+function romSt(id){ensureP4();return S.rom[id]||(S.rom[id]={stage:0,pts:0,next:0,done:0})}
+function couplePlanToday(){if(!S||!G||G.tutorial||NET.on)return null;for(const C of COUPLES){const r=romSt(C.id);if(r.done||S.day<C.start||S.day<r.next)continue;return C}return null}
+function coupleSpawn(C){const pairs=[[0,1],[1,2],[2,3],[4,0],[3,5],[6,4]].filter(([a,b])=>a<S.up.seats&&b<S.up.seats&&seatFree(G.seats[a])&&seatFree(G.seats[b]));if(!pairs.length)return false;const [sa,sb]=pick(pairs);
+ for(const [who,si] of [['a',sa],['b',sb]]){G.forceCouple={C,who};G.forceSeat=si;spawnCustomer(true)}G.forceCouple=null;G.forceSeat=null;toast(`💞 ${C.a.n}さんと${C.b.n}さんが来店`);return true}
+function coupleTalk(c){const C=COUPLES.find(x=>x.id===c.couple);const r=romSt(C.id);if(!C)return false;
+ if(r.dayDone===S.day){say(c,pick(['今日はありがとう','ふふ、また来ますね']),2);c.talked=0;return true}
+ if(r.stage>=C.st.length){finishCouple(C,c);return true}
+ const st=C.st[r.stage];const el=$('#talkBox');fpsUnlock();const opts=st.a;TALK={c,opts:[],end:1,t0:performance.now()};
+ el.innerHTML=`<button class="tx" id="talkX">✕ 閉じる</button><div class="q"><small>💞 ${C.a.n}と${C.b.n}（${r.stage+1}/${C.st.length}）</small>${st.s}</div>${opts.map((o,i)=>`<button data-rk="${i}">${i+1}. ${o[0]}</button>`).join('')}`;el.style.display='block';
+ el.querySelectorAll('[data-rk]').forEach(b=>{b.onpointerdown=e=>e.stopPropagation();b.onclick=e=>{e.stopPropagation();const o=opts[+b.dataset.rk];r.pts+=o[1];r.stage++;r.dayDone=S.day;r.next=S.day+3+Math.floor(Math.random()*3);save();
+  el.innerHTML=`<button class="tx" id="talkX2">✕ 閉じる</button><div class="q"><small>💞 その後…</small>${o[2]}</div>${r.stage>=C.st.length?'<div style="color:#ff9ab0;font-size:12px">次に二人が来たとき、物語の結末が…</div>':''}`;$('#talkX2').onclick=ev=>{ev.stopPropagation();closeTalk()};$('#talkX2').onpointerdown=ev=>ev.stopPropagation();
+  if(o[1]===2){sfx.good();addXP(4);for(const x of G.customers)if(x.couple===C.id){x.mood='happy';x.talkBonus=1.25;x.dirty=1}}TALK.t0=performance.now()}});
+ $('#talkX').onclick=e=>{e.stopPropagation();closeTalk()};$('#talkX').onpointerdown=e=>e.stopPropagation();return true}
+function finishCouple(C,c){const r=romSt(C.id);const k=r.pts>=10?'hi':r.pts>=7?'mid':'lo';r.done=1;r.end=k;save();fpsUnlock();const el=$('#talkBox');TALK={c,opts:[],end:1,t0:performance.now()};
+ el.innerHTML=`<button class="tx" id="talkX">✕ 閉じる</button><div class="q"><small>💞 ${C.a.n}と${C.b.n}の物語・完結</small>${C.end[k]}</div><div style="color:#ff9ab0;font-size:12px">${k==='hi'?'💍 最高の結末！ XP+50・評判UP':'物語を見届けた！ XP+30'}</div>`;el.style.display='block';addXP(k==='hi'?50:30);if(k==='hi'){S.rep=clamp(S.rep+.2,.5,5);applause()}
+ addLetter(`${C.a.n}・${C.b.n}`,k==='hi'?`結婚式の招待状が届いた。「二人が出会ったあのカウンターに、心から感謝を込めて」`:k==='mid'?'二人から写真付きのはがきが届いた。「いつもの席、また二人で座りに行きます」':'二人から短いはがきが届いた。「またあの店で、乾杯しましょう」',k==='hi'?'💌':'📮');
+ $('#talkX').onclick=e=>{e.stopPropagation();closeTalk()};$('#talkX').onpointerdown=e=>e.stopPropagation()}
+/* ---------- incognito celebrities (fictional) ---------- */
+const CELEBS=[
+ {id:'mio',n:'星野 澪',job:'女優',L:{skin:'#f7d7b8',hair:'#1a1410',shirt:'#2a2a2a',jacket:'#c8b090',hs:5,shades:true,hatType:'fedora',hat:'#d8c8a0',scarf:'#f0e6d0',build:.9,h:.98},h:['撮影が押しちゃって…やっと解放されたの','台本、明日までに3シーン分覚えなきゃ','ドラマの最終回、見てくれた人いるかな'],thanks:'内緒にしてくれてありがとう。…次のドラマ、バーテンダーの役なの。参考にさせてね。'},
+ {id:'kaz',n:'KAZ',job:'ロック歌手',L:{skin:'#eec29b',hair:'#b02a2a',shirt:'#1a1a1a',jacket:'#1a1a1a',hs:6,shades:true,hood:true,earring:true,build:1.0,h:1.03},h:['今日はライブの打ち上げを抜けてきたんだ','喉を休めなきゃいけないんだけどね、一杯だけ','新曲の歌詞が、なかなか書けなくて'],thanks:'気づかないふり、うれしかったよ。次のアルバムに、この店の歌を入れようかな。'},
+ {id:'todo',n:'藤堂 七段',job:'将棋の棋士',L:{skin:'#eec29b',hair:'#2a2a2a',shirt:'#e8e0d0',jacket:'#3a3a4a',hs:0,glasses:true,shades:false,hatType:'cap',hat:'#2a2a2a',scarf:'#4a4a6a',build:.95,h:1.0},h:['今日は長い一日でね。…百手以上、考え続けた','頭を使ったあとは、甘いものが欲しくなる','次の対局まで、あと三日か…'],thanks:'静かな店で、いい手が浮かびました。次のタイトル戦、勝ったらまた来ます。'},
+ {id:'hama',n:'ハマちゃん',job:'お笑い芸人',L:{skin:'#dba87c',hair:'#1a1410',shirt:'#e0c040',jacket:'#2a2a2a',hs:2,shades:true,hatType:'cap',hat:'#c03030',build:1.1,h:.98},h:['収録でスベってさ…いや、なんでもない','今日は笑わせる側じゃなくて、休む側でいたいんだ','ネタ帳、どこに置いたっけ…'],thanks:'今日は一回も「面白いこと言って」って言われなかった。最高の夜だったよ。'},
+ {id:'ogo',n:'大河内 投手',job:'プロ野球選手',L:{skin:'#c88a5a',hair:'#1a1410',shirt:'#f0f0f0',jacket:'#1a2a4a',hs:2,shades:true,hatType:'cap',hat:'#1a2a4a',build:1.22,h:1.08},h:['肩のケア、今日もしっかりやってきた','明日は登板日じゃないから、一杯だけ','ナイターの帰りなんだ。勝ったよ'],thanks:'気づかないふり、ありがとう。今度、チームのみんなで来てもいいかな。'}];
+function celebPlanToday(){if(!S||!G||G.tutorial||NET.on||S.day<6)return null;ensureP4();if(Math.random()>.18)return null;const c=CELEBS.filter(x=>!(S.celebs[x.id]&&S.celebs[x.id].signed));return c.length?pick(c):null}
+function celebTalk(c){const C=CELEBS.find(x=>x.id===c.celeb);const st=S.celebs[C.id]||(S.celebs[C.id]={met:1,quiet:0});c.hintN=(c.hintN||0);const el=$('#talkBox');fpsUnlock();
+ const hint=C.h[Math.min(c.hintN,C.h.length-1)];const names=[C,...CELEBS.filter(x=>x!==C).sort(()=>Math.random()-.5).slice(0,2)].sort(()=>Math.random()-.5);
+ TALK={c,opts:[],end:1,t0:performance.now()};el.innerHTML=`<button class="tx" id="talkX">✕ 閉じる</button><div class="q"><small>🕶 サングラスのお客さん</small>「${hint}」</div>
+ <button data-cl="hint">1. 「今日はお仕事帰りですか？」（もっと話を聞く）</button><button data-cl="guess">2. 「…もしかして」（正体を当てる）</button><button data-cl="quiet">3. （何も聞かず、静かに一杯を出す）</button>`;el.style.display='block';
+ const fin=()=>{$('#talkX')&&($('#talkX').onclick=e=>{e.stopPropagation();closeTalk()})};
+ el.querySelectorAll('[data-cl]').forEach(b=>{b.onpointerdown=e=>e.stopPropagation();b.onclick=e=>{e.stopPropagation();const k=b.dataset.cl;
+  if(k==='hint'){c.hintN++;closeTalk();c.talked=0;say(c,C.h[Math.min(c.hintN,C.h.length-1)],3.2);return}
+  if(k==='quiet'){st.quiet=(st.quiet||0)+1;c.talkBonus=1.6;c.mood='happy';c.dirty=1;closeTalk();c.talked=1;say(c,'…ありがとう。こういう店、好きだな',2.6);sfx.good();
+   if(st.quiet>=2&&!st.signed){st.signed=1;setTimeout(()=>{toast(`🕶 実は${C.job}の「${C.n}」だった！ サインをもらった`);addLetter(C.n,`サイン色紙と手紙が届いた。「${C.thanks}」`,'✍')},1500)}save();return}
+  el.innerHTML=`<button class="tx" id="talkX">✕ 閉じる</button><div class="q"><small>🕶 正体は…？</small>このお客さんは、もしかして…</div>${names.map(x=>`<button data-gs="${x.id}">${x.job}の「${x.n}」</button>`).join('')}`;fin();
+  el.querySelectorAll('[data-gs]').forEach(g=>{g.onpointerdown=e=>e.stopPropagation();g.onclick=e=>{e.stopPropagation();closeTalk();c.talked=1;
+   if(g.dataset.gs===C.id){st.guessed=1;st.signed=1;c.talkBonus=2;c.mood='happy';c.dirty=1;say(c,'…バレちゃった？ 内緒にしてね',3);sfx.good();addXP(10);toast(`✍ ${C.job}の「${C.n}」からサインをもらった！（図鑑のアルバムへ）`);addLetter(C.n,`サイン色紙をもらった。「内緒だよ。また来るね」`,'✍')}
+   else{say(c,'え？ 人違いですよ（笑）',2.5);c.talkBonus=.95}save()}})}});
+ $('#talkX').onclick=e=>{e.stopPropagation();closeTalk()};$('#talkX').onpointerdown=e=>e.stopPropagation();return true}
+/* ---------- troublemakers ---------- */
+const TROUBLE={loud:{i:'📢',n:'大声の酔っぱらい'},claim:{i:'😤',n:'クレーマー'},camp:{i:'🪑',n:'居座り客'}};
+function troubleRate(){return({easy:.025,normal:.06,hard:.11})[S.diff]||.06}
+function troubleTick(dt){if(!G||G.tutorial)return;for(const c of G.customers){if(!c.trouble||c.resolved||c.status==='leave'||c.status==='enter')continue;c.trT=(c.trT||0)+dt;
+ if(c.trouble==='loud'&&['waiting','ordered','drinking','relax'].includes(c.status)){c.shoutT=(c.shoutT||rnd(4,7))-dt;if(c.shoutT<=0){c.shoutT=rnd(6,10);say(c,pick(['おーい！ もっと酒持ってこーい！','ガハハハ！ 聞いてくれよぉ！','マスタぁ〜！ こっち来いよぉ〜','ここの店はなぁ〜、うぃっく']),2.6);if(!muted)noise(.3,500,.06,.6);
+   for(const x of G.customers)if(x!==c&&Math.abs(x.seat-c.seat)<=2&&['waiting','ordered','drinking','relax'].includes(x.status)){if(x.status==='waiting'||x.status==='ordered')x.pat-=3;if(Math.random()<.3)say(x,pick(['うるさいなあ…','ちょっと…','（顔をしかめる）']),1.8)}G.tidy=Math.max(0,(G.tidy??100)-1.5)}}
+ if(c.trouble==='claim'&&c.status==='drinking'&&!c.claiming&&c.t>2){c.claiming=1;c.claimT=16;say(c,pick(['ちょっと！ これ薄くない？','これ、注文と違う気がするんだけど','おい、グラスが汚れてるぞ']),3.2);sfx.bad();floatAt(c.m.g.position.clone().add(V(0,2.1,0)),'😤 クレーム！ クリックして対応','#ff9a7a',15)}
+ if(c.claiming){c.claimT-=dt;if(c.claimT<=0){c.resolved=1;c.claiming=0;S.rep=clamp(S.rep-.06,.5,5);c.talkBonus=.5;say(c,'もういい！ 二度と来ないよ',2.4);toast('😤 クレームを放っておいたので、評判が下がった…');leave(c,'angry')}}
+ if(c.trouble==='camp'&&c.status==='relax'&&c.drinks>=1){c.relaxT=Math.max(c.relaxT,5);if(!c.campSaid&&c.trT>20){c.campSaid=1;say(c,'（スマホをいじりながら、ずっと座っている…）',3)}}
+ const ms=STAFFOBJ.find(o=>o.id==='misaki');if(ms&&(stf('misaki').lv||1)>=2&&!c.misakiT&&(c.trouble==='loud'?c.trT>12:c.trouble==='camp'?c.trT>40:false)){c.misakiT=1;resolveTrouble(c,'misaki')}}}
+function resolveTrouble(c,how){c.resolved=1;c.claiming=0;c.dirty=1;if(how==='misaki')floatAt(c.m.g.position.clone().add(V(0,2.2,0)),'💁 ミサキが対応してくれた','#ffd7f0',14);
+ if(c.trouble==='loud'){c.mood='neutral';say(c,pick(['…わりい、飲みすぎた','お、おう…静かにするよ']),2.4)}
+ if(c.trouble==='camp'){say(c,'あ、もうこんな時間か。ごちそうさま',2.2);setTimeout(()=>{if(G.customers.includes(c)&&c.status!=='leave')leave(c,'neutral')},1500)}
+ G.troubleOK=(G.troubleOK||0)+1;addXP(3)}
+function troubleTalk(c){const T0=TROUBLE[c.trouble];const el=$('#talkBox');fpsUnlock();let opts;
+ if(c.trouble==='loud')opts=[['「お水をどうぞ。少し休憩しましょう」','ok'],['「他のお客様もいらっしゃいますので…」','risk'],['（相手にしない）','ignore']];
+ else if(c.trouble==='claim')opts=[['「申し訳ありません。すぐお作り直しします」','redo'],['「レシピ通りですが、お口に合いませんでしたか？」','explain'],['（取り合わない）','ignore']];
+ else opts=[['「そろそろラストオーダーのお時間です」','ok'],['「お次のお飲み物はいかがですか？」','order'],['（そのままにする）','ignore']];
+ TALK={c,opts:[],end:1,t0:performance.now()};el.innerHTML=`<button class="tx" id="talkX">✕ 閉じる</button><div class="q"><small>${T0.i} ${T0.n}</small>${c.trouble==='claim'?'「なあ、これどうなってんの？」':c.trouble==='loud'?'「なんだよぉ〜、マスタぁ〜」':'（もう何時間も座っている…）'}</div>${opts.map((o,i)=>`<button data-tr="${o[1]}">${i+1}. ${o[0]}</button>`).join('')}`;el.style.display='block';
+ el.querySelectorAll('[data-tr]').forEach(b=>{b.onpointerdown=e=>e.stopPropagation();b.onclick=e=>{e.stopPropagation();const k=b.dataset.tr;closeTalk();c.talked=1;
+  if(k==='ok'){resolveTrouble(c);sfx.good()}
+  else if(k==='risk'){if(Math.random()<.65){resolveTrouble(c);sfx.ok()}else{say(c,'なんだとぉ！？ 客に向かって！',2.5);c.trT=0;c.talked=0;sfx.bad()}}
+  else if(k==='redo'){const pr=RECIPES[c.order]?RECIPES[c.order].price:600;S.money-=Math.round(pr*.5);resolveTrouble(c);say(c,'…まあ、そこまで言うなら',2.2);floatAt(c.m.g.position.clone().add(V(0,2.1,0)),'作り直し代 -'+yen(Math.round(pr*.5)),'#ffb0a0',14)}
+  else if(k==='explain'){if((c.lastScore||0)>=80&&Math.random()<.75){resolveTrouble(c);say(c,'…まあ、言われてみればうまいな',2.2);sfx.ok()}else{c.resolved=1;c.claiming=0;S.rep=clamp(S.rep-.04,.5,5);say(c,'言い訳かよ。もういい',2.2);sfx.bad()}}
+  else if(k==='order'){say(c,'じゃあ…もう一杯だけ',1.8);c.trT=0}
+  else{if(c.trouble==='claim'){c.claimT=Math.min(c.claimT||5,4)}else c.trT+=0}}});
+ $('#talkX').onclick=e=>{e.stopPropagation();closeTalk()};$('#talkX').onpointerdown=e=>e.stopPropagation()}
+/* ---------- rival bar NEON ---------- */
+const NEONCAMP=['ハッピーアワー','カクテル半額デー','ライブ演奏の夜','新作フェア','DJナイト'];
+const REN={L:{skin:'#eec29b',hair:'#c03a2a',shirt:'#1a1a1a',jacket:'#2a1a12',hs:6,earring:true,build:1.0,h:1.04,eye:'#2a1a10'},
+ st:[{s:'ここが噂の「憩」か。…ふん、悪くない。向かいのBAR NEONのレンだ。客は全部もらうぜ',a:[['「お互いがんばりましょう」',2,'…調子狂うな。まあいい'],['「負けませんよ」',1,'言うじゃねえか。楽しみにしてるぜ']]},
+  {s:'うちのハッピーアワー、見たか？ 客が行列だ',a:[['「すごいですね。参考にさせてもらいます」',2,'…素直なやつだな'],['「うちは味で勝負です」',1,'ハッ、味だけで食えるかよ']]},
+  {s:'…なあ、この一杯どうやって作ってる？ いや、別に盗む気はねえよ',a:[['「お教えしますよ。ステアは、氷を回すように…」',2,'…マジかよ。ありがとな'],['「企業秘密です」',0,'ちっ、ケチだな']]},
+  {s:'親父の店を継いだんだ。でも客が離れてく。派手にやるしかねえんだよ',a:[['「お父さんの店の味を守るのも、大事では」',2,'…親父の味、か。久しぶりに思い出した'],['「それなら勝負ですね」',1,'ああ。負けねえ']]},
+  {s:'今度の祭り、うちとお前の店で何かやらねえか？ …いや、なんでもねえ',a:[['「ぜひ一緒にやりましょう！」',2,'…本気かよ。じゃあ、決まりだ'],['「うちはうちでやります」',0,'…そうかよ']]}],
+ end:{hi:'コラボナイト、大成功だったな。…お前の店があって、よかったよ。これからはライバル兼、飲み友達だ。',lo:'これからも勝負だ。月末の売上、首を洗って待ってろよ。'}};
+function rivalOpen(){ensureP4();return S.rival&&S.day>=S.rival.open}
+function rivalCamp(d){if(!S.rival||d<S.rival.open)return null;if(S.rival.friend)return null;const r=hrand(S.seed,d*53+11);return r<.4?NEONCAMP[Math.floor(hrand(S.seed,d*91)*NEONCAMP.length)]:null}
+function rivalSpawnMul(){if(!rivalOpen())return 1;return rivalCamp(S.day)?1.15:1.04}
+function renDue(){if(!rivalOpen()||G.tutorial||NET.on)return false;const R=S.rival;if(R.done)return false;return S.day>=(R.renNext||R.open+1)}
+function renTalk(c){const R=S.rival;if(R.renDay===S.day){say(c,'…なんだよ。今日はもう話しただろ',2);c.talked=0;return true}
+ if((R.stage||0)>=REN.st.length){const k=(R.pts||0)>=7?'hi':'lo';R.done=1;R.friend=k==='hi';save();fpsUnlock();const el=$('#talkBox');TALK={c,opts:[],end:1,t0:performance.now()};el.innerHTML=`<button class="tx" id="talkX">✕ 閉じる</button><div class="q"><small>🆚 レン（BAR NEON）・物語の結末</small>「${REN.end[k]}」</div><div style="color:#7cff9a;font-size:12px">${k==='hi'?'🤝 和解！ これからはNEONのキャンペーンで客を取られなくなり、来店ペース+5%':'🔥 ライバル関係は続く！ 月末勝負の賞金が2倍に'}</div>`;el.style.display='block';addXP(40);addLetter('レン（BAR NEON）',k==='hi'?'「コラボナイトの写真、送っとく。…また飲みに行くわ」':'「次の月末勝負、負けたら一杯おごれよ」',k==='hi'?'🤝':'🔥');$('#talkX').onclick=e=>{e.stopPropagation();closeTalk()};$('#talkX').onpointerdown=e=>e.stopPropagation();return true}
+ const st=REN.st[R.stage||0];const el=$('#talkBox');fpsUnlock();TALK={c,opts:[],end:1,t0:performance.now()};
+ el.innerHTML=`<button class="tx" id="talkX">✕ 閉じる</button><div class="q"><small>🆚 レン（BAR NEONの店主）</small>「${st.s}」</div>${st.a.map((o,i)=>`<button data-rn="${i}">${i+1}. ${o[0]}</button>`).join('')}`;el.style.display='block';
+ el.querySelectorAll('[data-rn]').forEach(b=>{b.onpointerdown=e=>e.stopPropagation();b.onclick=e=>{e.stopPropagation();const o=st.a[+b.dataset.rn];R.pts=(R.pts||0)+o[1];R.stage=(R.stage||0)+1;R.renDay=S.day;R.renNext=S.day+4+Math.floor(Math.random()*3);save();closeTalk();c.talked=1;say(c,o[2],3);if(o[1]===2)sfx.good()}});
+ $('#talkX').onclick=e=>{e.stopPropagation();closeTalk()};$('#talkX').onpointerdown=e=>e.stopPropagation();return true}
+function rivalMonth(dayDone,sales){ensureP4();const R=S.rival;if(!R||dayDone<R.open)return null;R.youM=(R.youM||0)+sales;const camp=rivalCamp(dayDone);R.themM=(R.themM||0)+Math.round((9000+S.day*260)*(.85+hrand(S.seed,dayDone*17)*.35)*(camp?1.25:1)/10)*10;
+ if(calOf(dayDone).slot!==6)return null;const win=R.youM>=R.themM;const prize=win?(R.friend?5000:R.done?20000:10000):0;S.money+=prize;R.wins=(R.wins||0)+(win?1:0);R.losses=(R.losses||0)+(win?0:1);if(win)S.rep=clamp(S.rep+.05,.5,5);const out={you:R.youM,them:R.themM,win,prize};R.youM=0;R.themM=0;return out}
+/* ---------- SNS ---------- */
+const HANDLES=['nomiaruki_yuki','barhopper_k','sakeneko22','yoru_no_sanpo','craftbeer_mania','hibiki_daisuki','tokyo_nightwalk','gourmet_tabi','kanpai_club','shizukana_yoru','highball_lover','cocktail_note'];
+function snsPosts(){const P=[];const st=G.stats,hl=G.hl;const L=(t,base)=>P.push({h:pick(HANDLES),t,l:Math.round(base*(.6+Math.random()*.9))});
+ if(hl.best&&hl.best.score>=90)L(`「${hl.best.name.replace(/<[^>]*>/g,'')}」が絶品だった…！ 憩、また行く🍸`,120+hl.best.score*3);
+ if(Object.keys(hl.tricks||{}).length)L(`憩のバーテンダーさんの${Object.keys(hl.tricks)[0]}、かっこよすぎて動画撮るの忘れた✨`,180);
+ if(G.catPet&&S.cat)L(`憩の看板猫${S.cat.name}ちゃんがかわいすぎる🐾 #看板猫`,260);
+ if(G.ev&&G.ev.id)L(`${G.ev.name.split('（')[0]}の夜は憩で一杯。雰囲気最高`,140);
+ if(G.wx==='rain'||G.wx==='snow')L(`${G.wx==='rain'?'雨':'雪'}の日のバーって、なんでこんなに落ち着くんだろう`,90);
+ if(ambScore()>=20)L('憩のインテリア、来るたびに増えてて楽しい。和モダンって感じ',110);
+ if(STAFFOBJ.length)L(`憩のスタッフさん、みんな感じいい☺️`,80);
+ if(G.troubleOK)L('となりの酔っぱらい、マスターがさらっとなだめてて神対応だった',150);
+ if(st.angry>=3)L('今日の憩、混んでて待たされた…でも味はいい',40);
+ if(st.served>=30)L(`憩、今日めちゃくちゃ繁盛してた！ ${st.served}杯くらい出てたんじゃ？`,160);
+ if(!P.length)L('ふらっと入ったバーが当たりだった。「憩」っていうお店',60);
+ const out=P.sort(()=>Math.random()-.5).slice(0,3);const tot=out.reduce((a,p)=>a+p.l,0);const buzz=tot>=700||(st.perfect>=6&&Math.random()<.5);return{out,buzz,tot}}
+/* ---------- end of day ---------- */
+function p4EndDay(dayDone){ensureP4();const sns=snsPosts();if(sns.buzz){S.sns.buzz=2;S.rep=clamp(S.rep+.05,.5,5);addXP(10)}else if(S.sns.buzz>0)S.sns.buzz--;S.sns.posts+=sns.out.length;
+ if(G.hl.best&&G.hl.best.score>=95&&Math.random()<.35)addLetter('お客さん',pick(['「最高の一杯をありがとう。仕事の疲れが吹き飛びました」','「誕生日の夜をここで過ごせてよかった。また来年も」','「初めてのバーで緊張したけど、また行きたいです」']),'💌');
+ if(!S.rival&&dayDone>=11){S.rival={open:dayDone+2,stage:0,pts:0};addLetter('商店街の掲示板','「向かいの空き店舗に、新しいバー『BAR NEON』が近日オープン」','📰')}
+ const rm=S.rival?rivalMonth(dayDone,G.stats.sales):null;const L0=(G.newLetters||[]).slice();return{sns,rm,letters:L0}}
+function p4Report(R){if(!R)return'';let h='';
+ h+=`<h3 style="margin:12px 0 6px;font-size:16px">📱 今日の口コミ ${R.sns.buzz?'<span style="color:#ff8ab0">🔥 バズった！ 明日・あさってはお客さん増加</span>':''}</h3><div style="display:flex;flex-direction:column;gap:5px">${R.sns.out.map(p=>`<div style="background:#ffffff0d;border:1px solid #ffffff1a;border-radius:10px;padding:6px 10px;font-size:13px"><b style="color:#9fd4ff">@${p.h}</b>　${p.t}<span style="float:right;color:#ff8ab0">♥ ${p.l}</span></div>`).join('')}</div>`;
+ if(R.letters.length)h+=`<h3 style="margin:12px 0 6px;font-size:16px">✉ 手紙が${R.letters.length}通 届きました</h3>${R.letters.map(l=>`<div style="background:#f6eedc;color:#3a2414;border-radius:8px;padding:8px 12px;margin:4px 0;font-size:13.5px;font-family:${MINCHO}">${l.ic} <b>${l.from}</b>より　${l.t}</div>`).join('')}`;
+ if(R.rm)h+=`<h3 style="margin:12px 0 6px;font-size:16px">🆚 今月の売上勝負 vs BAR NEON</h3><div style="font-size:14px">憩 <b>${yen(R.rm.you)}</b>　vs　NEON <b>${yen(R.rm.them)}</b>　→　${R.rm.win?`<b style="color:#7cff9a">勝ち！</b>${R.rm.prize?' 賞金 '+yen(R.rm.prize):''}`:'<b style="color:#ff8a7a">負け…</b> 来月こそ！'}</div>`;
+ return h}
+function albumTab(){ensureP4();const sg=CELEBS.filter(c=>S.celebs[c.id]&&S.celebs[c.id].signed);const rm=COUPLES.filter(C=>S.rom[C.id]&&S.rom[C.id].done);
+ return `<div style="font-size:13px;margin-bottom:6px">✍ サイン ${sg.length}/${CELEBS.length}　💞 見届けた恋 ${rm.length}/${COUPLES.length}　${S.rival?`🆚 NEONとの勝負 ${S.rival.wins||0}勝${S.rival.losses||0}敗${S.rival.friend?'（和解）':''}`:''}</div>
+ <div class="zgrid">${CELEBS.map(c=>{const s=S.celebs[c.id];return `<div class="zc ${s&&s.signed?'':'lock'}"><div style="font-size:24px">✍</div><b>${s&&s.signed?c.n:'？？？'}</b><small>${s&&s.signed?c.job+'のサイン':s?'正体不明のお客さん':'サイン'}</small></div>`}).join('')}${COUPLES.map(C=>{const r=S.rom[C.id];return `<div class="zc ${r&&r.done?'':'lock'}"><div style="font-size:24px">💞</div><b>${r&&r.stage?C.a.n+'と'+C.b.n:'？？？'}</b><small>${r&&r.done?{hi:'💍 結ばれた',mid:'交際中',lo:'飲み友達'}[r.end]:r&&r.stage?`${r.stage}/${C.st.length}`:'恋の物語'}</small></div>`}).join('')}</div>
+ <h3 style="margin:10px 0 6px;font-size:15px">✉ 届いた手紙（${S.letters.length}通）</h3>${S.letters.slice().reverse().map(l=>`<div style="background:#f6eedc;color:#3a2414;border-radius:8px;padding:7px 11px;margin:4px 0;font-size:13px;font-family:${MINCHO}"><span style="color:#8a6a4a">${dateStr(l.d,1)}</span>　${l.ic} <b>${l.from}</b>　${l.t}</div>`).join('')||'<p class="sub">まだ手紙は届いていません</p>'}`}
 /* ====================== STORE MANAGEMENT: STAFF / MARKET / RENOVATION / INTERIOR / CAT ====================== */
 function ensureP3(){if(!S)return;for(const k in ING)if(S.stock[k]==null)S.stock[k]=0;
  S.staff=S.staff||{};S.reno=S.reno||{wall:1,counter:1,light:1,table:0,terrace:0,lounge:0};S.place=S.place||{};S.owned=S.owned||{}}
@@ -2500,7 +2659,7 @@ function staffTalk(id){if(!S||S.phase!=='service')return;const s=stf(id),D0=STAF
  el.querySelectorAll('[data-sk]').forEach(b=>{b.onpointerdown=e=>e.stopPropagation();b.onclick=e=>{e.stopPropagation();const o=opts[+b.dataset.sk];s.talkDay=S.day;if(o[1]==='mot'){s.mot=clamp((s.mot??70)+o[2],0,100);toast(`${D0.name}のやる気UP！`)}else if(o[1]==='xp'){s.xp=(s.xp||0)+1;staffLv(id);toast(`${D0.name}が少し上達した`)}else{s.mot=clamp((s.mot??70)+o[2],0,100);const ob=STAFFOBJ.find(x=>x.id===id);if(ob){ob.busy+=6}toast(`${D0.name}はひと息ついた`)}sfx.good();closeTalk();save()}});
  $('#talkX').onclick=e=>{e.stopPropagation();closeTalk()};$('#talkX').onpointerdown=e=>e.stopPropagation()}
 const STAFFLV=[0,3,7,12,18];
-function staffLv(id){const s=stf(id);let lv=1;for(let i=0;i<STAFFLV.length;i++)if((s.xp||0)>=STAFFLV[i])lv=i+1;if(lv>(s.lv||1)){s.lv=lv;setTimeout(()=>toast(`⬆ ${STAFF[id].name}が Lv${lv} になった！「${STAFF[id].lines[clamp(lv-1,0,4)]}」`),1200)}}
+function staffLv(id){const s=stf(id);let lv=1;for(let i=0;i<STAFFLV.length;i++)if((s.xp||0)>=STAFFLV[i])lv=i+1;if(lv>(s.lv||1)){s.lv=lv;if(lv===5)addLetter(STAFF[id].name,'「'+STAFF[id].lines[4]+'」','👥');setTimeout(()=>toast(`⬆ ${STAFF[id].name}が Lv${lv} になった！「${STAFF[id].lines[clamp(lv-1,0,4)]}」`),1200)}}
 function staffEndDay(){let wages=0;const rows=[];ensureP3();for(const id in STAFF){const s=S.staff[id];if(!s||!s.hired)continue;const worked=!!STAFFOBJ.find(o=>o.id===id);
  if(worked){const w=wageOf(id);wages+=w;s.days=(s.days||0)+1;s.cons=(s.cons||0)+1;s.xp=(s.xp||0)+1;s.mot=clamp((s.mot??70)+(s.cons>=5?-7:s.cons>=3?-2:1),0,100);staffLv(id);rows.push(`${STAFF[id].icon}${STAFF[id].name} ${yen(w)}`)}
  else{s.cons=0;s.mot=clamp((s.mot??70)+5,0,100)}}
@@ -2637,7 +2796,7 @@ function interiorTab(){ensureP3();const a=ambScore(),fx=ambFx();const owned=Obje
  let pick0='';if(placeSel){const sp=SPOTS.find(s=>s.id===placeSel);const fit=owned.filter(k=>PLACE[k].sp.includes(sp.t)&&(!placedHas(k)||S.place[sp.id]===k));pick0=`<div style="margin-top:6px;font-size:13px"><b>${sp.n}</b>（${{wall:'壁',floor:'床',table:'テーブルの上',counter:'カウンターの上'}[sp.t]}）に置く：${fit.map(k=>`<button class="tg ${S.place[sp.id]===k?'on':''}" data-put="${k}">${PLACE[k].i} ${PLACE[k].n}</button>`).join('')||'<span class="sub">置ける物を持っていません（下で買えます）</span>'} ${S.place[sp.id]?'<button class="tg" data-put="">片付ける</button>':''}</div>`}
  const shop=Object.keys(PLACE).map(k=>{const P0=PLACE[k];const has=S.owned[k];return `<div class="card ${has?'done':''}"><div style="font-size:26px;width:40px;text-align:center">${P0.i}</div><div class="info"><b>${P0.n}</b> <span class="sub">${P0.th?P0.th+'風・':''}雰囲気+${P0.amb}</span><div class="sub">置き場所：${P0.sp.map(t=>({wall:'壁',floor:'床',table:'テーブル',counter:'カウンター'})[t]).join('・')}${P0.fx?'　'+P0.fx:''}</div></div>${has?`<span style="font-weight:800;color:${placedHas(k)?'#7cd67c':'#ffd77a'}">${placedHas(k)?'配置中':'未配置'}</span>`:`<button class="btn sm" data-pbuy="${k}" ${S.money<P0.p?'disabled':''}>${yen(P0.p)}</button>`}</div>`}).join('');
  return `<div class="card" style="grid-column:1/-1;flex-direction:column;align-items:stretch"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px"><b>🏠 店内の配置（見取り図の点をクリック）</b><span>雰囲気 <b style="color:#ffd77a">${a}</b>点 → チップ +${Math.round(fx.tip*100)}%・待てる時間 +${Math.round(fx.pat*100)}%　<span class="sub">（同じ「和風」「洋風」を3つ以上でボーナス+5）</span></span></div>${map}${pick0}</div>${shop}`}
-function bindP3Shop(){
+function bindP3Shop(){document.querySelectorAll('[data-hh]').forEach(b=>b.onclick=()=>{S.hhDay=S.hhDay===S.day?0:S.day;sfx.pop();save();openShop()});
  document.querySelectorAll('[data-hire]').forEach(b=>b.onclick=()=>interview(b.dataset.hire));
  document.querySelectorAll('[data-fire]').forEach(b=>b.onclick=()=>{if(!b.dataset.c){b.dataset.c=1;b.textContent='本当に？（もう一度）';return}const id=b.dataset.fire;S.staff[id].hired=0;toast(`${STAFF[id].name}とお別れしました`);save();openShop('staff')});
  document.querySelectorAll('[data-shift]').forEach(b=>b.onclick=()=>{const [id,i]=b.dataset.shift.split(':');const s=S.staff[id];s.shift[+i]=s.shift[+i]?0:1;sfx.pop();save();openShop('staff')});
@@ -2669,11 +2828,12 @@ function decorTick(t){const a=DECOROBJ.aquarium;if(a)a.userData.fish.forEach((f,
 /* ---------- 11/12. collection & records ---------- */
 const TRICKS=['ジャストポア','ハイポア','ローリングシェイク','神速サーブ','フレア','スライドサーブ','リズム職人','きれいなカット','磨き上げグラス','丸氷','スモーク演出','お披露目','ファイヤーピール'];
 function openZukan(tab,back){tab=tab||'drink';const was=G&&G.paused;if(G&&S.phase==='service')G.paused=true;S.made=S.made||{};S.met=S.met||{};S.tricksSeen=S.tricksSeen||{};S.best=S.best||{};
- const tabs=[['drink','🍸 お酒'],['cust','🙋 お客さん'],['trick','✨ 技'],['ach','🏆 実績'],['rec','🏅 きろく']];let body='';
+ const tabs=[['drink','🍸 お酒'],['cust','🙋 お客さん'],['trick','✨ 技'],['ach','🏆 実績'],['rec','🏅 きろく'],['album','✉ アルバム']];let body='';
  if(tab==='drink')body=`<div class="zgrid">${Object.keys(RECIPES).map(k=>{const r=RECIPES[k],n=S.made[k]||0;return `<div class="zc ${n?'':'lock'}"><div>${glassSVG(r.glass,{w:34,fill:.85,color:recipeColor(r),garnish:r.garnish,foam:r.method==='tap'})}</div><b>${n?r.name:'？？？'}</b><small>${n?`${n}杯 つくった`:'まだ作っていない'}</small></div>`}).join('')}</div>`;
- if(tab==='cust')body=`<div class="zgrid">${Object.keys(CT).filter(k=>!CT[k].reg).map(k=>`<div class="zc ${S.met[k]?'':'lock'}"><div style="font-size:26px">🙋</div><b>${S.met[k]?CT[k].name:'？？？'}</b></div>`).join('')}${REGS.map(r=>{const st=S.regs[r.id];return `<div class="zc ${st&&st.met?'':'lock'}"><div style="font-size:26px">⭐</div><b>${st&&st.named?r.name:st&&st.met?'？？？（来店済み）':'？？？'}</b><small>${st&&st.named?`${st.regular?'⭐常連・':'顔なじみ・'}${r.job}<br>なかよし度 ${st.aff||0}/5${st.ended?'<br>📖 物語 完結':''}`:'常連さん'}</small></div>`}).join('')}</div>`;
+ if(tab==='cust')body=`<div class="zgrid">${Object.keys(CT).filter(k=>!CT[k].reg).map(k=>`<div class="zc ${S.met[k]?'':'lock'}"><div style="font-size:26px">🙋</div><b>${S.met[k]?CT[k].name:'？？？'}</b></div>`).join('')}${REGS.map(r=>{const st=S.regs[r.id];return `<div class="zc ${st&&st.met?'':'lock'}"><div style="font-size:26px">⭐</div><b>${st&&st.named?r.name:st&&st.met?'？？？（来店済み）':'？？？'}</b><small>${st&&st.named?`${st.regular?'⭐常連・':'顔なじみ・'}${r.job}<br>なかよし度 ${st.aff||0}/${MAXAFF}${st.ended?'<br>📖 物語 完結':''}`:'常連さん'}</small></div>`}).join('')}</div>`;
  if(tab==='trick')body=`<div class="zgrid">${TRICKS.map(t=>`<div class="zc ${S.tricksSeen[t]?'':'lock'}"><div style="font-size:24px">✨</div><b>${S.tricksSeen[t]?t:'？？？'}</b><small>${S.tricksSeen[t]?S.tricksSeen[t]+'回':''}</small></div>`).join('')}</div>`;
  if(tab==='ach')body=`<div class="zgrid">${ACH.map(a=>`<div class="zc ${S.ach[a.id]?'':'lock'}"><div style="font-size:24px">🏆</div><b>${a.name}</b><small>${S.ach[a.id]?'達成！':'未達成'}</small></div>`).join('')}</div>`;
+ if(tab==='album')body=albumTab();
  if(tab==='rec'){const B=S.best,Y=S.yday||{};const row=(l,k,f=v=>v)=>`<tr><td>${l}</td><td>${f(B[k]||0)}</td><td style="color:#f5e6c8aa">${Y[k]!==undefined?f(Y[k]):'-'}</td></tr>`;body=`<table class="rtab"><tr><td></td><td><b>自己ベスト</b></td><td><b>前回</b></td></tr>${row('1日の杯数','served',v=>v+'杯')}${row('1日の売上','sales',yen)}${row('1日のチップ','tips',yen)}${row('最高コンボ','combo',v=>'×'+v)}${row('パーフェクト','perfect',v=>v+'杯')}</table><p style="font-size:13px;margin-top:8px">🎯 お題クリア ${S.chalWins||0}回 ／ 🏆 カクテル大会 最高 ${S.contestBest?S.contestBest+'位':'未出場'} ／ 📸 写真 ${S.photos||0}枚</p>`}
  const cntD=Object.keys(RECIPES).filter(k=>S.made[k]).length,cntT=TRICKS.filter(t=>S.tricksSeen[t]).length,cntC=Object.keys(CT).filter(k=>!CT[k].reg&&S.met[k]).length+REGS.filter(r=>S.regs[r.id]&&S.regs[r.id].met).length;
  openOv(`<div class="modal" style="width:900px"><h1>📚 図鑑・きろく</h1><p style="font-size:13px;color:#f5e6c8bb">お酒 ${cntD}/${Object.keys(RECIPES).length} ・ お客さん ${cntC}/${Object.keys(CT).filter(k=>!CT[k].reg).length+REGS.length} ・ 技 ${cntT}/${TRICKS.length} ・ 実績 ${ACH.filter(a=>S.ach[a.id]).length}/${ACH.length}</p><div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">${tabs.map(([k,l])=>`<button class="tg ${k===tab?'on':''}" data-zt="${k}">${l}</button>`).join('')}</div><div style="max-height:400px;overflow:auto">${body}</div><div style="display:flex;justify-content:flex-end;margin-top:10px"><button class="btn" id="zClose">閉じる</button></div></div>`);
@@ -2698,8 +2858,8 @@ function photoShot(){renderer.render(scene,camera);const src=renderer.domElement
  $('#phMore').onclick=()=>{closeOv()};$('#phEnd').onclick=()=>{closeOv();photoExit()}}
 
 function talk(id,lv){const R0=REGS.find(r=>r.id===id);if(!R0)return;const a=(S.regs[id]||{}).aff||0;const el=$('#talk');
- let rw='';if(lv===5&&!S.regs[id].rewarded){S.regs[id].rewarded=1;const w=R0.reward;if(w.money)S.money+=w.money;if(w.rep)S.rep=clamp(S.rep+w.rep,.5,5);if(w.flag)S.flags[w.flag]=1;rw=`<div class="rw">🎁 ${w.txt}</div>`;sfx.good();save()}
- const nmd=regSt(id).named||lv>=1;el.innerHTML=`<div class="tn"><div class="av" style="background:${R0.col}">${nmd?R0.name[0]:'？'}</div><div><div class="nm">${nmd?R0.name:'はじめてのお客さん'}</div><div class="jb">${nmd?R0.job+'・好物：'+RECIPES[R0.fav].name:'まだ名前を知らない'}</div></div><div class="hs">${'♥'.repeat(a)}${'♡'.repeat(5-a)}</div></div><div class="tx">「${R0.lines[lv]}」</div>${lv>0&&lv<5?`<div class="rw" style="color:#ff9ab0">♥ 仲良くなった！</div>`:''}${rw}<div style="font-size:10px;color:#aaa;text-align:right;margin-top:2px">クリックで閉じる</div>`;
+ let rw='';if(lv===MAXAFF&&!S.regs[id].rewarded){S.regs[id].rewarded=1;const w=R0.reward;if(w.money)S.money+=w.money;if(w.rep)S.rep=clamp(S.rep+w.rep,.5,5);if(w.flag)S.flags[w.flag]=1;rw=`<div class="rw">🎁 ${w.txt}</div>`;sfx.good();save()}
+ const nmd=regSt(id).named||lv>=1;el.innerHTML=`<div class="tn"><div class="av" style="background:${R0.col}">${nmd?R0.name[0]:'？'}</div><div><div class="nm">${nmd?R0.name:'はじめてのお客さん'}</div><div class="jb">${nmd?R0.job+'・好物：'+RECIPES[R0.fav].name:'まだ名前を知らない'}</div></div><div class="hs">${'♥'.repeat(a)}${'♡'.repeat(Math.max(0,MAXAFF-a))}</div></div><div class="tx">「${R0.lines[lv]}」</div>${lv>0&&lv<MAXAFF?`<div class="rw" style="color:#ff9ab0">♥ 仲良くなった！</div>`:''}${rw}<div style="font-size:10px;color:#aaa;text-align:right;margin-top:2px">クリックで閉じる</div>`;
  el.style.display='block';el.style.animation='none';void el.offsetWidth;el.style.animation='';clearTimeout(talkT);talkT=setTimeout(()=>el.style.display='none',10000);
  if(G&&G.hl)G.hl.talks.push({name:R0.name,text:R0.lines[lv],lv});if(lv>0)tone(880,.2,'sine',.05),tone(1320,.3,'sine',.04,.1)}
 $('#talk').onclick=()=>{$('#talk').style.display='none'};
