@@ -1,0 +1,38 @@
+name: 🐞 バグ報告
+description: おかしな動き・止まった・表示が崩れた などを教えてください
+title: "[バグ] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        遊んでくれてありがとうございます！分かる範囲で大丈夫です。
+        ※ パスワードやメールアドレスなどの個人情報は書かないでください（この掲示板は誰でも見られます）。
+  - type: textarea
+    id: what
+    attributes:
+      label: 何が起きましたか？
+      placeholder: 例）シェイカーを振ったあと、グラスに注げなくなった
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: その直前に何をしていましたか？
+      placeholder: 例）2日目の営業中、マティーニを作っていた
+  - type: dropdown
+    id: device
+    attributes:
+      label: 遊んでいた機器
+      options: [パソコン, スマホ（横向き）, タブレット, その他]
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: ブラウザ（分かれば）
+      placeholder: 例）Chrome / Safari / Edge
+  - type: textarea
+    id: shot
+    attributes:
+      label: 画面の写真（あれば貼り付け）
