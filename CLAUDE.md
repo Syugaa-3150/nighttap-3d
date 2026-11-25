@@ -1,0 +1,39 @@
+# Bar 憩（いこい） — CLAUDE.md
+
+路地裏のバー「憩」のバーテンダーになる3D一人称ゲーム。単一の `index.html`（Three.js r160、ES module）。
+
+## ユーザーについて
+- 日本語で返答する。説明は専門用語を避け、遊ぶ人の目線で書く。
+- 優先順位：**バグ修正 → 新機能 → 見た目**。
+- 新機能の依頼が「提案して」で来たら、番号付き案（例 1-a, 2-3）を出して選んでもらってから作る。選ばれなかった案は入れない（入れる場合は報告で明記）。
+
+## 守ること（安全）
+- 「自分や渡した人にウイルスが入らないように」：外部通信は増やさない。CSP の `connect-src` は `wss://0.peerjs.com` のみ（対戦用）。`eval`・外部スクリプト追加・ファイルダウンロード機能は入れない。
+- セーブはブラウザの localStorage のみ（`nighttap3d_*`）。
+- GitHub は **Syugaa-3150/nighttap-3d だけ** 操作してよい。他のリポジトリは触らない。
+- コミット・push はユーザーの依頼（またはその作業の一部として了承済み）のときだけ。
+
+## 公開先
+- GitHub Pages: https://syugaa-3150.github.io/nighttap-3d/ （このリポジトリの `index.html`）
+- Claude アーティファクト: slug `3a998a6f-b8d2-43f2-b9eb-e2c821344a9c`
+- どちらも同じビルドを出す。片方だけ更新しない。
+
+## コードの要点
+- 主なグローバル：`P`(ポインタ) `H`(手に持つ物) `G`(その日の状態) `S`(セーブ) `ST`/`SLOTS`(配置) `RECIPES` `ING` `GL`(グラス種) `SKILLS` `FLAIR` `PRAC`(練習場)。
+- 早い段階で `save()` から参照されるグローバルは `let/const` でなく `var`（TDZ回避）。
+- 同名のトップレベル関数を二重定義しない（モジュールなので SyntaxError で全停止）。置き換える時は旧定義を切り取る。
+- メインループ `frameBody` は dt を .05 に丸める。`update(dt)` は営業中かつ非ポーズ時のみ。
+- 開発版には `window.__dbg={...};`（1行）があり、公開版では消す。
+
+## dev/ フォルダ（開発用。公開ページからは使われない）
+- `dev/make_dev.py`：公開版 `index.html` ＋ `dev/dbg_line.js` → 開発版 `/home/claude/v2/index.html`。新しい作業環境では最初にこれを実行。
+- `dev/build.py`：開発版 → 公開版 `index.html`（`__dbg` を消し、CSP を確認）。`make_dev` と完全に逆変換。
+- `dev/tests/`：自動テスト。`cp dev/tests/*.py /home/claude/` してそこで実行（`t7.py` を共通部品として読む）。three は `cd /home/claude/v2 && npm i three@0.160.0`。
+  - 回帰：`f_t22.py`（チュートリアル通し）、`stress.py`（負荷）、`h_t23.py`（全メニュー自動作成）。公開版スモーク：`tb.py`。
+  - 練習場：`t12.py [技id,...]`、レイヤー・スライド等：`t13.py`。
+- `__dbg` の公開に必要な関数を増やしたら `dev/dbg_line.js` も更新する。
+
+## 作業手順（スキル）
+- 改修の進め方 → `bar-ikoi-patch`
+- 自動テスト → `bar-ikoi-test`
+- ビルドと公開 → `bar-ikoi-release`
