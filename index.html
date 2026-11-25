@@ -124,8 +124,8 @@ button{font-family:inherit}
 .slab:after{content:"";position:absolute;left:50%;bottom:-6px;margin-left:-5px;border:5px solid transparent;border-top-color:#3fd0c988;border-bottom:0}
 .slab.on{background:#3fd0c9;color:#062a28;transform:translate(-50%,-100%) scale(1.15);z-index:2}.slab.on small{color:#0a4a46}
 #arrow{position:absolute;display:none;transform:translate(-50%,-100%);text-align:center;pointer-events:none;z-index:3}
-#arrow .ar{font-size:40px;line-height:1;color:#ffe14a;text-shadow:0 0 10px #000,0 3px 0 #a07000;animation:arb .7s ease-in-out infinite}
-#arrow .al{background:#ffe14a;color:#3a2414;font-weight:900;font-size:13px;border-radius:10px;padding:3px 10px;box-shadow:0 3px 0 #a07000;white-space:nowrap}
+#arrow .ar{font-size:40px;line-height:1;color:#5ee6dd;text-shadow:0 0 10px #000,0 3px 0 #127a74;animation:arb .7s ease-in-out infinite}
+#arrow .al{background:#5ee6dd;color:#0b2b29;font-weight:900;font-size:13px;border-radius:10px;padding:3px 10px;box-shadow:0 3px 0 #127a74;white-space:nowrap}
 #arrow.side .ar{animation:ars .7s ease-in-out infinite}
 @keyframes arb{50%{transform:translateY(-10px)}}
 @keyframes ars{50%{transform:translateX(-10px)}}
@@ -243,10 +243,10 @@ body.touch #tip{display:none!important}
 #tut{left:12px!important;bottom:auto!important;top:58px;transform:none!important;width:400px!important}
 #tut .th{gap:8px;align-items:flex-start}#tut .th>span:last-child{white-space:nowrap;flex:none}
 #tut .tgoals div{font-size:14px;line-height:1.7}
-#tutBanner{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%) scale(.9);background:rgba(20,12,7,.95);border:3px solid #ffe14a;border-radius:18px;padding:16px 30px;text-align:center;z-index:30;pointer-events:none;opacity:0;transition:opacity .35s,transform .35s;box-shadow:0 10px 40px #000c}
+#tutBanner{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%) scale(.9);background:rgba(20,12,7,.95);border:3px solid #5ee6dd;border-radius:18px;padding:16px 30px;text-align:center;z-index:30;pointer-events:none;opacity:0;transition:opacity .35s,transform .35s;box-shadow:0 10px 40px #000c}
 #tutBanner.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
-#tutBanner .bs{font-size:13px;color:#ffe14a;font-weight:900;letter-spacing:.15em}#tutBanner .bt{font-size:26px;font-weight:900;color:#fff;margin:4px 0}#tutBanner .bg{font-size:16px;color:#c8faf6;font-weight:800}
-.lookCue{position:absolute;left:50%;transform:translateX(-50%);z-index:25;pointer-events:none;font-size:20px;font-weight:900;color:#ffe14a;background:rgba(20,12,7,.85);border:2px solid #ffe14a;border-radius:14px;padding:6px 18px;display:none;animation:lcPulse 1s ease-in-out infinite}
+#tutBanner .bs{font-size:13px;color:#5ee6dd;font-weight:900;letter-spacing:.15em}#tutBanner .bt{font-size:26px;font-weight:900;color:#fff;margin:4px 0}#tutBanner .bg{font-size:16px;color:#c8faf6;font-weight:800}
+.lookCue{position:absolute;left:50%;transform:translateX(-50%);z-index:25;pointer-events:none;font-size:20px;font-weight:900;color:#b8fff9;background:rgba(6,40,38,.88);border:2px solid #5ee6dd;border-radius:14px;padding:6px 18px;display:none;animation:lcPulse 1s ease-in-out infinite}
 #lookUp{top:62px}#lookDn{bottom:170px}
 @keyframes lcPulse{0%,100%{opacity:1}50%{opacity:.45}}
 #tut .tt{font-size:14px!important}
@@ -354,7 +354,7 @@ body.touch #evalPop{bottom:190px}
 .bub.say{background:var(--pn2)!important;color:var(--gold2)!important;border:1px solid var(--bd)!important}
 .slab{background:rgba(10,24,24,.72)!important;border:1px solid rgba(71,214,200,.45)!important;border-radius:10px!important;backdrop-filter:blur(4px)}
 .slab.on{background:var(--teal)!important;color:#05211e!important}
-#arrow .al{background:linear-gradient(180deg,#fff1a8,#ffd84a)!important;border-radius:999px!important;box-shadow:0 4px 12px #0008!important}
+#arrow .al{background:linear-gradient(180deg,#b8fff9,#4fd8cf)!important;border-radius:999px!important;box-shadow:0 4px 12px #0008!important}
 #evalPop{background:var(--pn2)!important;border:1px solid var(--gold)!important;border-radius:16px!important;backdrop-filter:blur(10px);box-shadow:0 10px 30px #000a}
 #combo{color:var(--gold2)!important;text-shadow:0 0 14px rgba(232,180,90,.7),0 2px 0 #000!important}
 #toast{background:var(--pn2)!important;color:var(--gold2)!important;border:1px solid var(--gold);box-shadow:0 8px 24px #000a!important;border-radius:999px!important}
@@ -440,7 +440,7 @@ body.touch #tut{max-height:250px!important}
 #tkInfo{display:none!important}
 #top .ic,#top button{white-space:nowrap;min-width:38px;overflow:hidden}
 #top .chip{white-space:nowrap;overflow:hidden}
-#tgtRing{position:absolute;border:2px solid #ffe14a;border-radius:50%;pointer-events:none;display:none;z-index:3;box-shadow:0 0 14px #ffe14a88,inset 0 0 10px #ffe14a55;animation:tgp 1.1s ease-in-out infinite}
+#tgtRing{position:absolute;border:2px solid #5ee6dd;border-radius:50%;pointer-events:none;display:none;z-index:3;box-shadow:0 0 14px #5ee6dd88,inset 0 0 10px #5ee6dd55;animation:tgp 1.1s ease-in-out infinite}
 @keyframes tgp{0%,100%{transform:scale(1);opacity:.95}50%{transform:scale(1.12);opacity:.55}}
 #edgeHint{position:absolute;display:none;pointer-events:none;z-index:4;background:rgba(14,11,9,.8);border:1px solid var(--gold,#d9b06a);color:#ffe9b8;border-radius:12px;padding:5px 14px 8px;font-size:14px;font-weight:800;overflow:hidden}
 #edgeHint i{position:absolute;left:0;bottom:0;height:3px;background:#ffd77a}
