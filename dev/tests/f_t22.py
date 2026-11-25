@@ -15,7 +15,7 @@ async def main():
         await pg.evaluate("(()=>{"+HELP+"})()")
         S="const S=()=>o.push('st '+d.TUTST+' '+(document.querySelector('#tut .tgoals')||{innerText:''}).innerText.replace(/\\n/g,' | '));const up=()=>{d.FPS.on=true;d.camera.rotation.set(-.15,0,0);d.camera.updateMatrixWorld()},dn=()=>{d.FPS.on=true;d.camera.rotation.set(-.7,0,0);d.camera.updateMatrixWorld()};"
         r=await pg.evaluate("""(()=>{const d=__dbg,V=d.V,o=[];"""+S+"""try{
-        d.G.lookAcc=2;T.tick(1);S();dn();T.click(d.ST.rack.pint.g.position.clone().add(V(0,.06,-.19)));T.tick(1);d.returnHand();T.tick(1);S();
+        d.G.lookAcc=2;d.G.tutUp=1;d.G.tutDown=1;T.tick(1);S();dn();T.click(d.ST.rack.pint.g.position.clone().add(V(0,.06,-.19)));T.tick(1);d.returnHand();T.tick(1);S();
         T.tick(80);up();const c=d.G.customers[0];T.click(c.m.g.position.clone().add(V(0,1.4,0)));T.tick(2);dn();
         T.click(d.ST.rack.pint.g.position.clone().add(V(0,.06,-.19)));T.click(d.SLOTS.find(s=>s.id==='T0').pos.clone());T.tick(1);d.G.tilt=.8;T.tick(1);
         T.down(d.ST.taps[0].piv.position.clone().add(V(0,.1,0)));T.moveBy(0,80);let i=0;const gl=T.glassOn('T0');while(d.P.act&&gl.fill()<.65&&i++<600)T.tick(1);d.G.tilt=0;while(d.P.act&&i++<900)T.tick(1);T.up();T.tick(2);
